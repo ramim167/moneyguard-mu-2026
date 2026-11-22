@@ -16,13 +16,13 @@ const option = (name) => { const i = process.argv.indexOf(name); return i > 0 ? 
 const OUT = option("--out");
 const STRICT = process.argv.includes("--strict");
 const SHOTS = option("--shots");
-const PORT = Number(process.env.TIDEWAY_BN_PORT || 8797), DEBUG_PORT = Number(process.env.TIDEWAY_BN_DEBUG_PORT || 9337);
+const PORT = Number(process.env.MONEYGUARD_BN_PORT || 8797), DEBUG_PORT = Number(process.env.MONEYGUARD_BN_DEBUG_PORT || 9337);
 const CHROME = process.env.CHROME || ["C:/Program Files/Google/Chrome/Application/chrome.exe", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"].find(existsSync) || "google-chrome";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const errors = [];
 
-const work = mkdtempSync(join(tmpdir(), "tideway-bn-"));
+const work = mkdtempSync(join(tmpdir(), "moneyguard-bn-"));
 const server = spawn(process.env.PYTHON || (process.platform === "win32" ? "python" : "python3"),
   [join(ROOT, "run.py"), "--db", join(work, "bn.sqlite3"), "--port", String(PORT)], {stdio: "ignore", windowsHide: true, env: {...process.env, OPENAI_API_KEY: ""}});
 const chrome = spawn(CHROME, ["--headless=new", `--remote-debugging-port=${DEBUG_PORT}`, `--user-data-dir=${join(work, "profile")}`,
@@ -46,7 +46,7 @@ const settle = () => evaluate("new Promise((r) => requestAnimationFrame(() => re
 const found = new Map();
 async function collect(label) {
   await settle();
-  const missing = await evaluate("window.TidewayBangla.missing()");
+  const missing = await evaluate("window.MoneyGuardBangla.missing()");
   for (const key of missing) { if (!found.has(key)) found.set(key, new Set()); found.get(key).add(label); }
   console.log(`${label.padEnd(34)} ${missing.length} untranslated`);
   if (SHOTS) {
@@ -57,8 +57,8 @@ async function collect(label) {
 }
 async function loginAs(id, pin) {
   await evaluate(`(async () => { const c = await (await fetch('/api/config')).json();
-    await fetch('/api/session/logout', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Tideway-Token': c.csrf_token}, body: '{}'});
-    const r = await fetch('/api/session/login', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Tideway-Token': c.csrf_token}, body: JSON.stringify({operator_id: '${id}', pin: '${pin}'})});
+    await fetch('/api/session/logout', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-MoneyGuard-Token': c.csrf_token}, body: '{}'});
+    const r = await fetch('/api/session/login', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-MoneyGuard-Token': c.csrf_token}, body: JSON.stringify({operator_id: '${id}', pin: '${pin}'})});
     if (!r.ok) throw new Error('login failed'); return true; })()`);
   await send("Page.reload");
   await until("document.readyState === 'complete' && typeof state !== 'undefined' && !!state.dashboard && !!document.querySelector('#view .metric')", `signed in as ${id}`);
@@ -122,7 +122,7 @@ try {
     await evaluate(`(async () => { const plan = state.dashboard.plan; const bundle = plan.bundles.find((b) => b.feasible);
       const ack = bundle.probability_breach_after > plan.risk_target ? {risk_acknowledgement: {acknowledged: true, plan_id: plan.plan_id,
         plan_hash: plan.plan_hash, bundle_id: bundle.bundle_id, probability_breach_after: bundle.probability_breach_after, risk_target: plan.risk_target}} : {};
-      const r = await fetch('/api/plan/approve', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Tideway-Token': state.config.csrf_token},
+      const r = await fetch('/api/plan/approve', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-MoneyGuard-Token': state.config.csrf_token},
         body: JSON.stringify({business_id: state.businessId, plan_id: plan.plan_id, bundle_id: bundle.bundle_id, pin: '${pin}',
           confirm_amount_minor: bundle.exposure_minor, review_ms: 9000, ...ack})});
       const answer = await r.json(); if (!r.ok) throw new Error(answer.error); return answer.status; })()`).then((status) => console.log(`approved as ${id}: ${status}`));
@@ -137,7 +137,7 @@ try {
   await view("shield"); await collect("scam check (empty)");
   await view("assistant"); await collect("assistant");
   await view("shield"); await click('[data-action="shield-sample"][data-sample="fakeCashIn"]'); await until("!!document.querySelector('.shield-result')", "shield result"); await collect("scam check (result)");
-  await view("learn"); await evaluate("localStorage.removeItem('tideway:lessons:' + state.operator.id), true");
+  await view("learn"); await evaluate("localStorage.removeItem('moneyguard:lessons:' + state.operator.id), true");
   await click('[data-action="learn-answer"][data-id="safety"][data-i="0"]'); await sleep(300); await collect("money lessons (wrong answer)");
   await click('[data-action="learn-answer"][data-id="safety"][data-i="1"]'); await sleep(300); await collect("money lessons (right answer)");
   await view("inbox"); await click('[data-action="inbox-sample"][data-sample="injection"]'); await evaluate("document.querySelector('#inbox-form').requestSubmit(), true");

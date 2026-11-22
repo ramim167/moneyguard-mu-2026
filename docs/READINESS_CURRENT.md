@@ -16,7 +16,7 @@ Historical upgrade and Windows reports describe earlier source versions.
 - Mock financing compares arrival date, fee, APR convention, total repayment,
   unverified eligibility and the cash/payroll path through repayment. Borrowing
   cannot appear feasible merely because repayment falls beyond the first horizon.
-- Exact shipped TidePay weights now have a separate frozen-artifact evaluation,
+- Exact shipped GuardPay weights now have a separate frozen-artifact evaluation,
   exposed in the app with integrity and artifact-hash checks. Audited-model scores
   remain separate. The low-history limitation is visible.
 - A new independent challenge set was sealed before first observation. Actual
@@ -45,7 +45,7 @@ Historical upgrade and Windows reports describe earlier source versions.
 | Latest stored full unit run | 497 run; 0 failures; 0 errors; 1 skipped | Python 3.13.7, Windows; the report records its own source hash; injected outputs are not model quality |
 | Additional standard-library run | 252 run; 0 failures; 0 errors; 4 skipped | Python 3.11.16; optional photo tests require Pillow; report records its own source hash |
 | Financial scenarios | 24/24 expected workflows; 9 rescues | 8/9 executed rescues meet the 10% simulated risk target |
-| Shipped TidePay | 7,427 unseen synthetic invoices; MAE 8.5585 days | Heuristic 10.2296; training-only prior 11.7453; no weight changes |
+| Shipped GuardPay | 7,427 unseen synthetic invoices; MAE 8.5585 days | Heuristic 10.2296; training-only prior 11.7453; no weight changes |
 | First actual Qwen3 challenge | 28/32 correct; 32/32 contained | Four retained misses; no mandate, execution or financial-ledger mutation |
 | Post-fix Qwen3 regression | 32/32 known cases handled; 8/8 safe stops | One real-model pass after disclosed guard fixes; not a new blind score |
 | Independent-audit Windows Qwen3 rerun | 32/32 known requests handled; 32/32 contained | Actual compatible inference on disclosed cases; retains every output; not blind |
@@ -139,7 +139,7 @@ Instruction screening has finite coverage. The v5 and v6 first observations belo
 are separate authored sets; they cannot be compared as an uncontrolled percentage
 improvement. Optional semantic checks remain advisory and require a local model.
 Independent verification of the supplied SME observations, usability re-testing,
-current MLX/TideLM planning and receipt-model evaluation,
+current MLX/GuardLM planning and receipt-model evaluation,
 external security testing and real-data calibration remain outstanding.
 Partial settlements, reversals and real lender eligibility require separate
 financial design before live integration. Stored hosted run 8 concluded success for commit f60a6752e26723ae6b696a40e52335d15f1e3339.
@@ -162,7 +162,7 @@ be guaranteed from synthetic checks while these validation gaps remain.
   labels and first observation remain in `evidence/screening-v5/`.
 - Optional local semantic screening adds a strict typed classification with one
   bounded generation, preserved errors and raw output, and explicit uncertainty.
-  `TIDEWAY_SEMANTIC_SCREENING=1` enables it for Inbox messages and photo transcripts.
+  `MONEYGUARD_SEMANTIC_SCREENING=1` enables it for Inbox messages and photo transcripts.
   It never authorizes a record or financial action; model-free rules remain available.
 - [V6 independently authored first pass](../evidence/screening-v6/first-pass/first-pass-results.json)
   records actual local inference, rules/semantic/combined denominators, uncertainty,
@@ -192,7 +192,7 @@ Owner discount ceilings, preferences and exclusions survive counter-offers and r
 - [improved-base-development-r3](../evidence/screening-v7/improved-base-development-r3/report.json): 96 cases; semantic attack recall 100.0%; combined attack recall 100.0%; broader warning false-positive rate 2.5%; targets met: True. Backend: mlx-base; recorded model artifacts apply.
 - [fresh](../evidence/screening-v7/fresh/report.json): 48 cases; semantic attack recall 95.8%; combined attack recall 95.8%; broader warning false-positive rate 31.2%; targets met: True. Backend: mlx-base; recorded model artifacts apply.
 
-Development cases are disclosed v6 regressions. The fresh set is separately AI-authored, not an external or human-blind assessment. Native MLX classification cannot inherit Windows GGUF or historical TideLM planning scores. Every miss and raw output is retained. The native classifier uses the already cached base model without the planning LoRA; the planning backend is unchanged. Independent remediation review agents were unavailable because of an account usage limit; no independent review pass is claimed.
+Development cases are disclosed v6 regressions. The fresh set is separately AI-authored, not an external or human-blind assessment. Native MLX classification cannot inherit Windows GGUF or historical GuardLM planning scores. Every miss and raw output is retained. The native classifier uses the already cached base model without the planning LoRA; the planning backend is unchanged. Independent remediation review agents were unavailable because of an account usage limit; no independent review pass is claimed.
 
 ## Behavior-driven sandbox checks
 

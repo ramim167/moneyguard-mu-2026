@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     read = lambda p: json.loads((ROOT / p).read_text(encoding='utf-8'))
-    pay = read('evidence/upgrade-v1/tidepay/report.json')
+    pay = read('evidence/upgrade-v1/guardpay/report.json')
     cases = read('evidence/upgrade-v1/scenarios/report.json')
     delay = read('evidence/upgrade-v1/payment-delay.json')
     test = read('evidence/test-summary.json')
@@ -18,10 +18,10 @@ def main():
     for key,value in pay['results'].items():
         rows.append(f"| {key} | {value['n']} | {value['mae_days']:.4f} | {value['log_loss']:.4f} | {value['brier_sum']:.4f} |")
     rows += ['', 'The historical prior used test-label statistics; raw historical evidence is preserved. The audit benchmark does not replace production weights. Federation remains one-process simulation with pooled scaling and illustrative predictable masks. Seven of forty SMEs have worse federated MAE than the heuristic; pooled MAE is slightly better overall. One synthetic cohort cannot establish real-business accuracy.', '',
-             'Evidence: `evidence/upgrade-v1/tidepay/` (report, raw predictions, splits/hashes, reliability bins/plot, subgroup and uncertainty results). Method: `docs/TIDEPAY_EVALUATION_V2.md`.', '',
+             'Evidence: `evidence/upgrade-v1/guardpay/` (report, raw predictions, splits/hashes, reliability bins/plot, subgroup and uncertainty results). Method: `docs/GUARDPAY_EVALUATION_V2.md`.', '',
              '## B. Financial tools and conditional selection', '',
              'Whole-plan preflight validates roles/Advise mode, strict entity identity, money/currency/units, dates, hypothetical isolation and tool budgets before any proposing side effect. Rescue selection consumes deterministic forecast/risk/security outputs and records a bounded model follow-up, observable tool receipts and a code-written rationale. Fallback and injected transports are labelled explicitly.', '',
-             'Archived real-model smoke on macOS: unavailable, zero real requests, exit code 2. That environment had no MLX, released adapter or cached base weights. Historical TideLM v2 scores do not measure the changed protocol. The later Windows compatible-model verification and retained failed runs are separate under `evidence/readiness-v2/model/`; see `docs/READINESS_UPDATE.md`. Reproduction: `python3 scripts/smoke_reasoning.py`; model-enabled commands in `docs/MODEL_REASONING_V2.md`.', '',
+             'Archived real-model smoke on macOS: unavailable, zero real requests, exit code 2. That environment had no MLX, released adapter or cached base weights. Historical GuardLM v2 scores do not measure the changed protocol. The later Windows compatible-model verification and retained failed runs are separate under `evidence/readiness-v2/model/`; see `docs/READINESS_UPDATE.md`. Reproduction: `python3 scripts/smoke_reasoning.py`; model-enabled commands in `docs/MODEL_REASONING_V2.md`.', '',
              'Evidence: `evidence/upgrade-v1/model/`; guard tests are separate from model quality.', '', '## C. Distinct conditions, screening and performance', '']
     summary=cases['summary'];classes=summary['by_expected_outcome']
     rows += [f"{summary['workflow_successes']}/{summary['cases']} correct handling, with {summary['executed_rescues']} executed rescues, {classes['honest_infeasibility']['cases']} infeasible, {classes['no_action_needed']['cases']} no-action and {classes['security_blocked']['cases']} blocked. {summary['unauthorised_state_changes']} unexpected financial-state changes. Development/held-out specifications were sealed before evaluating.", '',
@@ -40,7 +40,7 @@ def main():
              '## Actual verification and handoff', '',
              f"Latest automated report: {test['tests_run']} tests run, {test['tests_run']-test['skipped']-test['failures']-test['errors']} passed, {test['skipped']} skipped, {test['failures']} failures and {test['errors']} errors; Python {test['python']} on {test['platform']}. See evidence/test-summary.json for the validated source digest and evidence/test-run.log for skip reasons. The earlier stdlib-only baseline had four optional Pillow skips; each run records its actual skips.", '',
              'Baseline: `evidence/upgrade-v1/baseline.json`; original self-test and historical observations preserved. Current self-test, unit, compile, browser, model availability and distribution reports describe their own actual environments. Only the environments named in those reports were verified. No Docker build, external penetration test, SME user study or post-change real-model quality result is claimed.', '',
-             'Regenerated deliverables: slides/pitch.pdf; docs/architecture.pdf; docs/security-assessment.pdf; docs/submission-notes.pdf; docs/Tideway_FinTechathon_2026_Roadmap.pdf. Final visual QA evidence and source/package hashes are kept with the release reports. Build the local ZIP with `python3 scripts/build_submission_package.py`, verify extracted bytes/startup with `python3 scripts/verify_package.py`, inspect dist/extraction-verification.json and dist/SHA256SUMS.txt.', '',
+             'Regenerated deliverables: slides/pitch.pdf; docs/architecture.pdf; docs/security-assessment.pdf; docs/submission-notes.pdf; docs/MoneyGuard_FinTechathon_2026_Roadmap.pdf. Final visual QA evidence and source/package hashes are kept with the release reports. Build the local ZIP with `python3 scripts/build_submission_package.py`, verify extracted bytes/startup with `python3 scripts/verify_package.py`, inspect dist/extraction-verification.json and dist/SHA256SUMS.txt.', '',
              '## Team-controlled outstanding steps', '',
              '- Install the exact released text adapter/base and verify real-model behavior on supported hardware; repeat receipt-model smoke separately.',
              '- Supply leader and actual contribution roles; verify eligibility, registration acknowledgement and current reviewer repository access.',

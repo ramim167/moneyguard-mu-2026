@@ -1,5 +1,5 @@
 {
-  "schema_version": "tideway-reasoning-v2",
+  "schema_version": "moneyguard-reasoning-v2",
   "generated_at_utc": "2026-10-18T08:38:47.692625+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
@@ -16,12 +16,12 @@
     "structured_plans": true,
     "working_tree_changes": "Source hashes identify this run; base revision alone is not the edited tree.",
     "source_sha256": {
-      "tideway\\tidelm.py": "4013b331954ae2267ba1e51cf0db1473ad126ec4154005eec3fabb41002ae632",
-      "tideway\\copilot.py": "2bee7a8be221cce84ffd10f066fb044c9bb34821039a3807922fff4b32fb1376",
-      "tideway\\local_model.py": "b37cec30197eb53e79812a82c62538d801d2931d809af81a743f18c44a7c3db6",
-      "tideway\\agent.py": "37fead4abe401e617fdf36192c5c1faa12eeed120fccccbb7a1826d90fc887b0",
-      "tideway\\plan_schema.py": "1c748219b8285e5ceaeda6e696bd1c062f074a3a475d057f3e83063d0c3b6660",
-      "scripts\\smoke_reasoning.py": "a8ae81b26e1e3b93f1ad3571aecbf35f94b256180acff4d371eb9227ea0a137f"
+      "moneyguard\\guardlm.py": "4013b331954ae2267ba1e51cf0db1473ad126ec4154005eec3fabb41002ae632",
+      "moneyguard\\copilot.py": "2bee7a8be221cce84ffd10f066fb044c9bb34821039a3807922fff4b32fb1376",
+      "moneyguard\\local_model.py": "8ae7b55abb9dbbe95a0855c7f6b0db13789fcf73bb19711512a484e8ac809068",
+      "moneyguard\\agent.py": "37fead4abe401e617fdf36192c5c1faa12eeed120fccccbb7a1826d90fc887b0",
+      "moneyguard\\plan_schema.py": "1c748219b8285e5ceaeda6e696bd1c062f074a3a475d057f3e83063d0c3b6660",
+      "scripts\\smoke_reasoning.py": "0b71e993ead91ef147b2f33f27aeb223423730d53931e01255bcdb2cf5811487"
     }
   },
   "case_fixture": {
@@ -37,14 +37,14 @@
     "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
     "backend": "local-compatible",
     "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-    "evaluated_tidelm_adapter": false,
+    "evaluated_guardlm_adapter": false,
     "reason": null
   },
   "requested_identity": {
     "backend": "local-compatible",
     "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
     "adapter_path": null,
-    "released_tidelm_adapter": false
+    "released_guardlm_adapter": false
   },
   "adapter_files": {},
   "downloads_allowed": false,
@@ -63,7 +63,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Smallest tested single-customer breaking point: Nila Traders, 5 extra days. Reserve shortfall BDT 2,000.  Smallest integer delay for one customer at a time, with all other likely receipts fixed; simultaneous shocks and model error are not covered.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -71,7 +71,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -281,7 +281,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Smallest tested single-customer breaking point: Nila Traders, 5 extra days. Reserve shortfall BDT 2,000.  Smallest integer delay for one customer at a time, with all other likely receipts fixed; simultaneous shocks and model error are not covered.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -289,7 +289,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -499,7 +499,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Stress-tested 1 accepted early-payment agreements with 7 extra days. At an assumed 25% late-performance rate, reserve-breach risk is 13.20% of simulated futures. These are assumptions, not observed reliability.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -507,7 +507,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -635,7 +635,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Stress-tested 1 accepted early-payment agreements with 7 extra days. At an assumed 25% late-performance rate, reserve-breach risk is 13.20% of simulated futures. These are assumptions, not observed reliability.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -643,7 +643,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -771,7 +771,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Compared 4 recovery options. Additional cash estimates require confirmed funding at opening; all actions still need fresh human approval. Open Decision lab for the costs, dates and consent requirements.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -779,7 +779,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -1063,7 +1063,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Compared 4 recovery options. Additional cash estimates require confirmed funding at opening; all actions still need fresh human approval. Open Decision lab for the costs, dates and consent requirements.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -1071,7 +1071,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -1355,7 +1355,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "I can't approve, pay or transfer money; a person approves in the app with a PIN.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -1363,7 +1363,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,

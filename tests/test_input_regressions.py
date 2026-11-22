@@ -1,10 +1,10 @@
 """Financial input regressions: ambiguous text must not invent settled money or delays."""
 import unittest
 
-from tideway import conversation, scam_shield
-from tideway.agent import Agent
-from tideway.service import Tideway
-from tideway.tidelm import TideLM, TideLMUnavailable
+from moneyguard import conversation, scam_shield
+from moneyguard.agent import Agent
+from moneyguard.service import MoneyGuard
+from moneyguard.guardlm import GuardLM, GuardLMUnavailable
 
 
 BUSINESS = "shapla-services"
@@ -12,14 +12,14 @@ CUSTOMERS = ["Bay Logistics", "Nila Traders"]
 
 
 def unavailable_model(_system, _user):
-    raise TideLMUnavailable("No model in this regression test")
+    raise GuardLMUnavailable("No model in this regression test")
 
 
 class InboxFinancialInputs(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = Tideway(":memory:")
-        cls.extractor = TideLM(generator=unavailable_model)
+        cls.app = MoneyGuard(":memory:")
+        cls.extractor = GuardLM(generator=unavailable_model)
 
     @classmethod
     def tearDownClass(cls):
@@ -102,7 +102,7 @@ class BanglaFinancialInputs(unittest.TestCase):
         self.assertEqual(details["delays"], dict.fromkeys(CUSTOMERS, 10))
 
     def test_ambiguous_delay_assignments_request_clarification_without_tools(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         try:
             for text in ("Bay Logistics এবং Nila Traders যদি ১০ ও ২০ দিন দেরি করে?",
                          "Bay Logistics এবং Nila Traders যদি ১০ দিন ও ২০ দিন দেরি করে?",

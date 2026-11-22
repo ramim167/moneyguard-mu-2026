@@ -1,13 +1,13 @@
 import {spawn,spawnSync} from 'node:child_process';
 import {mkdtempSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
 import {join} from 'node:path';import {tmpdir} from 'node:os';
-const ROOT=process.env.TIDEWAY_REPO||process.cwd(),PY=process.env.PYTHON||'python3';
+const ROOT=process.env.MONEYGUARD_REPO||process.cwd(),PY=process.env.PYTHON||'python3';
 const OUT=join(ROOT,'evidence/remediation-v7/browser-risk');mkdirSync(OUT,{recursive:true});
-const work=mkdtempSync(join(tmpdir(),'tideway-h11-browser-'));
+const work=mkdtempSync(join(tmpdir(),'moneyguard-h11-browser-'));
 const digest=()=>spawnSync(PY,['-B','-c','from scripts.verify_submission import source_digest;print(source_digest()[0])'],{cwd:ROOT,encoding:'utf8'}).stdout.trim();
 const before=digest();
-const code=`import sys,json\nsys.path.insert(0,${JSON.stringify(ROOT)})\nfrom tideway.service import Tideway\nfrom tideway.server import make_handler,Application\nfrom http.server import ThreadingHTTPServer\nfrom scripts.evaluate_upgrade_scenarios import load_spec,new_business\na=Application(${JSON.stringify(join(work,'h11.sqlite3'))},seed=False)\ns=load_spec();new_business(a.tideway,next(c for c in s['scenarios'] if c['id']=='H11'),s['defaults'])\nh=ThreadingHTTPServer(('127.0.0.1',0),make_handler(a))\nprint(json.dumps({'port':h.server_port}),flush=True)\nh.serve_forever()\n`;
-const server=spawn(PY,['-B','-c',code],{cwd:ROOT,stdio:['ignore','pipe','ignore'],env:{...process.env,OPENAI_API_KEY:'',TIDEWAY_LOCAL_MODEL_URL:'',TIDEWAY_LOCAL_TEXT_MODEL:'',TIDEWAY_SEMANTIC_SCREENING:'0'}});
+const code=`import sys,json\nsys.path.insert(0,${JSON.stringify(ROOT)})\nfrom moneyguard.service import MoneyGuard\nfrom moneyguard.server import make_handler,Application\nfrom http.server import ThreadingHTTPServer\nfrom scripts.evaluate_upgrade_scenarios import load_spec,new_business\na=Application(${JSON.stringify(join(work,'h11.sqlite3'))},seed=False)\ns=load_spec();new_business(a.moneyguard,next(c for c in s['scenarios'] if c['id']=='H11'),s['defaults'])\nh=ThreadingHTTPServer(('127.0.0.1',0),make_handler(a))\nprint(json.dumps({'port':h.server_port}),flush=True)\nh.serve_forever()\n`;
+const server=spawn(PY,['-B','-c',code],{cwd:ROOT,stdio:['ignore','pipe','ignore'],env:{...process.env,OPENAI_API_KEY:'',MONEYGUARD_LOCAL_MODEL_URL:'',MONEYGUARD_LOCAL_TEXT_MODEL:'',MONEYGUARD_SEMANTIC_SCREENING:'0'}});
 let buf='';const port=await new Promise((resolve,reject)=>{server.stdout.on('data',x=>{buf+=x;if(buf.includes('\n'))resolve(JSON.parse(buf.split('\n')[0]).port);});server.on('exit',c=>reject(new Error('H11 server exited '+c)));});
 const chrome=spawn(process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--remote-debugging-port=9366',`--user-data-dir=${join(work,'chrome')}`,'--no-first-run','--no-default-browser-check','about:blank'],{stdio:'ignore'});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));let socket,id=0;const pending=new Map();const errors=[];
@@ -16,7 +16,7 @@ async function ev(expression){const r=await send('Runtime.evaluate',{expression,
 async function until(expression,label){for(let i=0;i<200;i++){if(await ev(expression))return;await sleep(150);}throw new Error('Timed out '+label);}
 const click=selector=>ev(`document.querySelector(${JSON.stringify(selector)}).click(),true`);
 async function shot(name){const r=await send('Page.captureScreenshot',{format:'png'});writeFileSync(join(OUT,name+'.png'),Buffer.from(r.data,'base64'));}
-async function login(who,pin){await ev(`(async()=>{const c=await(await fetch('/api/config')).json();const h={'Content-Type':'application/json','X-Tideway-Token':c.csrf_token};await fetch('/api/session/logout',{method:'POST',headers:h,body:'{}'});const r=await fetch('/api/session/login',{method:'POST',headers:h,body:JSON.stringify({operator_id:${JSON.stringify(who)},pin:${JSON.stringify(pin)}})});if(!r.ok)throw Error('login failed');return true;})()`);await send('Page.reload');await until('!!state.dashboard && !state.busy','dashboard');await click('[data-view="rescue"]');}
+async function login(who,pin){await ev(`(async()=>{const c=await(await fetch('/api/config')).json();const h={'Content-Type':'application/json','X-MoneyGuard-Token':c.csrf_token};await fetch('/api/session/logout',{method:'POST',headers:h,body:'{}'});const r=await fetch('/api/session/login',{method:'POST',headers:h,body:JSON.stringify({operator_id:${JSON.stringify(who)},pin:${JSON.stringify(pin)}})});if(!r.ok)throw Error('login failed');return true;})()`);await send('Page.reload');await until('!!state.dashboard && !state.busy','dashboard');await click('[data-view="rescue"]');}
 try{
  let tabs;for(let i=0;i<100;i++){try{tabs=await(await fetch('http://127.0.0.1:9366/json')).json();break;}catch{await sleep(100);}}
  socket=new WebSocket(tabs.find(t=>t.type==='page').webSocketDebuggerUrl);await new Promise(r=>socket.addEventListener('open',r,{once:true}));

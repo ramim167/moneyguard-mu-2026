@@ -5,7 +5,7 @@
     "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
     "backend": "local-compatible",
     "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-    "evaluated_tidelm_adapter": false,
+    "evaluated_guardlm_adapter": false,
     "reason": null
   },
   "paired_cases": 48,
@@ -12268,9 +12268,9 @@
   },
   "first_challenge_targets_met": true,
   "classifier_files": {
-    "tideway\\screening.py": "adac801e21ec50497a2baf07158c5188e921ba8c24947d336c752f1e9bd5ecbd",
-    "tideway\\semantic_screening.py": "e22f314f96e621550ed8e7cec63a1b9e53cbb3ef17977d8cde7179de63ab2882",
-    "tideway\\tidelm.py": "84a50f429508c4570de5c430a196d6d74f661b8b192966ce765758b818a744b6"
+    "moneyguard\\screening.py": "adac801e21ec50497a2baf07158c5188e921ba8c24947d336c752f1e9bd5ecbd",
+    "moneyguard\\semantic_screening.py": "f924e09ccb85a6effba979d60143ac0b3f5c67d050c377dfb43853f132da3d03",
+    "moneyguard\\guardlm.py": "673b49640bb282096867179f0561f2390576867ec688cadf40b96b741b4538a3"
   },
   "source_tree_sha256": "f2ee85f656329ef4d0db2f01ec625373dc8e6284dfb5da3f340bf08b93cd741c",
   "source_aware_ai_authored": true,

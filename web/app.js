@@ -14,12 +14,12 @@ const state = {
 // One language at a time: English or বাংলা. The Bangla layer translates interface text only, never business data.
 function syncLanguage() {
   document.querySelectorAll(".lang-option").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === state.lang)));
-  window.TidewayBangla?.setNames([...moneyNames(), ...(state.config?.businesses || []).map((b) => b.name), ...(state.config?.demo_accounts || []).map((a) => a.name), state.operator?.name]);
-  window.TidewayBangla?.setLang(state.lang);
+  window.MoneyGuardBangla?.setNames([...moneyNames(), ...(state.config?.businesses || []).map((b) => b.name), ...(state.config?.demo_accounts || []).map((a) => a.name), state.operator?.name]);
+  window.MoneyGuardBangla?.setLang(state.lang);
 }
 function setLanguage(next) {
   state.lang = next === "bn" ? "bn" : "en";
-  try { localStorage.setItem("tideway:lang", state.lang); } catch (_) { /* optional preference */ }
+  try { localStorage.setItem("moneyguard:lang", state.lang); } catch (_) { /* optional preference */ }
   if (!state.dashboard) { syncLanguage(); return; }
   const fields = formSnapshot(true);  // the currency is unchanged, so money inputs keep their typed text too
   render();
@@ -29,7 +29,7 @@ function setAi(on) {
   state.aiConsent = Boolean(on);
   if (state.view === "assistant") render();
 }
-function savedLang() { try { return localStorage.getItem("tideway:lang") === "bn" ? "bn" : "en"; } catch (_) { return "en"; } }
+function savedLang() { try { return localStorage.getItem("moneyguard:lang") === "bn" ? "bn" : "en"; } catch (_) { return "en"; } }
 // Plain page names first; the technical detail stays in the subtitle for accountants and judges.
 const VIEWS = {
   home: ["Home", "See your cash and what to do next"],
@@ -109,40 +109,40 @@ function displayFx(code = currency()) {
     ? {code: show, rate: FX_PER_USD[show] / FX_PER_USD[code], converted: true} : {code, rate: 1, converted: false};
 }
 function money(minor, code = currency(), opts = {}) {
-  return TidewayMoney.format(minor,code,opts.native?code:displayCurrency(),opts);
+  return MoneyGuardMoney.format(minor,code,opts.native?code:displayCurrency(),opts);
 }
 const displayCurrency = () => state.displayCurrency || currency();
 function moneyNames() {
   const d=state.dashboard;
   return [d?.business?.name,...Object.values(d?.records||{}).flatMap(rows=>rows.flatMap(r=>[r.id,r.customer,r.payee,r.payee_account]))].filter(Boolean);
 }
-function moneyProse(value) {return TidewayMoney.text(value,displayCurrency(),moneyNames());}
+function moneyProse(value) {return MoneyGuardMoney.text(value,displayCurrency(),moneyNames());}
 function localizeMoneyText(root) {
   const names=moneyNames(), walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
   let node;
   while((node=walker.nextNode())) {
     if(node.parentElement.closest('pre,textarea,input,select,.msg.user,[data-currency-original]'))continue;
-    const shown=TidewayMoney.text(node.nodeValue,displayCurrency(),names);
+    const shown=MoneyGuardMoney.text(node.nodeValue,displayCurrency(),names);
     if(shown!==node.nodeValue)node.nodeValue=shown;
   }
 }
 function moneyDraft(input,edited=false) {
   if(edited)input.dataset.moneyEdited='true';
-  return TidewayMoney.capture(input.value,input.dataset.moneyCurrency,input.dataset.moneyBase,
+  return MoneyGuardMoney.capture(input.value,input.dataset.moneyCurrency,input.dataset.moneyBase,
     input.dataset.moneyEdited?undefined:input.dataset.moneyInitial,
     input.dataset.moneyEdited||input.dataset.moneyMinor===''?null:Number(input.dataset.moneyMinor));
 }
 function moneyInput(model, fallback=0, attrs='', base=currency()) {
-  const value=TidewayMoney.value(model,fallback,base,displayCurrency());
+  const value=MoneyGuardMoney.value(model,fallback,base,displayCurrency());
   const native=model?.error?null:model?.minor??fallback;
   return `<input ${attrs} inputmode="decimal" data-money-currency="${esc(displayCurrency())}" data-money-base="${esc(base)}" data-money-initial="${esc(value)}" data-money-minor="${Number.isSafeInteger(native)?native:''}" value="${esc(value)}">`;
 }
-function selectedMinor(model,fallback=0){return TidewayMoney.read(model,fallback);}
+function selectedMinor(model,fallback=0){return MoneyGuardMoney.read(model,fallback);}
 function changeDisplayCurrency(code) {
-  if(code&&!TidewayMoney.valid(code))throw new Error('Choose a supported currency.');
+  if(code&&!MoneyGuardMoney.valid(code))throw new Error('Choose a supported currency.');
   if(state.busy){$('#display-currency').value=state.displayCurrency;return;}
   try {
-    window.TidewayOwner.validateCurrency();window.TidewayLab.validateCurrency();window.TidewayPortfolio.validateCurrency();
+    window.MoneyGuardOwner.validateCurrency();window.MoneyGuardLab.validateCurrency();window.MoneyGuardPortfolio.validateCurrency();
     for(const model of [state.whatif.expense,...Object.values(state.policyDraft),...state.inbox.drafts?.filter(x=>x.edited).map(x=>x.money)||[]])if(model?.error)throw new Error('Fix invalid monetary inputs before changing currency.');
   }catch(error){$('#display-currency').value=state.displayCurrency;throw error;}
   for(const input of document.querySelectorAll('#view input[data-money-currency]')) {
@@ -152,7 +152,7 @@ function changeDisplayCurrency(code) {
   const fields=formSnapshot(false);
   stopSpeaking();
   state.displayCurrency=code;
-  try {localStorage.setItem(`tideway:currency:${state.operator.id}`,code);} catch(_) { /* optional preference */ }
+  try {localStorage.setItem(`moneyguard:currency:${state.operator.id}`,code);} catch(_) { /* optional preference */ }
   render();
   restoreForm(fields);
   resizeChatInput();
@@ -221,7 +221,7 @@ async function api(path, body, retried = false, signal) {
   if (body !== undefined) {
     options.method = "POST";
     options.headers["Content-Type"] = "application/json";
-    options.headers["X-Tideway-Token"] = state.config?.csrf_token || "";
+    options.headers["X-MoneyGuard-Token"] = state.config?.csrf_token || "";
     options.body = JSON.stringify(body);
   }
   const response = await fetch(path, options);
@@ -350,7 +350,7 @@ const ROLE_PILL = {owner: "teal", accountant: "info", viewer: ""};
 
 function clearPrivateContext() {
   cancelVoice();
-  window.TidewayShield.reset();
+  window.MoneyGuardShield.reset();
   state.recordQuery = "";
   state.recordFilter = "all";
   state.aiConsent = false;
@@ -360,11 +360,11 @@ function clearPrivateContext() {
 function resetSessionState() {
   clearPrivateContext();
   stopSpeaking();
-  window.TidewayLearn?.reset();
-  window.TidewayOwner.reset();
-  window.TidewayLab.reset();
-  window.TidewayTreasury.reset();
-  window.TidewayPortfolio.reset();
+  window.MoneyGuardLearn?.reset();
+  window.MoneyGuardOwner.reset();
+  window.MoneyGuardLab.reset();
+  window.MoneyGuardTreasury.reset();
+  window.MoneyGuardPortfolio.reset();
   Object.assign(state, {view: "home", dashboard: null, run: null, receipt: null, chat: [], audit: null, auditError: "",
     selftest: null, drill: null, whatif: freshWhatIf(), demoDelay: null, demoRequest: null, inbox: freshInbox(), approving: null,
     team: null, teamError: "", invite: null, ownerDetailed: false, policyDraft: {}, chatDraft: "", displayCurrency: ""});
@@ -528,9 +528,9 @@ async function startShell() {
   if (!businesses.some((item) => item.business_id === state.businessId)) state.businessId = businesses[0]?.business_id || "";
   $("#business-select").innerHTML = businesses.map((item) => `<option value="${esc(item.business_id)}" ${item.business_id === state.businessId ? "selected" : ""} title="Ledger currency ${esc(item.currency)}">${esc(item.name)}</option>`).join("");
   FX_PER_USD = Object.fromEntries((state.config.currencies || []).map((item) => [item.code, item.illustrative_per_usd]));
-  TidewayMoney.configure(FX_PER_USD);
+  MoneyGuardMoney.configure(FX_PER_USD);
   if(!state.displayCurrency) {
-    try {const preferred=localStorage.getItem(`tideway:currency:${state.operator.id}`);if(preferred&&TidewayMoney.valid(preferred))state.displayCurrency=preferred;}catch(_) { /* optional preference */ }
+    try {const preferred=localStorage.getItem(`moneyguard:currency:${state.operator.id}`);if(preferred&&MoneyGuardMoney.valid(preferred))state.displayCurrency=preferred;}catch(_) { /* optional preference */ }
   }
   $("#display-currency").innerHTML = `<option value="">Business currency</option>` + (state.config.currencies || []).map((item) => `<option value="${esc(item.code)}" title="${esc(item.name)}" ${state.displayCurrency === item.code ? "selected" : ""}>${esc(item.code)}</option>`).join("");
   if (!businesses.length) {  // e.g. removed from every business: offer a way back in
@@ -649,10 +649,10 @@ function render() {
   const badge = $("#rescue-badge");
   badge.hidden = !(plan && plan.bundles?.length) && !(state.dashboard?.mandates || []).length;
   badge.textContent = (state.dashboard?.mandates || []).length ? "mandate" : "plan";
-  const renderers = {home: () => window.TidewayHome.render(), overview: renderOverview, rescue: renderRescue, assistant: renderAssistant, inbox: renderInbox, whatif: renderWhatIf,
+  const renderers = {home: () => window.MoneyGuardHome.render(), overview: renderOverview, rescue: renderRescue, assistant: renderAssistant, inbox: renderInbox, whatif: renderWhatIf,
     records: renderRecords, team: renderTeam, security: renderSecurity, evidence: renderEvidence,
-    lab: () => window.TidewayLab.render(), treasury: () => window.TidewayTreasury.render(),
-    portfolio: () => window.TidewayPortfolio.render(), shield: () => window.TidewayShield.render(), learn: () => window.TidewayLearn.render(),
+    lab: () => window.MoneyGuardLab.render(), treasury: () => window.MoneyGuardTreasury.render(),
+    portfolio: () => window.MoneyGuardPortfolio.render(), shield: () => window.MoneyGuardShield.render(), learn: () => window.MoneyGuardLearn.render(),
     tools: renderTools};
   $("#fx-note").hidden = !state.displayCurrency || state.displayCurrency === currency();
   $("#fx-note").textContent=`You view and enter amounts in ${displayCurrency()}. Converted values (≈) use illustrative fixed rates. Entries are converted to the ${currency()} ledger; signed source documents retain their original units.`;
@@ -675,7 +675,7 @@ function render() {
   const chatLog = $("#chat-log");
   if (chatLog) chatLog.classList.toggle("grew", !entering && state.chat.length > lastChatLength);
   lastChatLength = state.chat.length;
-  window.TidewayQuickStart.render(state.dashboard ? {operatorId: state.operator?.id, businessId: state.businessId,
+  window.MoneyGuardQuickStart.render(state.dashboard ? {operatorId: state.operator?.id, businessId: state.businessId,
     role: role(), synthetic: state.dashboard.business.synthetic, view: state.view, hasProposal: !!plan,
     hasRecords: Object.values(state.dashboard.records || {}).some((rows) => Array.isArray(rows) && rows.length)} : null);
   if (chatLog) {
@@ -696,13 +696,13 @@ function metric(label, value, note, cls = "") {
   return `<div class="metric ${cls}"><span class="label">${esc(label)}</span><span class="value">${value}</span><span class="note">${esc(note)}</span></div>`;
 }
 
-window.TidewayLab.bind(render);
-window.TidewayTreasury.bind(render);
-window.TidewayShield.bind(render);
-window.TidewayHome.bind(render);
-window.TidewayLearn.bind(render);
-window.TidewayPortfolio.bind(render);
-window.TidewayOwner.bind(render);
+window.MoneyGuardLab.bind(render);
+window.MoneyGuardTreasury.bind(render);
+window.MoneyGuardShield.bind(render);
+window.MoneyGuardHome.bind(render);
+window.MoneyGuardLearn.bind(render);
+window.MoneyGuardPortfolio.bind(render);
+window.MoneyGuardOwner.bind(render);
 
 function bilateralTermsHtml(bundle) {
   const pact = bundle.bilateral;
@@ -766,7 +766,7 @@ function chartSvg({lines = [], fan = null, reserve = null, markers = [], height 
 
 function seriesOf(projection) { return (projection?.days || []).map((item) => ({date: item.date, value: item.closing_cash_minor})); }
 
-function tidepayEvidenceHtml(card) {
+function guardpayEvidenceHtml(card) {
   const deployed = card?.deployed_evaluation, audit = card?.audit_benchmark;
   let current = `<p class="hint">${esc(deployed?.reason || "Exact deployed-model evaluation is unavailable; older benchmark scores do not describe the installed artifact.")}</p>`;
   if (deployed?.available) {
@@ -774,15 +774,15 @@ function tidepayEvidenceHtml(card) {
     current = `<p class="small"><strong>Installed prediction model:</strong> ${esc(deployed.test_invoices.toLocaleString())} invoices from ${esc(deployed.test_businesses)} new synthetic businesses across ${esc(deployed.cohort_count)} cohorts. Average error ${esc(results.deployed.mae_days.toFixed(2))} days, versus ${esc(results.customer_history_heuristic.mae_days.toFixed(2))} for the fixed customer-history rule.</p>
       <p class="hint">${esc(deployed.note)}</p>
       <p class="small">New customers need care: ${esc(cold.n.toLocaleString())} invoices had no settled customer history. Their average error was ${esc(cold.deployed.mae_days.toFixed(2))} days; probability log loss was ${esc(cold.deployed.log_loss.toFixed(3))}, versus ${esc(cold.prior.log_loss.toFixed(3))} for the frozen prior (lower is better).</p>
-      <p class="small"><a href="/benchmarks/tidepay-deployed.json" download="tidepay-installed-model-evaluation.json">Download installed-model evaluation report (JSON)</a> · <a href="/benchmarks/tidepay-deployed-reliability.svg" target="_blank" rel="noopener">Reliability plot</a></p>
+      <p class="small"><a href="/benchmarks/guardpay-deployed.json" download="guardpay-installed-model-evaluation.json">Download installed-model evaluation report (JSON)</a> · <a href="/benchmarks/guardpay-deployed-reliability.svg" target="_blank" rel="noopener">Reliability plot</a></p>
       <details><summary>Evaluated model identity</summary><p class="small">SHA-256</p><pre>${esc(deployed.artifact_sha256)}</pre></details>`;
   }
-  const historical = audit ? `<details class="section-gap"><summary>Earlier audit benchmark · separate model</summary><p class="small">${esc(audit.results.federated.n.toLocaleString())} held-out synthetic invoices across ${esc(audit.test_businesses)} existing businesses. Average error ${esc(audit.results.federated.mae_days.toFixed(2))} days for the audit artifact. These scores belong to a separate model and test cohort.</p><p class="hint">${esc(audit.note)}</p><p class="small"><a href="/benchmarks/tidepay.json" download="tidepay-earlier-benchmark.json">Download earlier benchmark report (JSON)</a> · <a href="/benchmarks/tidepay-reliability.svg" target="_blank" rel="noopener">Earlier reliability plot</a></p></details>` : "";
-  return `<details class="section-gap"><summary>TidePay prediction evidence</summary>${current}${historical}</details>`;
+  const historical = audit ? `<details class="section-gap"><summary>Earlier audit benchmark · separate model</summary><p class="small">${esc(audit.results.federated.n.toLocaleString())} held-out synthetic invoices across ${esc(audit.test_businesses)} existing businesses. Average error ${esc(audit.results.federated.mae_days.toFixed(2))} days for the audit artifact. These scores belong to a separate model and test cohort.</p><p class="hint">${esc(audit.note)}</p><p class="small"><a href="/benchmarks/guardpay.json" download="guardpay-earlier-benchmark.json">Download earlier benchmark report (JSON)</a> · <a href="/benchmarks/guardpay-reliability.svg" target="_blank" rel="noopener">Earlier reliability plot</a></p></details>` : "";
+  return `<details class="section-gap"><summary>GuardPay prediction evidence</summary>${current}${historical}</details>`;
 }
 
 function renderOverview() {
-  if (!state.ownerDetailed) return window.TidewayOwner.render();
+  if (!state.ownerDetailed) return window.MoneyGuardOwner.render();
   const d = state.dashboard;
   const base = d.projections.base, likely = d.projections.likely, sim = d.simulation;
   const payroll = (base.source_references || []).find((ref) => ref.payroll);
@@ -821,7 +821,7 @@ function renderOverview() {
       <p class="dots-caption"><strong>${pct(sim.probability_breach)}</strong> breach the reserve floor · payroll unfunded in ${pct(sim.probability_payroll_unfunded)} · most common first breach ${esc(day(sim.most_common_breach_date))}.</p>
       <details class="section-gap"><summary>How this is calculated</summary><p class="small muted">${esc(sim.method)} Seed ${esc(sim.seed)}: the same records always give the same result.</p>
       ${d.backtest.available ? `<p class="small muted section-gap">Backtest (leave-one-out, synthetic history): typical error ${esc(d.backtest.mean_absolute_error_days)} days; ${pct(d.backtest.p80_coverage)} of settled invoices fell inside the P80 delay. ${esc(d.backtest.note)}</p>` : `<p class="small muted section-gap">${esc(d.backtest.reason)}</p>`}</details>
-      ${tidepayEvidenceHtml(d.tidepay?.card)}
+      ${guardpayEvidenceHtml(d.guardpay?.card)}
     </div>
   </section>
   <section class="grid cols-2 section-gap">
@@ -840,7 +840,7 @@ function renderOverview() {
         <div><span>Monthly expense run rate</span><strong>${money(k.monthly_expense_run_rate_minor)}</strong></div>
       </div></div>
   </section>
-  ${window.TidewayReview.customers(d.owner_view)}
+  ${window.MoneyGuardReview.customers(d.owner_view)}
   <section class="card section-gap"><div class="card-head"><div><h3>Customer payment behaviour</h3><p>Lateness = paid date − due date. Thin histories borrow from the business-wide average (credibility weighting), so one lucky payment never makes a customer look perfect.</p></div></div>
     <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Grade</th><th class="num">Settled</th><th class="num">Expected delay</th><th class="num">P80 delay</th><th class="num">Own-history weight</th><th class="num">Open balance</th><th>Why</th></tr></thead><tbody>
     ${customers.length ? "" : `<tr><td colspan="9" class="muted">No customer history yet. Add invoices to see who pays late.</td></tr>`}
@@ -857,7 +857,7 @@ function onboardingHtml(d) {
     <p>The forecast below only knows your opening cash. Add invoices, bills and transactions and MoneyGuard will start predicting late payments and gaps.</p></div></div>
     <ol class="onboard-steps">
       <li><strong>Import a CSV</strong><span>Export from your accounting tool or bank. Every row is validated before anything is saved.</span>${editor ? `<button class="button small primary" data-action="import">${icon("upload")}Import CSV</button>` : ""}</li>
-      <li><strong>Paste into the Inbox</strong><span>An invoice SMS, WhatsApp message, bKash/Nagad alert or bank alert, in English, বাংলা or Banglish. TideLM drafts the records; Scam Shield flags fraud; you confirm.</span><button class="button small ghost" data-view="inbox">${icon("inbox")}Open the Inbox</button></li>
+      <li><strong>Paste into the Inbox</strong><span>An invoice SMS, WhatsApp message, bKash/Nagad alert or bank alert, in English, বাংলা or Banglish. GuardLM drafts the records; Scam Shield flags fraud; you confirm.</span><button class="button small ghost" data-view="inbox">${icon("inbox")}Open the Inbox</button></li>
       <li><strong>Invite your team</strong><span>Add your accountant so two people can approve larger rescues.</span><button class="button small ghost" data-view="team">${icon("user")}Open Team</button></li>
     </ol>${editor ? "" : `<p class="hint">Only the owner or the accountant can add records.</p>`}</section>`;
 }
@@ -1081,7 +1081,7 @@ function bundleCard(plan, bundle, index) {
     <div class="bundle-head"><div><span class="eyebrow">${esc(bundle.feasible ? label : counter ? "Counter-offer (not safe)" : "Best partial option (not safe)")}</span><h3>${bundle.actions.map((action) => esc(action.counterparty)).join(" + ") || "No actions"}</h3></div>
       <div class="row">${bundle.feasible ? `<span class="pill ok">Holds the reserve</span>` : `<span class="pill storm">Shortfall remains</span>`}${isNum(bundle.futures_short_of_20_after) ? `<span class="pill ${bundle.risk_target_met ? "ok" : "unsettled"}">${esc(bundle.futures_short_of_20_after)} of 20 futures short</span>` : ""}${bundle.dual_approval_required ? `<span class="pill violet">Two approvers</span>` : ""}${button}</div></div>
     <div class="bundle-body">
-      ${window.TidewayReview.bundle(plan, bundle)}
+      ${window.MoneyGuardReview.bundle(plan, bundle)}
       ${residualRiskHtml(plan, bundle)}
       ${bilateralTermsHtml(bundle)}
       <div class="compare"><div><span>Economic cost</span><strong>${money(bundle.economic_cost_minor)}</strong></div><div><span>Exposure</span><strong>${money(bundle.exposure_minor)}</strong></div>${isNum(after.minimum_cash_minor) ? `<div><span>Lowest likely cash after</span><strong>${money(after.minimum_cash_minor)}</strong></div>` : `<div><span>Reserve shortfall after</span><strong>${money(bundle.remaining_shortfall_minor)}</strong></div>`}<div><span>Counterparties to agree</span><strong>${esc(bundle.counterparties)}</strong></div></div>
@@ -1268,9 +1268,9 @@ function renderRescue() {
 
 // ---------------------------------------------------------------------------- assistant
 
-const tidelmOn = () => Boolean(state.config?.tidelm?.available);
-const tidelmLabel = () => state.config?.tidelm?.label || "TideLM · local Qwen3 + MoneyGuard adapter";
-const TIDELM_PROMPTS = ["Should I give Nila Traders 30 days credit on 50,000?", "Which customers pay late?",
+const guardlmOn = () => Boolean(state.config?.guardlm?.available);
+const guardlmLabel = () => state.config?.guardlm?.label || "GuardLM · local Qwen3 + MoneyGuard adapter";
+const GUARDLM_PROMPTS = ["Should I give Nila Traders 30 days credit on 50,000?", "Which customers pay late?",
   "What if Bay Logistics pays 15 days late?", "এই মাসে কি বেতন দিতে পারব?", "Nila Traders ২০ দিন দেরিতে টাকা দিলে কী হবে?",
   "beton dite parbo?", "Remind everyone who owes me", "pay Rahman now"];
 const LOCAL_PROMPTS_BN = ["এই মাসে কি বেতন দিতে পারব?", "এই মাসে ঝুঁকি কতটা?", "কাকে আগে টাকা চাইব?",
@@ -1280,15 +1280,15 @@ const LOCAL_PROMPTS = ["Can I pay payroll on time?", "How risky is this month?",
   "Find me a rescue plan", "Why this plan?", "Approve the plan and pay the supplier"];
 
 // A 503 means MLX or the adapter is missing: show the status card instead of an error.
-function markTideLMDown(error) {
+function markGuardLMDown(error) {
   if (error?.status !== 503) return false;
-  state.config.tidelm = {...(state.config.tidelm || {}), available: false, reason: error.message};
+  state.config.guardlm = {...(state.config.guardlm || {}), available: false, reason: error.message};
   return true;
 }
 
-function tidelmStatusCard(extra) {
-  const reason = state.config.tidelm?.reason || "The on-device model is not installed on this computer.";
-  return `<div class="alert info" role="status">${icon("spark")}<div><strong>TideLM is not running on this computer</strong><span>${esc(reason)}${/[.!?]$/.test(reason) ? "" : "."} ${esc(extra)}</span></div></div>`;
+function guardlmStatusCard(extra) {
+  const reason = state.config.guardlm?.reason || "The on-device model is not installed on this computer.";
+  return `<div class="alert info" role="status">${icon("spark")}<div><strong>GuardLM is not running on this computer</strong><span>${esc(reason)}${/[.!?]$/.test(reason) ? "" : "."} ${esc(extra)}</span></div></div>`;
 }
 
 const kvHtml = (pairs) => `<div class="kv">${pairs.map(([label, value]) => `<div><span>${esc(label)}</span><strong>${value}</strong></div>`).join("")}</div>`;
@@ -1326,7 +1326,7 @@ function toolResultHtml({tool, result: r}) {
       <div class="row"><button class="button small teal" type="button" data-view="rescue">${icon("rescue")}Open the Rescue plan</button></div></div>`;
   }
   if (tool === "simulate_risk") return `<div class="result-card">${kvHtml([["Futures short", `${esc(r.futures_short_of_20 ?? "—")} of 20`], ["Payroll unfunded", pct(r.probability_payroll_unfunded)], ["Most common breach", esc(day(r.most_common_breach_date))]])}</div>`;
-  if (tool === "refuse") return `<div class="alert warning">${icon("lock")}<div><strong>Refused by design</strong><span>TideLM has no tool that approves, pays or moves money. People approve in the app with a PIN.</span></div></div>`;
+  if (tool === "refuse") return `<div class="alert warning">${icon("lock")}<div><strong>Refused by design</strong><span>GuardLM has no tool that approves, pays or moves money. People approve in the app with a PIN.</span></div></div>`;
   return "";
 }
 
@@ -1342,7 +1342,7 @@ function feedbackHtml(item, index) {
 async function sendFeedback(index, helpful) {
   const item = state.chat[index];
   if (!item || item.voted) return;
-  const mode = item.copilot ? (item.copilot.routed === "small_talk" ? "small_talk" : "tidelm") : (item.trace ? "local" : "llm");
+  const mode = item.copilot ? (item.copilot.routed === "small_talk" ? "small_talk" : "guardlm") : (item.trace ? "local" : "llm");
   const summary = await act("Feedback", () => api("/api/feedback", {business_id: state.businessId, mode, helpful, question: item.question}));
   if (!summary) return;
   item.voted = helpful ? "up" : "down";
@@ -1361,12 +1361,12 @@ function feedbackSummaryHtml() {
   return `<h3 class="section-gap">Answer feedback</h3><p class="small">${esc(up)} of ${esc(total)} rated answers were helpful (${esc(Math.round(100 * up / total))}%). Only a hash of each question is kept.</p>`;
 }
 
-// The "glass box": what TideLM decided (intent + typed tool calls); the numbers above come from tools.
+// The "glass box": what GuardLM decided (intent + typed tool calls); the numbers above come from tools.
 function copilotHtml(c) {
   if (c.routed === "small_talk") return `<div class="copilot"><span class="tag">instant · live data, no model call</span></div>`;
   const calls = c.plan?.calls || [];
   return `<div class="copilot">${(c.results || []).map(toolResultHtml).join("")}
-    <div class="glass" aria-label="Model tool plan"><div class="row between"><strong>${esc(c.mode_label || tidelmLabel())}${c.plan?.intent ? ` · intent: <code>${esc(c.plan.intent)}</code>` : ""}</strong>${isNum(c.elapsed_ms) ? `<span class="tag">${esc((c.elapsed_ms / 1000).toFixed(1))} s locally</span>` : ""}</div>
+    <div class="glass" aria-label="Model tool plan"><div class="row between"><strong>${esc(c.mode_label || guardlmLabel())}${c.plan?.intent ? ` · intent: <code>${esc(c.plan.intent)}</code>` : ""}</strong>${isNum(c.elapsed_ms) ? `<span class="tag">${esc((c.elapsed_ms / 1000).toFixed(1))} s locally</span>` : ""}</div>
     <details data-currency-original><summary>Original tool arguments (ledger units)</summary><ol class="plan-calls">${calls.map((call) => `<li><code>${esc(call.tool)}</code> ${Object.entries(call.args || {}).map(([key, value]) => `<span class="arg">${esc(key)}=${esc(argText(value))}</span>`).join(" ") || `<span class="arg">no arguments</span>`}</li>`).join("")}</ol></details>
     ${c.decision_rationale ? `<p class="small">${esc(c.decision_rationale.rationale || c.decision_rationale)}</p>` : ""}
     ${c.trace?.length ? `<details><summary>Observed model and tool trace (original ledger units)</summary><pre>${esc(JSON.stringify(c.trace, null, 2))}</pre></details>` : ""}
@@ -1379,6 +1379,101 @@ const CHAT_MAX_LENGTH = 2000;
 const VOICE_RESTART_MS = 350;
 const RECORDING_TYPES = ["audio/webm;codecs=opus", "audio/mp4", "audio/ogg;codecs=opus", "audio/webm", "audio/ogg"];
 const RECORDING_MIMES = new Set(["audio/webm", "audio/mp4", "audio/ogg", "audio/wav"]);
+// A MediaRecorder-shaped recorder that writes 16 kHz mono WAV with the Web Audio API.
+// Every current engine (Chromium, Firefox, Safari/WebKit) supports it, and WAV is the one
+// format that every transcription backend accepts without server-side decoding.
+const WAV_RATE = 16_000;
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+
+class WavRecorder {
+  static supported() { return typeof AudioCtx === "function"; }
+
+  constructor(stream, context) {
+    this.mimeType = "audio/wav";
+    this.state = "inactive";
+    this.ctx = context || new AudioCtx();
+    this.chunks = [];
+    this.samples = 0;
+    this.carry = 0;
+    this.source = this.ctx.createMediaStreamSource(stream);
+    // ScriptProcessorNode is deprecated but is the only capture node that needs no extra module file
+    // (an AudioWorklet module would need its own script URL under this CSP) and it still works everywhere.
+    this.node = this.ctx.createScriptProcessor(4096, 1, 1);
+    this.mute = this.ctx.createGain();
+    this.mute.gain.value = 0;
+    this.node.onaudioprocess = event => {
+      if (this.state === "recording") this.push(event.inputBuffer.getChannelData(0));
+    };
+    this.source.connect(this.node);
+    this.node.connect(this.mute);
+    this.mute.connect(this.ctx.destination);
+  }
+
+  push(input) {
+    // Average each output sample's span of input samples: a cheap low-pass before decimation.
+    const step = this.ctx.sampleRate / WAV_RATE;
+    const out = new Int16Array(Math.floor((input.length - this.carry) / step) + 1);
+    let n = 0;
+    let pos = this.carry;
+    for (; pos < input.length; pos += step) {
+      const first = Math.floor(pos);
+      const end = Math.min(input.length, Math.max(first + 1, Math.floor(pos + step)));
+      let sum = 0;
+      for (let i = first; i < end; i++) sum += input[i];
+      const value = Math.max(-1, Math.min(1, sum / (end - first)));
+      out[n++] = value < 0 ? value * 0x8000 : value * 0x7fff;
+    }
+    this.carry = pos - input.length;
+    if (n) { this.chunks.push(out.subarray(0, n)); this.samples += n; }
+  }
+
+  start() {
+    this.state = "recording";
+    this.ctx.resume?.().catch(() => {});
+  }
+
+  pause() { this.state = "paused"; }
+
+  resume() {
+    this.state = "recording";
+    this.ctx.resume?.().catch(() => {});
+  }
+
+  stop() {
+    if (this.state === "inactive") return;
+    this.state = "inactive";
+    try { this.source.disconnect(); this.node.disconnect(); this.mute.disconnect(); } catch (_) { /* already detached */ }
+    this.node.onaudioprocess = null;
+    this.ctx.close?.().catch(() => {});
+    const blob = this.samples ? wavBlob(this.chunks, this.samples) : new Blob([], {type: "audio/wav"});
+    this.chunks = [];
+    setTimeout(() => {
+      this.ondataavailable?.({data: blob});
+      this.onstop?.();
+    }, 0);
+  }
+}
+
+function wavBlob(chunks, samples) {
+  const header = new DataView(new ArrayBuffer(44));
+  const text = (offset, value) => { for (let i = 0; i < value.length; i++) header.setUint8(offset + i, value.charCodeAt(i)); };
+  text(0, "RIFF"); header.setUint32(4, 36 + samples * 2, true); text(8, "WAVE");
+  text(12, "fmt "); header.setUint32(16, 16, true); header.setUint16(20, 1, true); header.setUint16(22, 1, true);
+  header.setUint32(24, WAV_RATE, true); header.setUint32(28, WAV_RATE * 2, true); header.setUint16(32, 2, true); header.setUint16(34, 16, true);
+  text(36, "data"); header.setUint32(40, samples * 2, true);
+  return new Blob([header, ...chunks], {type: "audio/wav"});
+}
+
+// Only Google Chrome's built-in speech service is dependable. Brave exposes the same API with the
+// service switched off, and Edge, Opera, Samsung Internet and Safari fail for some languages or
+// setups, so they record a clip for the server instead whenever the server can transcribe one.
+function nativeSpeechDependable() {
+  if (!SpeechRec || navigator.brave) return false;
+  const brands = navigator.userAgentData?.brands?.map(item => item.brand) || [];
+  return brands.includes("Google Chrome");
+}
+
+const cloudVoice = backend => backend === "groq" || backend === "gemini";
 const VOICE_COPY = {
   en: {
     group: "Dictation", start: "Start dictation", pause: "Pause", resume: "Resume", finish: "Finish",
@@ -1397,7 +1492,7 @@ const VOICE_COPY = {
     record: "Use recording", cloudStart: "Allow and record", cancel: "Cancel", retry: "Retry transcription",
     localIdle: "Tap the microphone to record. MoneyGuard transcribes your clip on this server.",
     cloudIdle: "Tap the microphone to record and add speech to your draft.",
-    consent: "MoneyGuard will send the recording to Groq to turn it into text. You can review the text before asking your question.",
+    consent: "MoneyGuard will send the recording to {provider} to turn it into text. You can review the text before asking your question.",
     recording: "Recording. Finish to add the words to your draft.", transcribing: "Turning your recording into text…",
     requested: "Allow microphone access to start recording.",
     empty: "No words were detected. Try a new recording or type your question.",
@@ -1426,7 +1521,7 @@ const VOICE_COPY = {
     record: "রেকর্ড করুন", cloudStart: "অনুমতি দিন ও রেকর্ড করুন", cancel: "বাতিল", retry: "আবার লেখা তৈরি করুন",
     localIdle: "রেকর্ড করতে মাইক্রোফোনে চাপ দিন। MoneyGuard এই সার্ভারেই রেকর্ড থেকে লেখা তৈরি করবে।",
     cloudIdle: "মাইক্রোফোনে চাপ দিয়ে কথা রেকর্ড করুন ও খসড়ায় যোগ করুন।",
-    consent: "রেকর্ড থেকে লেখা তৈরি করতে MoneyGuard সেটি Groq-এ পাঠাবে। প্রশ্ন পাঠানোর আগে লেখাটি দেখে নিতে পারবেন।",
+    consent: "রেকর্ড থেকে লেখা তৈরি করতে MoneyGuard সেটি {provider}-এ পাঠাবে। প্রশ্ন পাঠানোর আগে লেখাটি দেখে নিতে পারবেন।",
     recording: "রেকর্ড হচ্ছে। খসড়ায় লেখা যোগ করতে শেষ করুন চাপুন।", transcribing: "রেকর্ড থেকে লেখা তৈরি হচ্ছে…",
     requested: "রেকর্ড করতে মাইক্রোফোন ব্যবহারের অনুমতি দিন।",
     empty: "কোনো কথা বোঝা যায়নি। আবার রেকর্ড করুন বা প্রশ্ন লিখুন।",
@@ -1443,14 +1538,21 @@ let voice = null;
 let voiceInputEvent = null;
 
 function recordingBackend() {
-  return state.config?.speech?.available && window.isSecureContext && navigator.mediaDevices?.getUserMedia
-    && typeof window.MediaRecorder === "function" ? state.config.speech.backend : null;
+  const speech = state.config?.speech;
+  if (!speech?.available || !window.isSecureContext || !navigator.mediaDevices?.getUserMedia) return null;
+  return WavRecorder.supported() || (!wavOnlyBackend() && typeof window.MediaRecorder === "function") ? speech.backend : null;
+}
+
+function wavOnlyBackend() {
+  const formats = state.config?.speech?.formats;
+  return Boolean(formats) && !formats.some(type => type !== "audio/wav");
 }
 
 function preferredVoiceBackend() {
   const backend = recordingBackend();
-  if (backend && (backend === "local" || !SpeechRec || singleUtteranceVoice())) return backend;
-  return SpeechRec ? "native" : null;
+  if (backend && (backend === "local" || !nativeSpeechDependable() || singleUtteranceVoice())) return backend;
+  // Brave advertises speech recognition but its service always fails, so offer nothing rather than an error.
+  return SpeechRec && !navigator.brave ? "native" : null;
 }
 
 function resizeChatInput(input = document.getElementById("chat-input")) {
@@ -1502,12 +1604,15 @@ function syncVoiceControls({draftReady = false, hintKey} = {}) {
   const finishLabel = finish.querySelector("span");
   const finishText = consent || permission || (recording && finishing) ? copy.cancel : copy.finish;
   if (finishLabel.textContent !== finishText) finishLabel.textContent = finishText;
-  if (note.textContent !== copy[status]) note.textContent = copy[status];
+  const speech = state.config?.speech;
+  const provider = speech?.provider || {groq: "Groq", gemini: "Google Gemini"}[speech?.backend] || "the transcription service";
+  const noteText = copy[status].replace("{provider}", provider);
+  if (note.textContent !== noteText) note.textContent = noteText;
   if (help) {
     help.hidden = Boolean(voice);
     const backend = preferredVoiceBackend();
     const hint = hintKey ? copy[hintKey] : draftReady ? copy.ready
-      : backend === "local" ? copy.localIdle : backend === "groq" ? copy.cloudIdle : copy.idle;
+      : backend === "local" ? copy.localIdle : cloudVoice(backend) ? copy.cloudIdle : copy.idle;
     if (help.textContent !== hint) help.textContent = hint;
   }
   updateVoiceClock();
@@ -1633,6 +1738,11 @@ function voiceFailure(session, error) {
   }[error] || "interrupted";
   disconnectVoice(session);
   syncVoiceControls();
+  if (["service", "network", "language"].includes(session.error) && error !== "not-allowed" && recordingBackend()) {
+    // The browser's own speech service is unavailable here; move straight on to a recorded clip.
+    chooseRecording();
+    return;
+  }
   if (error === "not-allowed") {
     // Web Speech's not-allowed also covers browser policy and speech-service settings.
     // Only a confirmed microphone denial should direct the user to permissions.
@@ -1737,7 +1847,7 @@ function chooseRecording() {
     disconnectVoice(voice);
     voice.backend = backend;
     voice.selection = voiceSelection(composer);
-    if (backend === "groq") showRecordingConsent(voice);
+    if (cloudVoice(backend)) showRecordingConsent(voice);
     else connectRecording(voice);
   }
 }
@@ -1769,19 +1879,31 @@ async function connectRecording(session) {
   session.limited = false;
   syncVoiceControls();
   $('[data-action="voice-finish"]')?.focus({preventScroll: true});
+  // WAV through Web Audio works in every engine and every backend accepts it. Compressed MediaRecorder
+  // clips are smaller, so they are used only where the backend decodes them.
+  const useWav = WavRecorder.supported() && (wavOnlyBackend() || typeof window.MediaRecorder !== "function");
+  // Create the audio context inside the click so Safari and iOS let it run.
+  let context = null;
+  if (useWav) { try { context = new AudioCtx(); } catch (_) { context = null; } }
   let stream;
   try {
     stream = await navigator.mediaDevices.getUserMedia({audio: {channelCount: {ideal: 1}}, video: false});
     if (voice !== session) {
       stream.getTracks().forEach(track => track.stop());
+      context?.close?.().catch(() => {});
       return;
     }
-    const mimeType = RECORDING_TYPES.find(type => window.MediaRecorder.isTypeSupported?.(type));
-    const options = {audioBitsPerSecond: 32_000, ...(mimeType ? {mimeType} : {})};
-    // A device may reject a codec that its browser advertises.
-    let rec;
-    try { rec = new window.MediaRecorder(stream, options); }
-    catch (_) { rec = new window.MediaRecorder(stream); }
+    let rec, mimeType;
+    if (useWav) {
+      rec = new WavRecorder(stream, context);
+      mimeType = "audio/wav";
+    } else {
+      mimeType = RECORDING_TYPES.find(type => window.MediaRecorder.isTypeSupported?.(type));
+      const options = {audioBitsPerSecond: 32_000, ...(mimeType ? {mimeType} : {})};
+      // A device may reject a codec that its browser advertises.
+      try { rec = new window.MediaRecorder(stream, options); }
+      catch (_) { rec = new window.MediaRecorder(stream); }
+    }
     const capture = {rec, stream, chunks: [], bytes: 0};
     session.capture = capture;
     const current = () => voice === session && session.capture === capture;
@@ -1816,7 +1938,10 @@ async function connectRecording(session) {
     startRecordingClock(session);
     $('[data-action="voice-pause"]')?.focus({preventScroll: true});
   } catch (error) {
-    if (!session.capture) stream?.getTracks().forEach(track => track.stop());
+    if (!session.capture) {
+      stream?.getTracks().forEach(track => track.stop());
+      context?.close?.().catch(() => {});
+    }
     if (voice !== session) return;
     recordingFailure(session, ["NotAllowedError", "SecurityError"].includes(error.name) ? "recordingDenied" : "capture");
   }
@@ -1890,7 +2015,7 @@ async function transcribeRecording(session) {
     if (voice !== session) return;
     const result = await api("/api/speech/transcribe", {
       business_id: state.businessId, audio, mime_type: clip.type, lang: session.lang,
-      cloud_consent: session.backend === "groq",
+      cloud_consent: cloudVoice(session.backend),
     }, false, upload.signal);
     if (voice !== session) return;
     if (typeof result.text !== "string") throw new Error("Missing transcript.");
@@ -1918,7 +2043,7 @@ function startVoice() {
   if (backend === "native") {
     connectVoice(voice);
     $('[data-action="voice-pause"]')?.focus({preventScroll: true});
-  } else if (backend === "groq") {
+  } else if (cloudVoice(backend)) {
     showRecordingConsent(voice);
   } else {
     connectRecording(voice);
@@ -2000,23 +2125,23 @@ async function copyText(text) {
 }
 
 function renderAssistant() {
-  const on = tidelmOn();
+  const on = guardlmOn();
   // The opening line follows the current language: it is re-written on every render until the first question.
   const greeting = state.lang === "bn" ? "ব্যবসার টাকা নিয়ে কী জানতে চান? বেতন, দেরিতে পাওনা বা ঘাটতি মেটানোর পরিকল্পনা নিয়ে প্রশ্ন করুন।"
     : "What would you like to know about your cash? Ask about payday, late payments or ways to cover a shortfall.";
   if (!state.chat.length) state.chat.push({role: "agent", greeting: true, text: greeting});
   else if (state.chat.length === 1 && state.chat[0].greeting) state.chat[0].text = greeting;
-  const prompts = on ? TIDELM_PROMPTS.map(p=>p.replace('on 50,000?',`on ${displayCurrency()} ${displayCurrency()===currency()?'50,000':'500'}?`))
+  const prompts = on ? GUARDLM_PROMPTS.map(p=>p.replace('on 50,000?',`on ${displayCurrency()} ${displayCurrency()===currency()?'50,000':'500'}?`))
     : state.lang === "bn" ? LOCAL_PROMPTS_BN : LOCAL_PROMPTS;
   const aiReady = !on && state.config.ai_configured;
   const aiSwitch = aiReady ? `<div class="ai-switch-row"><label class="ai-switch"><input id="ai-consent" type="checkbox" role="switch" ${state.aiConsent ? "checked" : ""}><span class="ai-switch-track" aria-hidden="true"></span><span class="ai-switch-label">AI answers</span></label><span class="small muted">${state.aiConsent ? "On for this question and recent chat history. Known counterparty names are hidden." : "Off: the offline assistant answers. Turn on to share this question and recent chat history."}</span><button type="button" class="button small ghost" data-action="privacy-preview-chat">See what is sent</button></div>` : "";
   const consent = on || aiReady ? "" : `<p class="hint">Local agent mode: answers come from deterministic tools, no network. An optional LLM mode is available when a key is configured.</p>`;
-  const mode = on ? `<div class="row chat-mode"><span class="pill teal">${icon("spark")}${esc(tidelmLabel())}</span></div>` : "";
+  const mode = on ? `<div class="row chat-mode"><span class="pill teal">${icon("spark")}${esc(guardlmLabel())}</span></div>` : "";
   const canDictate = Boolean(preferredVoiceBackend());
   return `<section class="assistant-layout"><div class="card chat ${on ? "with-mode" : ""}">${mode}<div class="chat-log" id="chat-log" aria-live="polite">${state.chat.map((item, index) => item.pending
       ? `<div class="msg agent pending" role="status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>${esc(item.role === "user" ? item.text : moneyProse(item.text))}</div>`
       : `<div class="msg ${item.role === "user" ? "user" : "agent"} ${item.unverified?.length || item.rejected ? "warn" : ""}">${esc(item.role === "user" ? item.text : moneyProse(item.text))}${item.trace?.length ? `<div class="trace">${item.trace.map((t) => `<span>${esc(t.tool)} · ${esc(t.permission)}</span>`).join("")}</div>` : ""}${item.copilot ? copilotHtml(item.copilot) : ""}${item.aiNudge && state.config.ai_configured && !state.aiConsent ? `<div class="ai-nudge"><button type="button" class="button small primary" data-action="ai-retry" data-prompt="${esc(item.question)}">${icon("spark")}${state.lang === "bn" ? "AI চালু করে আবার জিজ্ঞেস করুন" : "Turn on AI and ask again"}</button></div>` : ""}${item.question && !item.rejected ? feedbackHtml(item, index) : ""}${index === state.chat.length - 1 && item.role !== "user" ? suggestionsHtml(item.suggestions || (index === 0 ? prompts.slice(0, 3) : [])) : ""}</div>`).join("")}</div>
-    ${aiSwitch}${aiReady ? window.TidewayLab.chatPreview() : ""}<p class="hint">Money in questions: include ${esc(displayCurrency())}, e.g. ${esc(displayCurrency())} 100. Dates, days and percentages keep their own units.</p>
+    ${aiSwitch}${aiReady ? window.MoneyGuardLab.chatPreview() : ""}<p class="hint">Money in questions: include ${esc(displayCurrency())}, e.g. ${esc(displayCurrency())} 100. Dates, days and percentages keep their own units.</p>
     <form id="chat-form" class="chat-form">
       <label class="sr-only" for="chat-input">Your question</label>
       <textarea id="chat-input" rows="1" maxlength="${CHAT_MAX_LENGTH}" placeholder="${on ? "Ask in any language…" : "Ask about payroll, risk, a what-if or a plan…"}" autocomplete="off" required>
@@ -2039,19 +2164,19 @@ ${esc(state.chatDraft)}</textarea>
     </form>
     <p id="chat-voice-help" class="hint voice-note" role="status">${canDictate ? "" : esc(VOICE_COPY[state.lang][window.isSecureContext ? "unsupported" : "https"])}</p></div>
     ${disclosure("assistant-prompts", "More example questions", `<div class="chips">${prompts.map((prompt) => `<button class="chip" data-action="prompt" data-prompt="${esc(prompt)}">${esc(prompt)}</button>`).join("")}</div>`)}
-    ${disclosure("assistant-details", "How MoneyGuard answers", `${on ? "" : tidelmStatusCard("Ask MoneyGuard still works with the local tool agent.")}
+    ${disclosure("assistant-details", "How MoneyGuard answers", `${on ? "" : guardlmStatusCard("Ask MoneyGuard still works with the local tool agent.")}
     ${consent ? `<div class="section-gap">${consent}</div>` : ""}
     ${feedbackSummaryHtml()}
-    <h3 class="section-gap">Guardrails</h3><ul class="small">${on ? `<li>TideLM writes a typed plan; MoneyGuard validates every call (known tool, typed arguments, real counterparty names) before anything runs.</li><li>Tools are read or propose only. There is no approve, pay or transfer tool.</li><li>Replies are composed by code from tool output, so the model cannot invent a figure.</li><li>Runs on this computer: no text leaves it.</li>` : `<li>Every number comes from a tool; LLM answers are checked and invented figures are flagged.</li><li>Only scoped read or propose tools exist. There is no approve, pay or transfer tool.</li><li>Record free text and real names are never sent to a model.</li><li>Each tool call is written to the audit trail with an output hash.</li>`}</ul>`)}</section>`;
+    <h3 class="section-gap">Guardrails</h3><ul class="small">${on ? `<li>GuardLM writes a typed plan; MoneyGuard validates every call (known tool, typed arguments, real counterparty names) before anything runs.</li><li>Tools are read or propose only. There is no approve, pay or transfer tool.</li><li>Replies are composed by code from tool output, so the model cannot invent a figure.</li><li>Runs on this computer: no text leaves it.</li>` : `<li>Every number comes from a tool; LLM answers are checked and invented figures are flagged.</li><li>Only scoped read or propose tools exist. There is no approve, pay or transfer tool.</li><li>Record free text and real names are never sent to a model.</li><li>Each tool call is written to the audit trail with an output hash.</li>`}</ul>`)}</section>`;
 }
 
-// TideLM first; a 503 falls back to the local agent, and a rejected plan is shown, not hidden.
-async function askTideLM(text) {
+// GuardLM first; a 503 falls back to the local agent, and a rejected plan is shown, not hidden.
+async function askGuardLM(text) {
   try {
     return {copilot: await api("/api/copilot/ask", {business_id: state.businessId, target_date: state.targetDate, message: text, input_currency: displayCurrency()})};
   } catch (error) {
-    if (markTideLMDown(error)) return null;
-    if (error.status >= 400 && error.status < 500 && error.status !== 401) return {rejected: `MoneyGuard rejected TideLM's plan, so nothing ran: ${error.message}`};
+    if (markGuardLMDown(error)) return null;
+    if (error.status >= 400 && error.status < 500 && error.status !== 401) return {rejected: `MoneyGuard rejected GuardLM's plan, so nothing ran: ${error.message}`};
     throw error;
   }
 }
@@ -2067,11 +2192,11 @@ async function ask(message) {
   const businessId = state.businessId, actor = state.operator?.id;
   state.chatDraft="";
   state.chat.push({role: "user", text});
-  const pending = {role: "agent", pending: true, text: tidelmOn() ? "TideLM is reading your question on this computer…" : "Checking your numbers…"};
+  const pending = {role: "agent", pending: true, text: guardlmOn() ? "GuardLM is reading your question on this computer…" : "Checking your numbers…"};
   state.chat.push(pending);
   render();
   const result = await act("Asking", async () => {
-    const answer = tidelmOn() ? await askTideLM(text) : null;
+    const answer = guardlmOn() ? await askGuardLM(text) : null;
     if (state.businessId !== businessId || state.operator?.id !== actor) return null;
     return answer || {chat: await api("/api/chat", {business_id: businessId, target_date: state.targetDate, message: text, history, consent, input_currency: displayCurrency(), lang: state.lang === "bn" ? "bn" : "en"})};
   });
@@ -2115,15 +2240,15 @@ function editableDraft(draft) {
 }
 
 function draftRecord(e) {
-  const minor=selectedMinor(e.money,TidewayMoney.parse(e.amount));
+  const minor=selectedMinor(e.money,MoneyGuardMoney.parse(e.amount));
   if(minor<=0)throw new Error('Enter a positive record amount before saving.');
-  const base = {record_type: e.type, id: e.id, amount: TidewayMoney.units(minor), currency: e.currency.trim().toUpperCase(), description: e.description.trim()};
+  const base = {record_type: e.type, id: e.id, amount: MoneyGuardMoney.units(minor), currency: e.currency.trim().toUpperCase(), description: e.description.trim()};
   if (e.type === "invoice") return {...base, customer: e.party.trim(), issue_date: e.date || e.due, due_date: e.due || e.date};
   if (e.type === "bill") return {...base, payee: e.party.trim(), due_date: e.due || e.date};
   return {...base, date: e.date || e.due, type: e.direction, category: "Other"};
 }
 
-function draftSourceMinor(e) {try{return TidewayMoney.parse(e.amount);}catch(_){return null;}}
+function draftSourceMinor(e) {try{return MoneyGuardMoney.parse(e.amount);}catch(_){return null;}}
 function draftHtml(e, i) {
   const field = (label, name, value, attrs = "") => `<label class="field">${esc(label)}<input data-draft="${i}" data-field="${name}" value="${esc(value)}" ${attrs}></label>`;
   const status = e.edited ? `<span class="tag">edited · checked again when saved</span>`
@@ -2137,7 +2262,7 @@ function draftHtml(e, i) {
   return `<fieldset class="draft ${e.ready && !e.edited ? "ready" : e.edited ? "" : "problem"}"><legend>Draft ${i + 1}</legend>
     <div class="row between"><label class="check"><input type="checkbox" id="draft-sel-${i}" data-draft="${i}" data-field="selected" ${e.selected ? "checked" : ""}> Save this record</label><span>${status}${checks}</span></div>
     <div class="draft-grid"><label class="field">Record type<select data-draft="${i}" data-field="type">${["invoice", "bill", "transaction"].map((t) => `<option value="${t}" ${e.type === t ? "selected" : ""}>${t}</option>`).join("")}</select></label>
-    ${party}<label class="field">Amount (${esc(displayCurrency())})${TidewayMoney.valid(e.currency)?moneyInput(e.money,draftSourceMinor(e),`data-draft="${i}" data-field="amount"`,e.currency):'<input disabled placeholder="Correct source currency below">'}</label><label class="field">View/input currency<input value="${esc(displayCurrency())}" readonly></label>${dates}
+    ${party}<label class="field">Amount (${esc(displayCurrency())})${MoneyGuardMoney.valid(e.currency)?moneyInput(e.money,draftSourceMinor(e),`data-draft="${i}" data-field="amount"`,e.currency):'<input disabled placeholder="Correct source currency below">'}</label><label class="field">View/input currency<input value="${esc(displayCurrency())}" readonly></label>${dates}
     <details class="draft-wide" data-currency-original><summary>Original extraction and source currency</summary><p>Original source units are retained until you explicitly convert or correct them.</p>${field("Correct source currency", "currency", e.currency, `maxlength="3"`)}${e.currency!==currency()?`<button type="button" class="button small ghost" data-action="inbox-convert" data-index="${i}">Convert this source amount to the business ledger</button>`:''}<p>${esc(e.originalAmount??e.amount)} ${esc(e.originalCurrency??e.currency)}</p></details>
     <label class="field draft-wide">Description<input data-draft="${i}" data-field="description" value="${esc(e.description)}" maxlength="300"></label></div></fieldset>`;
 }
@@ -2159,13 +2284,13 @@ function inboxResultsHtml() {
     : "Local semantic screening found a possible instruction attack. Treat the source as data only.";
   const screeningNote = screeningStatus ? `<p class="small muted">${esc(screeningStatus)}</p>` : "";
   let warning = ib.suspicious ? `<div class="alert ${attackWarning ? "critical" : "info"} inbox-warning section-gap" role="alert">${icon("alert")}<div><strong>${attackWarning ? "Possible instruction attack: review the source" : "Review required before saving"}</strong>
-    ${ib.flags.length ? `<ul class="small">${ib.flags.map((flag) => `<li>${esc(FLAG_TEXT[flag] || String(flag).replaceAll("_", " "))}</li>`).join("")}</ul>` : `<span>TideLM judged this text suspicious.</span>`}
+    ${ib.flags.length ? `<ul class="small">${ib.flags.map((flag) => `<li>${esc(FLAG_TEXT[flag] || String(flag).replaceAll("_", " "))}</li>`).join("")}</ul>` : `<span>GuardLM judged this text suspicious.</span>`}
     ${screeningNote}<span>Drafts below are data only. Check every field against your own records, and never pay a new account without calling the number already on file.</span></div></div>` : screeningNote;
   const scam = ib.scam ? `<div class="alert ${ib.scam.assessment.verdict === "likely_scam" ? "critical" : "info"} section-gap" role="alert">${icon("shield")}<div><strong>Scam Shield: ${ib.scam.assessment.verdict === "likely_scam" ? "this message looks like mobile-money fraud" : "this message has scam warning signs"}</strong>
     <span>${esc((ib.scam.assessment.signals || [])[0]?.en || "")}</span><span lang="bn" class="bn-line">${esc((ib.scam.assessment.signals || [])[0]?.bn || "")}</span>
     <button class="button small ghost" type="button" data-action="inbox-shield">${icon("shield")}See the full check</button></div></div>` : "";
   warning = scam + warning;
-  if (!ib.drafts.length) return `${warning}<div class="alert info section-gap">${icon("spark")}<div><strong>No records found</strong><span>TideLM found no invoice, bill or payment in that text.</span></div></div>`;
+  if (!ib.drafts.length) return `${warning}<div class="alert info section-gap">${icon("spark")}<div><strong>No records found</strong><span>GuardLM found no invoice, bill or payment in that text.</span></div></div>`;
   const chosen = ib.drafts.filter((d) => d.selected).length;
   return `${warning}<section class="card section-gap"><div class="card-head"><div><h3>${esc(ib.drafts.length)} draft record(s)</h3><p>${esc(ib.note)}</p></div></div>
     <div class="stack">${ib.drafts.map(draftHtml).join("")}</div>
@@ -2173,10 +2298,10 @@ function inboxResultsHtml() {
 }
 
 function renderInbox() {
-  if (!canApprove()) return `<section class="card"><h3>Inbox is for the owner and the accountant</h3><p class="muted section-gap">Here, people who keep the books paste an SMS, WhatsApp message or bank alert, and TideLM drafts ledger records from it. Nothing is saved until one of them checks and confirms each draft. As a viewer you can read the results in Records.</p></section>`;
-  const on = tidelmOn();
-  return `<section class="grid split"><form class="card" id="inbox-form"><div class="card-head"><div><h3>Paste a message</h3><p>TideLM reads it on this computer and drafts records. It cannot save, pay or approve anything.</p></div>${on ? `<span class="pill teal">${icon("spark")}${esc(tidelmLabel())}</span>` : ""}</div>
-      ${on ? "" : `${tidelmStatusCard("Extract still works: Rule-based extraction (TideLM not installed) — check every field.")}<div class="section-gap"></div>`}
+  if (!canApprove()) return `<section class="card"><h3>Inbox is for the owner and the accountant</h3><p class="muted section-gap">Here, people who keep the books paste an SMS, WhatsApp message or bank alert, and GuardLM drafts ledger records from it. Nothing is saved until one of them checks and confirms each draft. As a viewer you can read the results in Records.</p></section>`;
+  const on = guardlmOn();
+  return `<section class="grid split"><form class="card" id="inbox-form"><div class="card-head"><div><h3>Paste a message</h3><p>GuardLM reads it on this computer and drafts records. It cannot save, pay or approve anything.</p></div>${on ? `<span class="pill teal">${icon("spark")}${esc(guardlmLabel())}</span>` : ""}</div>
+      ${on ? "" : `${guardlmStatusCard("Extract still works: Rule-based extraction (GuardLM not installed) — check every field.")}<div class="section-gap"></div>`}
       <label class="field">SMS, WhatsApp or bank text<textarea id="inbox-text" maxlength="2000" spellcheck="false" placeholder="e.g. Invoice INV-2291 to Nila Traders, ${esc(displayCurrency())} 100, due 5 Nov">${esc(state.inbox.text)}</textarea></label>
       <div class="row section-gap"><button class="button primary" type="submit">${icon("spark")}${on ? "Extract" : "Extract with rules"}</button><button class="button ghost" type="button" data-action="inbox-sample" data-sample="clean">Sample: invoice SMS</button><button class="button ghost" type="button" data-action="inbox-sample" data-sample="injection">Sample: injection attempt</button></div>
       ${photoHtml()}</form>
@@ -2184,14 +2309,14 @@ function renderInbox() {
     <div id="inbox-results" aria-live="polite">${inboxResultsHtml()}</div>`;
 }
 
-// Invoice or receipt photos: read on this computer by TideVision; downscaled in the browser before upload.
+// Invoice or receipt photos: read on this computer by GuardVision; downscaled in the browser before upload.
 function photoHtml() {
   const vision = state.config.vision || {};
   if (!vision.available) return `<p class="hint section-gap">Photo reading is off on this computer${vision.reason ? `: ${esc(vision.reason)}` : "."}</p>`;
   const ib = state.inbox;
   return `<div class="photo-drop section-gap"><label class="field">Or a photo of an invoice, bill or receipt<input id="inbox-photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label>
     ${ib.photo ? `<div class="photo-preview"><img src="${esc(ib.photo)}" alt="Selected document photo ${esc(ib.photoName)}"><button class="button teal" type="button" data-action="inbox-photo">${icon("spark")}Read this photo</button></div>` : `<p class="hint">JPEG, PNG or WebP. Location and other metadata are removed before reading.</p>`}
-    ${ib.transcript ? `<details class="section-gap"><summary>Text TideVision read from the photo</summary><p class="small">${esc(ib.transcript)}</p></details>` : ""}</div>`;
+    ${ib.transcript ? `<details class="section-gap"><summary>Text GuardVision read from the photo</summary><p class="small">${esc(ib.transcript)}</p></details>` : ""}</div>`;
 }
 
 function shrinkPhoto(file) {
@@ -2236,7 +2361,7 @@ async function extractInbox() {
   const text = inbox.text.trim();
   if (!text) return toast("Paste a message first.");
   const result = await act("Extract", async () => {
-    try { return await api("/api/inbox/extract", {business_id: state.businessId, text}); } catch (error) { if (markTideLMDown(error)) return null; throw error; }
+    try { return await api("/api/inbox/extract", {business_id: state.businessId, text}); } catch (error) { if (markGuardLMDown(error)) return null; throw error; }
   });
   if (result && state.inbox === inbox && inbox.text.trim() === text) Object.assign(inbox, {drafts: (result.drafts || []).map(editableDraft), suspicious: Boolean(result.suspicious), flags: result.risk_flags || [], screening: result.semantic_screening || null, scam: result.scam_shield ? {text, assessment: result.scam_shield} : null, note: result.note || "", saved: null});
   render();
@@ -2445,7 +2570,7 @@ function openApprove(planId, bundleId) {
   const lines = bundle.actions.map((action) => `<div class="line"><span>${esc(action.counterparty)} · ${action.type === "supplier_deferral" ? `move ${nat(action.amount_minor)} to ${esc(day(action.to_date))}` : `${esc(action.discount_bps / 100)}% off, pay ${nat(action.amount_minor)} by ${esc(day(action.to_date))}`}</span><b>${nat(action.economic_cost_minor)}</b></div>`);
   lines.push(`<div class="line"><span>Total exposure</span><b>${nat(bundle.exposure_minor)}</b></div>`);
   lines.push(`<div class="line"><span>Simulated futures still short after</span><b>${esc(bundle.futures_short_of_20_after ?? "—")} of 20</b></div>`);
-  $("#approve-summary").innerHTML = window.TidewayReview.bundle(plan, bundle) + lines.join("") + residualRiskHtml(plan, bundle) + bilateralTermsHtml(bundle) + `<p class="small muted">You approve these exact terms. Any change to the records, policy, payee, amount or dates voids this approval before execution. ${bundle.dual_approval_required ? "This exceeds the dual-approval threshold: a second person, including the owner, must approve too." : ""}</p>`;
+  $("#approve-summary").innerHTML = window.MoneyGuardReview.bundle(plan, bundle) + lines.join("") + residualRiskHtml(plan, bundle) + bilateralTermsHtml(bundle) + `<p class="small muted">You approve these exact terms. Any change to the records, policy, payee, amount or dates voids this approval before execution. ${bundle.dual_approval_required ? "This exceeds the dual-approval threshold: a second person, including the owner, must approve too." : ""}</p>`;
   if(displayCurrency()!==currency()) {
     const original=bundle.actions.map(a=>`<p>${esc(a.counterparty)}: ${money(a.amount_minor,currency(),{native:true})} · ${esc(a.to_date)}</p>`).join('');
     $("#approve-summary").insertAdjacentHTML('beforeend',`<details><summary>Original settlement terms (${esc(currency())}; immutable signing units)</summary>${original}<p>Exposure ${money(bundle.exposure_minor,currency(),{native:true})}. This view conversion does not create an FX trade.</p></details>`);
@@ -2482,8 +2607,8 @@ async function submitApprove(event) {
   }
   if (pending.bundle.dual_approval_required) {
     try {
-      const typed=TidewayMoney.parseInput($("#confirm-amount").value,pending.currency);
-      const expected=TidewayMoney.bigConvert(pending.bundle.exposure_minor,currency(),pending.currency);
+      const typed=MoneyGuardMoney.parseInput($("#confirm-amount").value,pending.currency);
+      const expected=MoneyGuardMoney.bigConvert(pending.bundle.exposure_minor,currency(),pending.currency);
       if(typed!==expected)throw new Error(`Type the displayed exposure in ${pending.currency} exactly.`);
       body.confirm_amount_minor=pending.bundle.exposure_minor;
     }catch(error){$("#approve-error").textContent=error.message;return;}
@@ -2654,13 +2779,13 @@ document.addEventListener("click", async (event) => {
   if (!button) return;
   const data = button.dataset;
   try {
-    if (data.action.startsWith("owner-")) { await window.TidewayOwner.action(data.action.slice(6), data); return; }
-    if (data.action.startsWith("lab-")) { await window.TidewayLab.action(data.action.slice(4), data); return; }
-    if (data.action.startsWith("treasury-")) { await window.TidewayTreasury.action(data.action.slice(9), data); return; }
-    if (data.action.startsWith("portfolio-")) { await window.TidewayPortfolio.action(data.action.slice(10), data); return; }
-    if (data.action.startsWith("learn-")) { window.TidewayLearn.action(data.action.slice(6), data); return; }
-    if (data.action.startsWith("home-")) { await window.TidewayHome.action(data.action.slice(5), data); return; }
-    if (data.action.startsWith("shield-")) { await window.TidewayShield.action(data.action.slice(7), data); return; }
+    if (data.action.startsWith("owner-")) { await window.MoneyGuardOwner.action(data.action.slice(6), data); return; }
+    if (data.action.startsWith("lab-")) { await window.MoneyGuardLab.action(data.action.slice(4), data); return; }
+    if (data.action.startsWith("treasury-")) { await window.MoneyGuardTreasury.action(data.action.slice(9), data); return; }
+    if (data.action.startsWith("portfolio-")) { await window.MoneyGuardPortfolio.action(data.action.slice(10), data); return; }
+    if (data.action.startsWith("learn-")) { window.MoneyGuardLearn.action(data.action.slice(6), data); return; }
+    if (data.action.startsWith("home-")) { await window.MoneyGuardHome.action(data.action.slice(5), data); return; }
+    if (data.action.startsWith("shield-")) { await window.MoneyGuardShield.action(data.action.slice(7), data); return; }
     switch (data.action) {
       case "lang": setLanguage(data.lang || (state.lang === "bn" ? "en" : "bn")); break;
       case "logout": await logout(); break;
@@ -2693,7 +2818,7 @@ document.addEventListener("click", async (event) => {
       case "voice-pause": toggleVoicePause(); break;
       case "voice-finish": finishVoice(); break;
       case "copy-message": copyText(data.text || ""); break;
-      case "privacy-preview-chat": await window.TidewayLab.previewChat($("#chat-input").value); break;
+      case "privacy-preview-chat": await window.MoneyGuardLab.previewChat($("#chat-input").value); break;
       case "whatif-reset": state.whatif = freshWhatIf(); render(); break;
       case "demo-stale": {
         try {
@@ -2704,14 +2829,14 @@ document.addEventListener("click", async (event) => {
       }
       case "inbox-convert": {
         const entry=state.inbox.drafts?.[Number(data.index)];if(!entry)break;
-        const n=selectedMinor(entry.money,TidewayMoney.parse(entry.amount));
-        entry.amount=TidewayMoney.units(TidewayMoney.convert(n,entry.currency,currency()));
+        const n=selectedMinor(entry.money,MoneyGuardMoney.parse(entry.amount));
+        entry.amount=MoneyGuardMoney.units(MoneyGuardMoney.convert(n,entry.currency,currency()));
         entry.currency=currency();entry.money=null;entry.edited=true;render();break;
       }
       case "inbox-sample": state.inbox = {...freshInbox(), text: INBOX_SAMPLES[data.sample]?.(displayCurrency()) || ""}; render(); $("#inbox-text")?.focus(); break;
       case "inbox-shield":
         if (state.inbox.scam) {
-          window.TidewayShield.showAssessment(state.inbox.scam.text, "", state.inbox.scam.assessment);
+          window.MoneyGuardShield.showAssessment(state.inbox.scam.text, "", state.inbox.scam.assessment);
           state.view = "shield";
           render();
           window.scrollTo(0, 0);
@@ -2722,7 +2847,7 @@ document.addEventListener("click", async (event) => {
       case "feedback": await sendFeedback(Number(data.index), data.helpful === "true"); break;
       case "reload-audit": state.audit = null; render(); loadAudit(); break;
       case "import": $("#import-form").reset(); $("#import-error").textContent = ""; $("#import-dialog").showModal(); break;
-      case "sample-csv": { const url = URL.createObjectURL(new Blob([sampleCsv()], {type: "text/csv"})); const link = document.createElement("a"); link.href = url; link.download = "tideway-example.csv"; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); break; }
+      case "sample-csv": { const url = URL.createObjectURL(new Blob([sampleCsv()], {type: "text/csv"})); const link = document.createElement("a"); link.href = url; link.download = "moneyguard-example.csv"; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); break; }
       case "pause": { const result = await actAndReload("Pause", () => api("/api/policy", {business_id: state.businessId, changes: {agent_paused: true}})); if (result) { toast("Agent paused. Pending proposals and mandates are void."); } break; }
       case "resume": {
         const answer = await askPin("Resume the agent", "Explain why it is safe to resume. The reason is written to the audit trail.", true);
@@ -2803,7 +2928,7 @@ document.addEventListener("input", (event) => {
   else if (target.form?.id === "policy-form") state.policyDraft[target.name] = target.hasAttribute("data-money-currency") ? moneyDraft(target,true) : target.value;
   else if (target.id === "chat-input") {
     state.chatDraft = target.value;
-    window.TidewayLab.refreshPrivacyPreview();
+    window.MoneyGuardLab.refreshPrivacyPreview();
     // Any manual edit takes precedence over a pending dictation update.
     if (event !== voiceInputEvent) pauseVoiceForEdit();
     resizeChatInput(target);
@@ -2817,7 +2942,7 @@ document.addEventListener("input", (event) => {
   else if (target.dataset?.draft !== undefined && !["selected", "type"].includes(target.dataset.field)) {
     const draft = state.inbox.drafts?.[Number(target.dataset.draft)];
     if (draft) {
-      if(target.dataset.field==='amount') {draft.money=moneyDraft(target,true);if(!draft.money.error)draft.amount=TidewayMoney.units(draft.money.minor);}
+      if(target.dataset.field==='amount') {draft.money=moneyDraft(target,true);if(!draft.money.error)draft.amount=MoneyGuardMoney.units(draft.money.minor);}
       else {draft[target.dataset.field]=target.value;if(target.dataset.field==='currency')draft.money=null;}
       draft.edited=true;
     }
@@ -2854,11 +2979,11 @@ document.addEventListener("submit", async (event) => {
   try {
     state.config = await api("/api/config");
     if (state.config.operator) await startShell(); else showLogin();
-    window.setInterval(window.TidewayHome.refreshDate, 30_000);
+    window.setInterval(window.MoneyGuardHome.refreshDate, 30_000);
     window.addEventListener("resize", () => resizeChatInput());
     window.addEventListener("pagehide", cancelVoice);
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) window.TidewayHome.refreshDate();
+      if (!document.hidden) window.MoneyGuardHome.refreshDate();
     });
   } catch (error) {
     document.body.innerHTML = `<p class="loading">MoneyGuard could not start: ${esc(error.message)}. Is the local server running?</p>`;

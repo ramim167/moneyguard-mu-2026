@@ -3,7 +3,7 @@
 // Home: the first screen an owner sees. It answers four questions in plain words, in English or বাংলা:
 // Can I pay salaries? How low will my cash go? Who owes me money? What should I do now?
 // It only reads the dashboard the server already computed; it never calculates a forecast or moves money.
-window.TidewayHome = (() => {
+window.MoneyGuardHome = (() => {
   const T = {
     en: {
       hello: "Hello", today: "Today in Bangladesh", demoDate: "Demo ledger date", ledgerDate: "Ledger date",

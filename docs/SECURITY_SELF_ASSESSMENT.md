@@ -27,7 +27,7 @@ Decision lab follows the same tenant, session and CSRF boundaries. Synthetic eve
 | Audit trail | Accountability | Hash chain plus independent witness |
 | Signing and witness keys | Mandate trust | Local key files, kept out of Git (`data/` is ignored) |
 
-Trust boundaries: (1) user to server (cookie, CSRF, Origin/Host checks, tenant membership); (2) model to tools (TideLM plans pass a typed validator; allow-list, read/propose only; a forbidden tool counts toward the circuit breaker); (3) tools to store (the only code that can approve, sign or execute); (4) stored record text to anything that reasons (quarantine and pseudonymisation). Inbox messages and photos are the deliberate exception: the local extractor must read them to draft records, but deterministic permissions prohibit approval/execution, field validation limits drafts, and a person must review before saving. Screening itself can miss instructions.
+Trust boundaries: (1) user to server (cookie, CSRF, Origin/Host checks, tenant membership); (2) model to tools (GuardLM plans pass a typed validator; allow-list, read/propose only; a forbidden tool counts toward the circuit breaker); (3) tools to store (the only code that can approve, sign or execute); (4) stored record text to anything that reasons (quarantine and pseudonymisation). Inbox messages and photos are the deliberate exception: the local extractor must read them to draft records, but deterministic permissions prohibit approval/execution, field validation limits drafts, and a person must review before saving. Screening itself can miss instructions.
 
 **Worst-case assumptions used in testing.** The model is fully hijacked and the human approver rubber-stamps whatever is proposed. The claim under test is that money cannot move on a fooled model's word, because enforcement lives outside the model.
 
@@ -46,7 +46,7 @@ Roles are per business: the same person can own one business and only view anoth
 
 ## 3. Threat table
 
-Each self-test case in `tideway/selftest.py` is mapped to the OWASP Top 10 for LLM Applications (LLM01 prompt injection, LLM02 sensitive information disclosure, LLM06 excessive agency, LLM09 misinformation, LLM10 unbounded consumption) and the OWASP Agentic Security Initiative identifiers (ASI01 goal hijack, ASI02 tool misuse, ASI03 identity and privilege abuse, ASI08 cascading failures, ASI09 human-agent trust exploitation, ASI10 rogue agents; T3 privilege compromise, T8 repudiation and untraceability, T9 identity spoofing). The mapping is our own judgement. Run `python3 -m tideway.selftest` or open Security, then Run self-test, to reproduce.
+Each self-test case in `moneyguard/selftest.py` is mapped to the OWASP Top 10 for LLM Applications (LLM01 prompt injection, LLM02 sensitive information disclosure, LLM06 excessive agency, LLM09 misinformation, LLM10 unbounded consumption) and the OWASP Agentic Security Initiative identifiers (ASI01 goal hijack, ASI02 tool misuse, ASI03 identity and privilege abuse, ASI08 cascading failures, ASI09 human-agent trust exploitation, ASI10 rogue agents; T3 privilege compromise, T8 repudiation and untraceability, T9 identity spoofing). The mapping is our own judgement. Run `python3 -m moneyguard.selftest` or open Security, then Run self-test, to reproduce.
 
 | Case | What is tested | OWASP | Enforcement observed |
 |---|---|---|---|
@@ -96,7 +96,7 @@ Loopback bind; Host and Origin allow-lists; CSRF token on every write; `HttpOnly
 
 ## 5. Privacy
 
-Optional TideLM inference runs on the owner's machine: no question, record or extracted message leaves it. The deterministic local agent sends nothing anywhere either. The Inbox extractor receives the pasted message or photo locally because it must draft a record; it never receives an approval or execution capability, and nothing is saved until confirmation. In optional LLM mode (per-message consent) counterparty names are replaced with pseudonyms and record free text is never sent. Demo data is fictional. No secrets, passport scans or private customer data are included; the public team roster was supplied by the team; `.env` and `data/` are ignored.
+Optional GuardLM inference runs on the owner's machine: no question, record or extracted message leaves it. The deterministic local agent sends nothing anywhere either. The Inbox extractor receives the pasted message or photo locally because it must draft a record; it never receives an approval or execution capability, and nothing is saved until confirmation. In optional LLM mode (per-message consent) counterparty names are replaced with pseudonyms and record free text is never sent. Demo data is fictional. No secrets, passport scans or private customer data are included; the public team roster was supplied by the team; `.env` and `data/` are ignored.
 
 ## 6. Known risks and residual limitations
 
@@ -108,12 +108,12 @@ controls the signing key remains outside this protection's threat boundary.
 
 1. **Demo-grade identity.** PINs and a local signing key stand in for real authentication and hardware-backed keys.
 2. **Privileged attacker.** Someone who can rewrite the database and both key files can forge history; the witness raises the bar but is not a ledger anchored outside the host.
-3. **Rule-based injection scan.** Patterns (eight languages) catch known phrasing; new phrasing could slip past the scan. TideLM also flags injection in pasted text (98.5% injection-flag accuracy on the deployed v2 synthetic test set), but a model is not a guarantee. The structural defence (no approve or execute tool, draft-only Inbox, quarantine of stored records, pseudonymisation and mandates) does not rely on it.
+3. **Rule-based injection scan.** Patterns (eight languages) catch known phrasing; new phrasing could slip past the scan. GuardLM also flags injection in pasted text (98.5% injection-flag accuracy on the deployed v2 synthetic test set), but a model is not a guarantee. The structural defence (no approve or execute tool, draft-only Inbox, quarantine of stored records, pseudonymisation and mandates) does not rely on it.
 4. **Simulated counterparties.** Real suppliers and customers behave differently; real rails add failure modes (partial settlement, reversal).
 5. **Single process and SQLite.** Adequate for the sandbox; production needs a hardened service and database.
 6. **Human factors.** A rubber-stamp approver is assumed in testing, but fast approvals are only flagged, not blocked.
 7. **Verification scope.** Authored Windows local-model smoke results are in `evidence/readiness-v2/model/`. The released MLX adapter, receipt model, SME user study and external penetration test remain unverified for this runtime.
-8. **Small model, synthetic training data.** TideLM can misread a name or drop a constraint (see its report); names are resolved against the ledger and every plan is only a proposal, but a person must still read it before approving.
+8. **Small model, synthetic training data.** GuardLM can misread a name or drop a constraint (see its report); names are resolved against the ledger and every plan is only a proposal, but a person must still read it before approving.
 9. **Not a compliance certification.** No claim of PCI, SOC 2, local regulator or bank approval.
 10. **Optional local model service.** The compatible backend only sends HTTP to literal loopback addresses, refuses redirects, and bounds responses. Its typed plans have the same permission boundary. The independently installed server is trusted infrastructure and must use offline models; MoneyGuard does not audit its plugins or forwarding behaviour. The first sealed Qwen3 compatible-model challenge is reported separately from the historical MLX adapter benchmark.
 

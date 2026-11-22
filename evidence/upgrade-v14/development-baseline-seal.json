@@ -2,9 +2,9 @@
   "recorded_at_utc": "2026-10-19T07:16:17.168515+00:00",
   "fixture_sha256": "d3d9f683a5cc2a50d6d0bccce5684be12dd3a0581740252f6b6cd1ec5ae4d10d",
   "classifier_files": {
-    "tideway/screening.py": "8e691c5d9113151d68907a33396ecffeb26986ac8fd0454e8161745a578b7906",
-    "tideway/semantic_screening.py": "49f0ac94817e29b059db8c91d172ec57a46bea977f2e6019235b5e8d94a70f32",
-    "tideway/tidelm.py": "84a50f429508c4570de5c430a196d6d74f661b8b192966ce765758b818a744b6"
+    "moneyguard/screening.py": "8e691c5d9113151d68907a33396ecffeb26986ac8fd0454e8161745a578b7906",
+    "moneyguard/semantic_screening.py": "dd8c572f05ec61c44c363ce52f57af2ad835b3936f06a3a9b76f5a5f016f86a9",
+    "moneyguard/guardlm.py": "673b49640bb282096867179f0561f2390576867ec688cadf40b96b741b4538a3"
   },
   "scope": "AI-authored source-aware development sample by the implementing maintainer; not independent or blind. Labels fixed before first inference. All runs retained."
 }

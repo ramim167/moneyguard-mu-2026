@@ -23,7 +23,7 @@ export async function waitFor(url, tries = 120) {
 }
 
 export async function launchBrowser({debugPort = 9341, width = 1280, height = 720, scale = 1.5} = {}) {
-  const profile = mkdtempSync(join(tmpdir(), "tideway-video-"));
+  const profile = mkdtempSync(join(tmpdir(), "moneyguard-video-"));
   const chrome = spawn(CHROME, ["--headless=new", `--remote-debugging-port=${debugPort}`, `--user-data-dir=${profile}`,
     "--no-first-run", "--no-default-browser-check", "--hide-scrollbars", "--mute-audio", "--force-color-profile=srgb",
     "--font-render-hinting=none", `--window-size=${Math.round(width * scale)},${Math.round(height * scale)}`, "about:blank"],

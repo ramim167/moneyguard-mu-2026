@@ -1,13 +1,13 @@
 """Focused regressions for counterparty-network projection scenarios."""
 import unittest
 
-from tideway.selftest import SHAPLA, TARGET, _mandate, _ops
-from tideway.service import Tideway
+from moneyguard.selftest import SHAPLA, TARGET, _mandate, _ops
+from moneyguard.service import MoneyGuard
 
 
 class CounterpartyNetworkRegression(unittest.TestCase):
     def test_baseline_network_keeps_never_pays_impact(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
 
         network = app.network(SHAPLA, TARGET)
         nila = next(item for item in network["customers"] if item["name"] == "Nila Traders")
@@ -17,7 +17,7 @@ class CounterpartyNetworkRegression(unittest.TestCase):
         self.assertEqual(impacts, sorted(impacts, reverse=True))
 
     def test_network_after_executed_early_payment_keeps_stress_valid(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         plan, mandate = _mandate(app, SHAPLA)
         bundle = next(item for item in plan["bundles"] if item["bundle_id"] == mandate["bundle_id"])
         early_payment = next(item for item in bundle["actions"] if item["type"] == "early_payment_offer")

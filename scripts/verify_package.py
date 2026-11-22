@@ -79,7 +79,7 @@ def isolated_environment():
     essential = {'PATH', 'HOME', 'USERPROFILE', 'SYSTEMROOT', 'WINDIR', 'COMSPEC', 'PATHEXT',
                  'TEMP', 'TMP', 'TMPDIR', 'LANG', 'LC_ALL', 'LC_CTYPE'}
     env = {k: v for k, v in os.environ.items() if k.upper() in essential}
-    env.update(PYTHONUTF8='1', TIDEWAY_HOST='127.0.0.1')
+    env.update(PYTHONUTF8='1', MONEYGUARD_HOST='127.0.0.1')
     return env
 
 
@@ -88,7 +88,7 @@ def main():
     parser.add_argument('archive', nargs='?', default=str(ROOT / 'dist/MoneyGuard-submission.zip'))
     args = parser.parse_args()
     archive = Path(args.archive).resolve()
-    with tempfile.TemporaryDirectory(prefix='tideway-distributed-') as directory:
+    with tempfile.TemporaryDirectory(prefix='moneyguard-distributed-') as directory:
         work = Path(directory)
         with zipfile.ZipFile(archive) as z:
             if z.testzip():
@@ -134,9 +134,9 @@ def main():
             else:
                 raise RuntimeError('Extracted server did not start')
             for route, expected in (('/', 200), ('/guide', 404), ('/guide.html', 404), ('/guide.css', 404),
-                                    ('/guide.js', 404), ('/personal-prep/project-guide/guide.html', 404), ('/benchmarks/tidepay.json', 200),
-                                    ('/benchmarks/tidepay-deployed.json', 200),
-                                    ('/benchmarks/tidepay-deployed-reliability.svg', 200),
+                                    ('/guide.js', 404), ('/personal-prep/project-guide/guide.html', 404), ('/benchmarks/guardpay.json', 200),
+                                    ('/benchmarks/guardpay-deployed.json', 200),
+                                    ('/benchmarks/guardpay-deployed-reliability.svg', 200),
                                     *[(route, 200) for route in binary_assets],
                                     ('/api/dashboard?business_id=shapla-services', 401)):
                 connection = http.client.HTTPConnection('127.0.0.1', port, timeout=2)
@@ -149,7 +149,7 @@ def main():
                     if content_type != binary_assets[route] or not body:
                         raise RuntimeError(f'Invalid binary asset response for {route}')
                     asset_checks[route] = {'content_type': content_type, 'bytes': len(body)}
-            if data['tidelm']['available'] is not False:
+            if data['guardlm']['available'] is not False:
                 raise RuntimeError('Fresh -S extraction unexpectedly enabled optional model inference')
         finally:
             process.terminate()

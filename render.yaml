@@ -3,22 +3,26 @@
 # The SQLite file lives on the instance's temporary disk, so the demo data resets on each deploy or restart.
 # Optional cloud AI: add OPENROUTER_API_KEY and/or GEMINI_API_KEY as secret environment variables in the
 # Render dashboard (never in this file). Without them the local agent answers every question.
+# Microphone in every browser: GEMINI_API_KEY (or GROQ_API_KEY) also powers voice-clip transcription for
+# browsers whose built-in speech service is missing or blocked (Firefox, Brave, some Edge/Safari setups).
 services:
   - type: web
     name: moneyguard
     runtime: python
     plan: free
     autoDeploy: true
-    buildCommand: python -m compileall -q run.py tideway
-    startCommand: python run.py --host 0.0.0.0 --port $PORT --db /tmp/tideway.sqlite3
+    buildCommand: python -m compileall -q run.py moneyguard
+    startCommand: python run.py --host 0.0.0.0 --port $PORT --db /tmp/moneyguard.sqlite3
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.11
-      - key: TIDEWAY_DECISION_LAB
+      - key: MONEYGUARD_DECISION_LAB
         value: "1"
       - key: OPENROUTER_API_KEY
         sync: false
       - key: GEMINI_API_KEY
         sync: false
-      - key: TIDEWAY_SPEECH_GROQ_API_KEY
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MONEYGUARD_SPEECH_GROQ_API_KEY
         sync: false

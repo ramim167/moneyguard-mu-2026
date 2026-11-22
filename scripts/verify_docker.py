@@ -39,9 +39,9 @@ def main():
         parser.exit(1, "Source must satisfy tracked LF policy: " + ", ".join(issues) + "\n")
     before, files_before = source_digest()
     token = uuid.uuid4().hex[:12]
-    image = f"tideway-verification:{token}"
-    volume = f"tideway-verification-data-{token}"
-    names = [f"tideway-verification-{token}-{suffix}" for suffix in ("initial", "recreated")]
+    image = f"moneyguard-verification:{token}"
+    volume = f"moneyguard-verification-data-{token}"
+    names = [f"moneyguard-verification-{token}-{suffix}" for suffix in ("initial", "recreated")]
     prefix = [args.docker_cli] + (["--host", args.docker_host] if args.docker_host else [])
     environment = os.environ.copy()
     if args.legacy_builder:
@@ -98,7 +98,7 @@ def main():
         report["image"] = {key: inspect.get(key) for key in ("Id", "Created", "Architecture", "Os", "Size")}
         report["image"]["user"] = inspect["Config"]["User"]
         report["image"]["cmd"] = inspect["Config"]["Cmd"]
-        assert inspect["Config"]["User"] == "tideway", "Image lost its non-root runtime user"
+        assert inspect["Config"]["User"] == "moneyguard", "Image lost its non-root runtime user"
         docker("volume-create", ["volume", "create", volume])
         created_volume = True
         for index, (name, phase) in enumerate(zip(names, ("workflow", "persisted"))):

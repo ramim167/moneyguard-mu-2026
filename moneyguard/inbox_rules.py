@@ -1,0 +1,321 @@
+"""Rule-based Inbox extraction: the fallback when GuardLM is not installed.
+
+Reads the alert formats MoneyGuard documents (bank SMS, card alerts, M-Pesa, UPI, WeChat Pay,
+Alipay, PayNow, DuitNow, GCash, Pix, SEPA, Faster Payments, Wise, bKash, invoice and bill
+notices, and short chat promises such as "Nila Traders will pay 50,000 next Friday") with
+regular expressions only.  It returns the same JSON shape GuardLM's extractor returns, so the
+records go through the same draft builder, validators, currency check and screening.
+
+It is deliberately simple and says so: every draft is labelled as rule-based and must be
+checked by a person.  Nothing here saves a record, and message text never gains authority.
+"""
+from __future__ import annotations
+
+import re
+from datetime import date, timedelta
+from decimal import Decimal
+
+from .domain import CURRENCIES
+
+_MONTHS = {name: number for number, name in enumerate(
+    ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"), 1)}
+_MONTH_RE = (r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|"
+             r"oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?(?![a-z])")
+_WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+
+# Currency symbols and words -> ISO codes; an ambiguous symbol prefers the business's own currency.
+_SYMBOLS = (
+    (r"R\$", ("BRL",)), (r"S\$", ("SGD",)), (r"HK\$", ("HKD",)), (r"A\$", ("AUD",)), (r"C\$", ("CAD",)),
+    (r"NZ\$", ("NZD",)), (r"US\$", ("USD",)), (r"\$", ("USD", "SGD", "AUD", "CAD", "HKD", "NZD", "MXN")),
+    (r"£", ("GBP",)), (r"€", ("EUR",)), (r"₹", ("INR",)), (r"৳|টাকা", ("BDT",)), (r"₱", ("PHP",)), (r"₦", ("NGN",)),
+    (r"[¥￥]", ("CNY",)), (r"(?<![A-Za-z])K[Ss]h\.?", ("KES",)),
+    (r"(?<![A-Za-z])(?:Rs\.?|rs\.?|INR|[Rr]upees?)", ("INR", "PKR", "LKR", "NPR")),
+    (r"(?<![A-Za-z])(?:Tk\.?|tk\.?|[Tt]aka)(?![a-z])", ("BDT",)), (r"(?<![A-Za-z])Rp\.?", ("IDR",)),
+    (r"(?<![A-Za-z])RM", ("MYR",)), (r"[元块]", ("CNY",)),
+)
+_CODES = "|".join(sorted(CURRENCIES, key=len, reverse=True))
+_CURRENCY = "|".join([rf"(?<![A-Za-z])(?:{_CODES})(?![A-Za-z])"] + [pattern for pattern, _ in _SYMBOLS])
+_NUMBER = (r"(?:\d{1,2}(?:,\d{2})+,\d{3}|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?|"
+           r"\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d{1,3}(?:[  ]\d{3})+(?:[.,]\d{1,2})?|"
+           r"\d+(?:[.,]\d{1,2})?")
+_SCALES = {"k": 1000, "thousand": 1000, "lakh": 100_000, "lac": 100_000, "লাখ": 100_000, "লক্ষ": 100_000,
+           "million": 1_000_000, "crore": 10_000_000, "কোটি": 10_000_000, "billion": 1_000_000_000}
+_SCALE = r"(?i:thousands?|lakhs?|lacs?|crores?|millions?|billions?|k|লাখ|লক্ষ|কোটি)(?!\w)"
+_UNKNOWN_SCALE = re.compile(r"\s*(?:[a-z]illions?|trillions?|quadrillions?|arab|kharab|lakhhs?|croresh)(?!\w)", re.I)
+_AMOUNT = re.compile(rf"(?P<pre>{_CURRENCY})\s?(?P<num>{_NUMBER})(?!\d|[.,]\d)(?:\s*(?P<scale>{_SCALE}))?"
+                     rf"|(?<![\d.,A-Za-z#/])(?<![A-Za-z0-9]-)(?P<num2>{_NUMBER})(?:\s*(?P<scale2>{_SCALE}))?\s?(?P<post>{_CURRENCY})")
+_NUMBER_NEXT = re.compile(rf"\s?(?:{_NUMBER})(?![/-]\d)")  # an amount, not the start of a date such as 15/11
+_REFERENCE_BEFORE = re.compile(r"(?:\binvoice|\bbill|\binv|\bno\.?|\bref(?:erence)?|\border|#)\s*[:#]?\s*$", re.I)
+_BARE_AMOUNT = re.compile(rf"\b(?:pay|pays|paying|paid|send|sending|transfer|owes?|owed|for|amount(?: due)?|total|of)\s+"
+                          rf"(?:me\s+|you\s+|us\s+|the\s+)?(?P<num>{_NUMBER})(?![\d/.-]|,\d)(?:\s*(?P<scale>{_SCALE}))?", re.I)
+
+_IN = re.compile(r"\breceived\b|\bcredited\b|\bcredit\b|\bcash\s+in\b|recebid[oa]|收款|\bdeposit(?:ed)?\b|\bditerima\b|\brecibid[oa]\b|"
+                 r"\breçu\b|পেয়েছেন|জমা হয়েছে|ক্যাশ ইন", re.I)
+_PAID_TO = re.compile(r"\bpaid\s+to\b", re.I)
+# bKash/Nagad outgoing alerts start "Send Money Tk 500.00 to ..." and "Payment Tk 1,500.00 to <merchant> ...".
+_OUT = re.compile(r"\bdebited\b|\bsent\b|\bspent\b|\bpaid to\b|\bcash\s+out\b|向.{1,40}?付款|\bwithdrawn?\b|\bpurchase\b|\bdebit\b|"
+                  r"\benviad[oa]\b|\bdibayar\b|\bsend\s+money\b|\bpayment\s+(?:of\s+)?(?:tk\.?|bdt|৳)\s?[\d,.]+\s+to\b|"
+                  r"পাঠিয়েছেন|ক্যাশ আউট|পেমেন্ট করেছেন", re.I)
+# Balances and fees describe an account or the cost of a transfer, not the amount transferred.
+_ANCILLARY_BEFORE = re.compile(
+    r"(?:\b(?:bal(?:ance)?\.?|fees?|charges?)|余额|餘額|手续费|手續費|ব্যালেন্স|চার্জ|ফি)"
+    r"\s*(?:(?:is|of|为|為)\s*)?[:=：]?\s*$", re.I)
+_UNSETTLED = re.compile(
+    r"\b(?:not|never)\s+(?:(?:yet|been)\s+)*(?:received|credited|debited|sent|paid|transferred|deposited)\b|"
+    r"\b(?:haven|hasn|wasn|weren|isn|aren|didn|couldn)['’]t\s+"
+    r"(?:(?:yet|been)\s+)*(?:received|credited|debited|sent|paid|transferred|deposited)\b|"
+    r"\b(?:payment|transaction|transfer|deposit)\b(?:(?!\.(?!\d)|[!?;\n]).){0,180}"
+    r"\b(?:failed|unsuccessful|declined|pending|cancelled|canceled|reversed)\b|"
+    r"\b(?:failed|unsuccessful|declined|cancelled|canceled|reversed)\s+(?:payment|transaction|transfer|deposit)\b|"
+    r"(?<!no )\bpending\s+(?:payment|transaction|transfer|deposit)\b", re.I)
+_INVOICE = re.compile(r"\binvoice\b|\bfactura\b|发票|\bnota fiscal\b|\bfacture\b(?!\s+fournisseur)", re.I)
+_BILL = re.compile(r"\bbill\b|\bsupplier\s+invoice\b|\binvoice\s+from\b|\btagihan\b|facture fournisseur|amount due|please pay|账单|\bfactura de proveedor\b", re.I)
+_PROMISE = re.compile(r"will pay|i'?ll pay|\bte pago\b|\bpagar[ée]\b|saya bayar|akan bayar|de dunga|de denge|\bdibo\b|"
+                      r"\d\s*日前付|\bpaierai\b|vou pagar", re.I)
+_DUE_BEFORE = re.compile(r"(?:\bdue(?:\s+date)?|\bvence(?:\s+el)?|\bvencimiento|échéance(?:\s+le)?|jatuh tempo|\bpay(?:ment)?\s+by|"
+                         r"\bby|\bbefore|\bantes del?|\bavant le|\baté|paling lambat|付款期限|到期日?)\s*[:：]?\s*(?:on\s+|le\s+|el\s+)?$", re.I)
+_DUE_AFTER = re.compile(r"^\s*(?:前|之前|\btak\b|\ber moddhe\b|\bmoddhe\b|\bke andar\b)", re.I)
+_ISSUE_BEFORE = re.compile(r"(?:\bissued(?:\s+on)?|\bemitida(?:\s+el)?|\bémise(?:\s+le)?|开票日期|\bdated)\s*[:：]?\s*$", re.I)
+_INJECTION = re.compile(r"ignore (?:all |any )?(?:previous|prior|earlier) (?:instructions|rules)|\bsystem\s*:|approve (?:the )?payment|"
+                        r"transfer all|changed? (?:our |the )?bank|new (?:bank )?account|mark every invoice|without asking|"
+                        r"忽略|ignora las instrucciones|abaikan instruksi|ignorez les consignes|ignore as instru", re.I)
+
+# A name ends before a currency, a reference or a transaction id ("from Dhaka Paper Tk 12,500", "Karim Traders ref KT-77").
+_NAME_STOP = (r"(?=\s+(?:on|today|tomorrow|due|em|via|for|el|le|pada|tanggal|at\s+\d|will|bill|has|have|is|sent|paid|pays?)\b|\s*[,(:：，。;]|\.\s|\.$|\s*$|"
+              r"\s+\d|\s+(?:ref(?:erence)?|trx\s?id|txn\s?id)\b|" + rf"\s*(?:{_CURRENCY}))")
+# A known name counts only as a whole word: "Ali" is not inside "Alif Store" or "quality".
+_WORD_EDGE = r"\wঀ-৿"
+_NAME = r"(?P<who>[A-Z一-鿿][^\n]{0,79}?)"
+_PARTY_PATTERNS = [re.compile(pattern, re.I if flags else 0) for pattern, flags in (
+    (r"付款方[：:]\s*(?P<who>[^，,。\n]{1,40})", 0),
+    (r"向(?P<who>[^，,。¥￥\n]{1,40}?)付款", 0),
+    (r"给(?P<who>[^，,。\n]{1,40}?)[，,。]", 0),
+    (r"^\s*\[(?:whatsapp|微信|wechat|sms|telegram|signal)\]\s*(?P<who>[^:：\n]{1,80})[:：]", 1),
+    (r"^\s*(?P<who>[A-Z一-鿿][^:：\n]{0,79})[:：]\s*(?:bill|invoice|factura|tagihan)\b", 0),
+    (r"^\s*(?P<who>[A-Z][^\n]{0,79}?)\s+(?:bill|invoice)\s+(?:no\.?\s*)?(?:[A-Z]{1,5}-?)?\d", 0),
+    (r"^\s*(?P<who>[A-Z][^\n]{0,79}?)\s+(?:will|is going to|promised to)\s+pay\b", 0),
+    (r"\b(?:from|by|dari)\s+" + _NAME + _NAME_STOP, 0),
+    (r"\bspent\s+at\s+" + _NAME + _NAME_STOP, 0),
+    (r"(?<![A-Za-z])(?:de)\s+" + _NAME + _NAME_STOP, 0),
+    (r"\b(?:to|para|a)\s+" + _NAME + _NAME_STOP, 0),
+    # Bangla alerts: "৳৫,০০০ পেয়েছেন করিম ট্রেডার্স থেকে" / "পাঠিয়েছেন রহিম স্টোরকে"
+    (r"(?:পেয়েছেন|পাঠিয়েছেন|পেমেন্ট করেছেন)\s+(?P<who>[ঀ-৿][ঀ-৿ ]{0,40}?)\s*(?:থেকে|কে)(?![ঀ-৿])", 0),
+)]
+_NOT_A_PARTY = re.compile(r"^(?:a/?c\b|acct|account|iban|me|you|us|your|my|our|the|this|pay|payment|ref|upi)\b", re.I)
+_REFERENCE = re.compile(r"(?:\bref(?:erence)?\.?\s*(?:no\.?)?\s*[:#]?\s*|\bupi\s*ref\s*no\.?\s*|\bupi\s*:\s*|\bid\s+|transfer\s*#\s*|"
+                        r"交易单号|订单号|\binvoice\s+(?:no\.?\s*)?|\bfactura\s+|\bfacture fournisseur\s+|\btagihan\s+|发票|"
+                        r"\bbill\s+(?:no\.?\s*)?)(?P<ref>[A-Za-z0-9][A-Za-z0-9/-]{2,30})", re.I)
+_CODE_REFERENCE = re.compile(r"\b[A-Z]{2,5}-\d{2,}\b")
+
+
+def _parse_number(raw):
+    text = raw.replace(" ", " ").replace(" ", "")
+    if "," in text and "." in text:
+        decimal = "," if text.rfind(",") > text.rfind(".") else "."
+        text = text.replace("." if decimal == "," else ",", "").replace(decimal, ".")
+    elif "," in text:
+        text = text.replace(",", "") if re.fullmatch(r"\d{1,3}(?:,\d{3})+", text) or not re.search(r",\d{1,2}$", text) \
+            else text.replace(",", ".")
+    elif text.count(".") > 1 or re.fullmatch(r"\d{1,3}\.\d{3}", text):
+        text = text.replace(".", "")
+    return Decimal(text)
+
+
+def _scaled_amount(number, scale, tail, checks):
+    if not scale and _UNKNOWN_SCALE.match(tail):
+        checks.append("unrecognized amount scale: enter the amount before saving")
+        return None
+    amount = _parse_number(number) * _SCALES.get((scale or "").casefold().removesuffix("s"), 1)
+    return int(amount) if amount == int(amount) else float(amount)
+
+
+def _currency(token, business_currency):
+    token = token.strip()
+    if token.upper() in CURRENCIES and re.fullmatch(r"[A-Za-z]{3}", token):
+        return token.upper()
+    for pattern, candidates in _SYMBOLS:
+        if re.fullmatch(pattern, token):
+            return business_currency if business_currency in candidates else candidates[0]
+    return business_currency
+
+
+def _year_for(month, day, today):
+    candidate = date(today.year, month, day)
+    return candidate if candidate >= today - timedelta(days=90) else date(today.year + 1, month, day)
+
+
+def _dates(text, today):
+    """[(start, end, value, note)] for every date-like phrase; value is ISO, or d/m/YYYY for the shared validator."""
+    found, taken = [], []
+
+    def add(match, value, note=None):
+        if any(match.start() < end and start < match.end() for start, end in taken):
+            return
+        taken.append((match.start(), match.end()))
+        found.append((match.start(), match.end(), value, note))
+
+    for match in re.finditer(r"(\d{4})年(\d{1,2})月(\d{1,2})日", text):
+        add(match, f"{int(match[1]):04d}-{int(match[2]):02d}-{int(match[3]):02d}")
+    for match in re.finditer(r"(?<!\d)(\d{4})-(\d{2})-(\d{2})(?!\d)", text):
+        add(match, match.group(0))
+    for match in re.finditer(r"(?<![\d.,])(\d{1,2})[/.-](\d{1,2})[/.-](\d{4}|\d{2})(?![\d])", text):
+        year = match[3] if len(match[3]) == 4 else f"20{match[3]}"
+        add(match, f"{int(match[1]):02d}/{int(match[2]):02d}/{year}")
+    for match in re.finditer(rf"(?<!\d)(\d{{1,2}})[\s-]({_MONTH_RE})[\s,-]+(\d{{4}}|\d{{2}})(?![\d:])", text, re.I):
+        year = int(match[3]) if len(match[3]) == 4 else 2000 + int(match[3])
+        add(match, f"{year:04d}-{_MONTHS[match[2][:3].lower()]:02d}-{int(match[1]):02d}")
+    for match in re.finditer(rf"\b({_MONTH_RE})\s+(\d{{1,2}}),?\s+(\d{{4}})(?!\d)", text, re.I):
+        add(match, f"{int(match[3]):04d}-{_MONTHS[match[1][:3].lower()]:02d}-{int(match[2]):02d}")
+    # Yearless patterns must not reconstruct part of an already complete date.
+    # Masking retains offsets used below to identify issue and due dates.
+    for start, end in taken:
+        text = text[:start] + " " * (end - start) + text[end:]
+    def add_yearless(match, month, day, note="year assumed"):
+        if any(match.start() < end and start < match.end() for start, end in taken):
+            return
+        try:
+            value = _year_for(month, day, today).isoformat()
+        except ValueError:
+            add(match, None, f"{match.group(0)} needs a valid day and year")
+        else:
+            add(match, value, note)
+
+    for match in re.finditer(r"(?<!\d)(\d{1,2})月(\d{1,2})日", text):
+        add_yearless(match, int(match[1]), int(match[2]))
+    for match in re.finditer(rf"(?<!\d)(\d{{1,2}})\s+({_MONTH_RE})(?![a-z])", text, re.I):
+        add_yearless(match, _MONTHS[match[2][:3].lower()], int(match[1]))
+    for match in re.finditer(rf"\b({_MONTH_RE})\s+(\d{{1,2}})(?![\d,])", text, re.I):
+        add_yearless(match, _MONTHS[match[1][:3].lower()], int(match[2]))
+    for match in re.finditer(r"(?<![\d.,/])(\d{1,2})/(\d{1,2})(?![\d/])", text):
+        first, second = int(match[1]), int(match[2])
+        if 1 <= second <= 12 and 1 <= first <= 31:
+            note = "year assumed" + ("; day/month order assumed" if first <= 12 and first != second else "")
+            add_yearless(match, second, first, note)
+    lowered = text.casefold()
+    for words, offset in (((r"today", r"hoy", r"aujourd'hui", r"hoje", r"hari ini", r"今天", r"aaj", r"aj"), 0),
+                          ((r"tomorrow", r"mañana", r"demain", r"amanhã", r"besok", r"明天", r"kal", r"kalke"), 1)):
+        for match in re.finditer(r"(?<![\w])(?:" + "|".join(words) + r")(?![\w])", lowered):
+            add(match, (today + timedelta(days=offset)).isoformat(), "relative date")
+    for match in re.finditer(r"\b(?:(next|this|on|by|coming)\s+)?(" + "|".join(_WEEKDAYS) + r")\b", lowered):
+        ahead = (_WEEKDAYS.index(match[2]) - today.weekday()) % 7
+        if ahead == 0 and match[1] in ("next", "coming"):
+            ahead = 7
+        add(match, (today + timedelta(days=ahead)).isoformat(), "relative date")
+    for match in re.finditer(r"\bin\s+(\d{1,3})\s+days?\b", lowered):
+        add(match, (today + timedelta(days=int(match[1]))).isoformat(), "relative date")
+    return sorted(found)
+
+
+def _party(segment, known):
+    hits = [name for name in known if name and re.search(rf"(?<![{_WORD_EDGE}]){re.escape(name)}(?![{_WORD_EDGE}])", segment, re.I)]
+    if hits:
+        return max(hits, key=len)
+    for pattern in _PARTY_PATTERNS:
+        for match in pattern.finditer(segment):
+            who = match.group("who").strip(" \t-–—\"'“”")
+            if who.endswith(".") and not re.search(r"(?:\b[A-Za-z]\.|\.[A-Za-z]{1,3}\.)$", who):
+                who = who[:-1]
+            who = who.strip()
+            if 2 <= len(who) <= 80 and not _NOT_A_PARTY.match(who) and not re.fullmatch(r"[\d\W]+", who):
+                return who
+    return ""
+
+
+def _reference(segment):
+    for match in _REFERENCE.finditer(segment):
+        if re.search(r"\d", match["ref"]):
+            return match["ref"].rstrip(".-/")
+    match = _CODE_REFERENCE.search(segment)
+    return match.group(0) if match else None
+
+
+def _amounts(segment):
+    """Every amount in the text.  In "INV-204 Tk 45,000" the currency prefixes 45,000, so 204 is a reference, not money."""
+    found, position = [], 0
+    while match := _AMOUNT.search(segment, position):
+        if (match["post"] and _REFERENCE_BEFORE.search(segment[max(0, match.start() - 20):match.start()])
+                and _NUMBER_NEXT.match(segment, match.end("post"))):
+            match = _AMOUNT.match(segment, match.start("post")) or match
+        found.append(match)
+        position = match.end()
+    return found
+
+
+def _record(segment, business_currency, today, known):
+    amounts = _amounts(segment)
+    checks = []
+    if amounts:
+        candidates = [match for match in amounts
+                      if not _ANCILLARY_BEFORE.search(segment[max(0, match.start() - 60):match.start()])]
+        # Multiple different amounts without a clear ancillary label are ambiguous. Do not guess.
+        values = {(_scaled_amount(match["num"] or match["num2"], match["scale"] or match["scale2"],
+                                  segment[match.end():], checks),
+                   _currency(match["pre"] or match["post"], business_currency)) for match in candidates}
+        if len(values) != 1:
+            return None
+        amount, currency = values.pop()
+        spans = [match.span() for match in candidates]
+    else:
+        bare = _BARE_AMOUNT.search(segment)
+        if not bare:
+            return None
+        amount = _scaled_amount(bare["num"], bare["scale"], segment[bare.end():], checks)
+        currency, spans = business_currency, [(bare.start("num"), bare.end())]
+        checks.append(f"no currency in the message: {business_currency} assumed")
+    masked = segment
+    for start, end in [m.span() for m in amounts] + spans:
+        masked = masked[:start] + " " * (end - start) + masked[end:]
+    # Interpret the leading action/document, rather than a later reference to a paid invoice or bill.
+    signals = [(match.start(), priority, kind, direction)
+               for priority, (pattern, kind, direction) in enumerate((
+                   (_BILL, "bill", "out"), (_INVOICE, "invoice", "in"), (_PROMISE, "invoice", "in"),
+                   (_IN, "transaction", "in"), (_OUT, "transaction", "out")))
+               if (match := pattern.search(segment))]
+    if paid := _PAID_TO.search(masked):
+        signals.append((paid.start(), 4, "transaction", "out"))
+    if not signals:
+        return None  # An amount alone does not establish that cash came in or went out.
+    _, _, kind, direction = min(signals)
+    if kind == "transaction" and _UNSETTLED.search(segment):
+        return None  # A denied, failed or pending transfer is not settled cash.
+    issue = due = when = None
+    for start, end, value, note in _dates(masked, today):
+        before, after = masked[max(0, start - 30):start], masked[end:end + 12]
+        if note:
+            checks.append(f"date {value}: {note}" if value else note)
+        if _ISSUE_BEFORE.search(before):
+            issue = issue or value
+        elif _DUE_BEFORE.search(before) or _DUE_AFTER.search(after):
+            due = due or value
+        else:
+            when = when or value
+    if kind == "transaction":
+        record_date, due_date = when or issue or due, None
+    elif kind == "invoice" and not _PROMISE.search(segment):
+        record_date, due_date = issue or when, due or (when if issue else None)
+    else:
+        record_date, due_date = issue, due or when
+    if not (record_date or due_date):
+        checks.append("no date found: add one before saving")
+    who = _party(segment, known)
+    if not who:
+        checks.append("no counterparty found: add one before saving")
+    return {"record_type": kind, "counterparty": who, "amount": amount, "currency": currency,
+            "date": record_date, "due_date": due_date, "direction": direction or "out",
+            "reference": _reference(segment), "_checks": checks}
+
+
+def extract(text, business, today, known_names=()):
+    """Same output shape as GuardLM's extractor: {"records": [...], "suspicious": bool}."""
+    today = date.fromisoformat(str(today)[:10])
+    known = sorted({str(name) for name in known_names if name}, key=len, reverse=True)
+    records = []
+    for segment in re.split(r"[\r\n]+", str(text)):
+        if not segment.strip() or _INJECTION.search(segment) and not _AMOUNT.search(segment):
+            continue
+        record = _record(segment.strip(), business["currency"], today, known)
+        if record is not None:
+            records.append(record)
+        if len(records) >= 20:
+            break
+    return {"records": records, "suspicious": bool(_INJECTION.search(str(text)))}

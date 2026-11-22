@@ -21,8 +21,8 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.evaluate_upgrade_scenarios import FIXTURE, load_spec, new_business, run_case  # noqa: E402
 from scripts.verify_submission import source_digest  # noqa: E402
-from tideway import analytics, planner  # noqa: E402
-from tideway.service import Tideway  # noqa: E402
+from moneyguard import analytics, planner  # noqa: E402
+from moneyguard.service import MoneyGuard  # noqa: E402
 
 
 def sha(path):
@@ -68,7 +68,7 @@ def run(output, *, runs=10000, repetitions=3, warmup=1):
         if case["id"] not in ("D06", "H11"):
             continue
         workflow = run_case(case, spec["defaults"])
-        app = Tideway(":memory:", seed=False)
+        app = MoneyGuard(":memory:", seed=False)
         try:
             business_id = new_business(app, case, spec["defaults"])
             snapshot = app.store.snapshot(business_id)
@@ -122,7 +122,7 @@ def run(output, *, runs=10000, repetitions=3, warmup=1):
                          "independent_finalists": planner.VALIDATION_FINALISTS, "search_runs": 400, "finalist_runs": 1200},
               "limitations": ["Known disclosed synthetic cases reused after inspecting failures; not fresh held-out performance.",
                               "Receipt timing is uncertain; accepted early-payment agreements are fixed in the sandbox simulation. Their real-world reliability is not measured.",
-                              "Fresh seeds reduce Monte Carlo sampling noise, not TidePay model error or unmodelled business risks.",
+                              "Fresh seeds reduce Monte Carlo sampling noise, not GuardPay model error or unmodelled business risks.",
                               "Below-target estimates are not guarantees; above-target approvals still require exact bound residual-risk acknowledgement from each approver.",
                               "No real money, genuine counterparties, model inference or external services tested."]}
     (out / "report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")

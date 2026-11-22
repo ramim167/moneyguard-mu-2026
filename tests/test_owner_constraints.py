@@ -2,9 +2,9 @@
 import copy
 import unittest
 
-from tideway.domain import SecurityError, ValidationError, canonical_json
-from tideway.service import Tideway
-from tideway.store import json_hash
+from moneyguard.domain import SecurityError, ValidationError, canonical_json
+from moneyguard.service import MoneyGuard
+from moneyguard.store import json_hash
 
 
 BUSINESS = "shapla-services"
@@ -12,7 +12,7 @@ BUSINESS = "shapla-services"
 
 class OwnerConstraints(unittest.TestCase):
     def setUp(self):
-        self.app = Tideway(":memory:")
+        self.app = MoneyGuard(":memory:")
         self.addCleanup(self.app.store.close)
         self.owner = self.app.store.verify_pin("nadia", "2468")
 
@@ -187,7 +187,7 @@ class OwnerConstraints(unittest.TestCase):
         # Give a legacy faulty plan a cap below its already-signed offer.
         self.rewrite(plan, lambda body: body["owner_constraints"].update(max_discount_bps=0))
         fresh = self.app.store.plan(BUSINESS, plan["plan_id"])
-        from tideway import security
+        from moneyguard import security
         mandate["plan_hash"] = fresh["plan_hash"]
         mandate["signature"] = security.sign(self.app.store.key, mandate)
         with self.app.store.connect() as db:
@@ -213,7 +213,7 @@ class OwnerConstraints(unittest.TestCase):
             self.propose(prefer="invented")
 
     def test_zero_stricter_and_more_permissive_policy_do_not_widen_owner_ceiling(self):
-        from tideway.constraints import owner_constraints
+        from moneyguard.constraints import owner_constraints
         for owner_cap, policy_cap, expected in ((0, 300, 0), (100, 50, 50), (100, 300, 100)):
             with self.subTest(owner=owner_cap, policy=policy_cap):
                 self.assertEqual(owner_constraints({"max_discount_bps": owner_cap, "prefer": "fewest_asks"},
@@ -241,7 +241,7 @@ class RiskDisplayBoundaries(unittest.TestCase):
         self.assertIn("10.000000000000002%", rendered[3])
 
     def test_exact_risk_target_and_rounding_do_not_supply_implicit_consent(self):
-        from tideway.store import Store
+        from moneyguard.store import Store
         plan = {"plan_id": "p", "plan_hash": "h", "risk_target": .10}
         self.assertIsNone(Store.risk_acknowledgement_terms(plan, {"bundle_id": "b", "probability_breach_after": .10}))
         for probability in (.10000001, .1049, .1178):

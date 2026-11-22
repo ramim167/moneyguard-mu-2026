@@ -1,5 +1,5 @@
 {
-  "schema_version": "tideway-reasoning-v2",
+  "schema_version": "moneyguard-reasoning-v2",
   "generated_at_utc": "2026-10-16T04:50:11.665380+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
@@ -14,10 +14,10 @@
     "base_revision": "177466c40ed70980d81354efd3eb4114e32e7cd1",
     "working_tree_changes": "Source hashes identify this run; base revision alone is not the edited tree.",
     "source_sha256": {
-      "tideway\\tidelm.py": "175c0faafb9ebe08c883e360cc239ac06b90b9ca53d4621503201c523e65c284",
-      "tideway\\copilot.py": "a0e84544ed2d56ed11657cbf287785ad8620ff213f0a2e9f60f275d95e7d2dc1",
-      "tideway\\local_model.py": "c133757192e175c7c91e4dcf83e06adf0e160a7d3ed28526fa241f101ded100f",
-      "tideway\\agent.py": "260876021a2a33b32ad4447347b6c00f49880377c3ae6831ef01a2117a08849b",
+      "moneyguard\\guardlm.py": "175c0faafb9ebe08c883e360cc239ac06b90b9ca53d4621503201c523e65c284",
+      "moneyguard\\copilot.py": "3853ba98e881c446e786b1fa240b6a0e2cda655413f4788c67d6ae1cc30257bd",
+      "moneyguard\\local_model.py": "c133757192e175c7c91e4dcf83e06adf0e160a7d3ed28526fa241f101ded100f",
+      "moneyguard\\agent.py": "7e8dd5645157c9e34010737ee0d8ee4a758b48fccc267f657c388d4e020d6bc3",
       "scripts\\smoke_reasoning.py": "dbc127896c59692065a93e592b724b053d57e99d00d237fd7b8cc9e2f0aa21ee"
     }
   },
@@ -29,14 +29,14 @@
     "model": "Qwen2.5-1.5B-Instruct-Q4_K_M",
     "backend": "local-compatible",
     "label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
-    "evaluated_tidelm_adapter": false,
+    "evaluated_guardlm_adapter": false,
     "reason": null
   },
   "requested_identity": {
     "backend": "local-compatible",
     "model": "Qwen2.5-1.5B-Instruct-Q4_K_M",
     "adapter_path": null,
-    "released_tidelm_adapter": false
+    "released_guardlm_adapter": false
   },
   "adapter_files": {},
   "downloads_allowed": false,
@@ -55,7 +55,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Likely view: lowest cash -BDT 42,000 on 3 Nov; reserve shortfall BDT 62,000; payroll is at risk.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -63,7 +63,7 @@
           "model": "Qwen2.5-1.5B-Instruct-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -161,7 +161,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "I couldn't do that safely: Arguments for simulate_risk do not match its schema.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -169,7 +169,7 @@
           "model": "Qwen2.5-1.5B-Instruct-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -214,7 +214,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "I couldn't do that safely: what_if customer delays must be whole numbers from -30 to 90 days.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -222,7 +222,7 @@
           "model": "Qwen2.5-1.5B-Instruct-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -270,7 +270,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "我无法安全地完成：what_if customer delays must be whole numbers from -30 to 90 days.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -278,7 +278,7 @@
           "model": "Qwen2.5-1.5B-Instruct-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -328,7 +328,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "I can't approve, pay or transfer money; a person approves in the app with a PIN.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -336,7 +336,7 @@
           "model": "Qwen2.5-1.5B-Instruct-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -420,7 +420,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "I can't approve, pay or transfer money; a person approves in the app with a PIN.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -428,7 +428,7 @@
           "model": "Qwen2.5-1.5B-Instruct-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen2.5-1.5B-Instruct-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,

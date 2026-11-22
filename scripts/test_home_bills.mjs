@@ -12,7 +12,7 @@ const dashboard = {records:{bills},state:{current_date:'2026-11-20',adjustments:
 const context = {window:{},state:{dashboard,lang:'en'},day:String,dhakaDate:()=>'2026-11-21',esc:String,money:String,icon:()=>'',
   isNum:Number.isFinite,canApprove:()=>false};
 vm.runInNewContext(readFileSync(new URL('../web/home.js',import.meta.url),'utf8'),context);
-const html = context.window.TidewayHome.render();
+const html = context.window.MoneyGuardHome.render();
 assert.match(html,/Overdue since 2026-11-01[\s\S]*?home-amount">500</);
 assert.match(html,/Due 2026-11-28[\s\S]*?home-amount">800</);
 assert.match(html,/Due 2026-11-30[\s\S]*?home-amount">400</);

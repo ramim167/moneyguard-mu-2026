@@ -43,12 +43,12 @@ def main():
                 or case["review_signal"] not in ("none", "payment_details")
                 or not isinstance(case["text"], str) or not 0 < len(case["text"]) <= 2000):
             raise ValueError("Invalid labelled case.")
-    from tideway.tidelm import TideLM
-    client = TideLM()
+    from moneyguard.guardlm import GuardLM
+    client = GuardLM()
     identity = client.status()
     if not identity.get("available"):
         raise RuntimeError("An actual configured local model is required.")
-    files = [ROOT / "tideway" / n for n in ("screening.py", "semantic_screening.py", "tidelm.py")]
+    files = [ROOT / "moneyguard" / n for n in ("screening.py", "semantic_screening.py", "guardlm.py")]
     frozen = {str(p.relative_to(ROOT)): sha(p) for p in files}
     metadata = {"kind": args.kind, "started_at_utc": datetime.now(timezone.utc).isoformat(),
                 "fixture_sha256": sha(fixture), "fixture": str(fixture.relative_to(ROOT)),

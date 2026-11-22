@@ -12,24 +12,24 @@ cash weather answers "will *my* cash fall below my reserve?". The portfolio rada
 question: *which of my SMEs are most likely to breach their own reserve floor in the next 60 days, when,
 why, and what should my relationship managers do first?*
 
-Code: `tideway/portfolio.py` (engine), `web/portfolio.js` (`window.TidewayPortfolio`), tests in
+Code: `moneyguard/portfolio.py` (engine), `web/portfolio.js` (`window.MoneyGuardPortfolio`), tests in
 `tests/test_portfolio.py`, evaluation in `scripts/evaluate_portfolio.py`.
 
 ## Method
 
 **Portfolio generation** (`generate_portfolio(n=60, seed=2026)`). Each SME gets its own seeded stream:
-sector (services, wholesale, retail, manufacturing, print — the TidePay synthetic sectors), market
+sector (services, wholesale, retail, manufacturing, print — the GuardPay synthetic sectors), market
 (BD/BDT 40%, CN/CNY 20%, SG/SGD 20%, IN/INR 20%), monthly payroll (lognormal, USD 1.5k–45k scaled by
 MoneyGuard's illustrative currency table), a latent health factor that drives billing-to-payroll and
 opening-cash-to-payroll multiples, a reserve floor of 15–45% of payroll, payroll on the 25th, month-end
 or semi-monthly, rent, utilities and two or three suppliers. Each SME has 3–8 customers with a latent
-payment personality (prompt / typical / slow / distressed, from `tideway/ml/synth.py`), payment terms,
+payment personality (prompt / typical / slow / distressed, from `moneyguard/ml/synth.py`), payment terms,
 a drift trend and an invoice frequency. Invoices are issued from June 2026; those paid before the
 1 October 2026 opening date become settled history, the rest are open (overdue or confirmed). Confirmed
-billing runs to day 30 of the 60-day horizon. Every record passes the normal `tideway.domain` validators.
+billing runs to day 30 of the 60-day horizon. Every record passes the normal `moneyguard.domain` validators.
 
 **Radar** (`radar(shock=None, seed=2026)`). For each SME: cash events from `projection.build_events`,
-lateness probabilities for each open invoice from TidePay (`analytics.tidepay_predictions`), then a
+lateness probabilities for each open invoice from GuardPay (`analytics.guardpay_predictions`), then a
 seeded Monte Carlo with 400 futures per SME. The sampling rule is the app's own: one shared draw per
 customer per future, overdue invoices conditioned on still being unpaid, all bills fixed. A unit test
 checks that the radar's breach probability equals `analytics.monte_carlo` exactly at zero shock for the
@@ -80,7 +80,7 @@ forecast for any real market.
 
 | Call | Median | Max |
 |---|---|---|
-| Cold baseline radar (generate + validate 60 ledgers, TidePay, 24,000 futures, backtest) | 1,622 ms | 1,646 ms |
+| Cold baseline radar (generate + validate 60 ledgers, GuardPay, 24,000 futures, backtest) | 1,622 ms | 1,646 ms |
 | Cold radar with an all-sector shock (baseline + stressed run, worst case) | 2,615 ms | 2,662 ms |
 | New all-sector shock, baseline already cached | 847 ms | 900 ms |
 | New single-sector shock, baseline already cached | 190 ms | 200 ms |
@@ -137,13 +137,13 @@ cash ratio, and it finds many more of the eventual breaches in its red tier, at 
 observed breach rates are about 1.5–2.2× the predicted probability, because the realised futures contain independent
 per-invoice noise and unexpected costs that the radar does not model. A lender should read the
 probability as a ranking signal, not a literal default rate. The realised futures come from the same
-generative family that TidePay was trained on, which flatters the radar; no stronger baseline (for
-example a deterministic TidePay "likely" projection) was evaluated.
+generative family that GuardPay was trained on, which flatters the radar; no stronger baseline (for
+example a deterministic GuardPay "likely" projection) was evaluated.
 
 ## Security and privacy design
 
-* **No tenant data.** `tideway/portfolio.py` imports only domain validators, projection, analytics,
-  the TidePay model and the synthetic generator. It does not import the store, service, server, agent
+* **No tenant data.** `moneyguard/portfolio.py` imports only domain validators, projection, analytics,
+  the GuardPay model and the synthetic generator. It does not import the store, service, server, agent
   or `sqlite3`; a test parses its imports and runs it in a fresh interpreter to confirm none of those
   modules are loaded. SME ids are `pf-sme-NNN` and never collide with workspace ids.
 * **Labelled.** Every response and row carries `synthetic: true`, a visible SYNTHETIC label, and
@@ -161,7 +161,7 @@ example a deterministic TidePay "likely" projection) was evaluated.
 
 Intended server route: `GET /api/portfolio/radar?shock_days=0-60&sector=all|services|wholesale|retail|manufacturing|print`,
 handled by `portfolio.radar_from_query(parse_qs(query))`, for any signed-in operator. It needs no
-business scoping because it never touches tenant data. The UI module is `window.TidewayPortfolio`
+business scoping because it never touches tenant data. The UI module is `window.MoneyGuardPortfolio`
 (`render`, `action`, `bind`, `reset`, `validateCurrency`) with `data-action="portfolio-…"` buttons, the
 same contract as the Decision lab. Bars are SVG and heat cells use CSS classes, so the page works under
 the app's `style-src 'self'` Content-Security-Policy.
@@ -173,7 +173,7 @@ the app's `style-src 'self'` Content-Security-Policy.
 * Only customer payment timing is uncertain in the radar; costs, payroll and new sales are fixed.
   Ledgers include confirmed billing to day 30, so late-horizon risk is conservative.
 * The probability is under-calibrated in the backtest (above); treat it as a ranking.
-* The backtest's realised futures share TidePay's synthetic generative family (in-distribution).
+* The backtest's realised futures share GuardPay's synthetic generative family (in-distribution).
 * Determinism holds for a given Python version (the generator uses `random` distributions beyond
   `random()`).
 

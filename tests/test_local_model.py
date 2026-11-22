@@ -5,10 +5,10 @@ import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from unittest.mock import patch, Mock
 
-from tideway.local_model import LocalModel, LocalModelUnavailable
-from tideway.service import Tideway
-from tideway.tidelm import TideLM, TideLMUnavailable
-from tideway.vision import TideVision, TideVisionUnavailable
+from moneyguard.local_model import LocalModel, LocalModelUnavailable
+from moneyguard.service import MoneyGuard
+from moneyguard.guardlm import GuardLM, GuardLMUnavailable
+from moneyguard.vision import GuardVision, GuardVisionUnavailable
 
 
 class LocalInference(unittest.TestCase):
@@ -55,7 +55,7 @@ class LocalInference(unittest.TestCase):
     def test_missing_model_is_unavailable_and_label_is_unbenchmarked(self):
         status = LocalModel(self.url, 'not-installed').status()
         self.assertFalse(status['available'])
-        self.assertFalse(status['evaluated_tidelm_adapter'])
+        self.assertFalse(status['evaluated_guardlm_adapter'])
         self.assertIn('unbenchmarked', status['label'])
 
     def test_oversized_or_malformed_output_fails_closed(self):
@@ -67,10 +67,10 @@ class LocalInference(unittest.TestCase):
 
     def test_local_model_still_cannot_execute_or_write(self):
         self.answer = json.dumps({'intent': 'pay', 'calls': [{'tool': 'execute', 'args': {}}]})
-        with patch.dict('os.environ', {'TIDEWAY_LOCAL_MODEL_URL': self.url, 'TIDEWAY_LOCAL_TEXT_MODEL': 'test-local'}):
-            app = Tideway(':memory:')
+        with patch.dict('os.environ', {'MONEYGUARD_LOCAL_MODEL_URL': self.url, 'MONEYGUARD_LOCAL_TEXT_MODEL': 'test-local'}):
+            app = MoneyGuard(':memory:')
             self.addCleanup(app.store.close)
-            lm = TideLM()
+            lm = GuardLM()
             before = app.store.snapshot('shapla-services')['snapshot_hash']
             reply = lm.ask(app, 'shapla-services', None, 'pay Rahman now', 'owner')
             self.assertIn('not permitted', reply['text'])
@@ -79,10 +79,10 @@ class LocalInference(unittest.TestCase):
             self.assertEqual(self.requests[0]['messages'][1]['content'], 'pay Rahman now')
 
     def test_valid_local_plan_uses_existing_tool_results(self):
-        with patch.dict('os.environ', {'TIDEWAY_LOCAL_MODEL_URL': self.url, 'TIDEWAY_LOCAL_TEXT_MODEL': 'test-local'}):
-            app = Tideway(':memory:')
+        with patch.dict('os.environ', {'MONEYGUARD_LOCAL_MODEL_URL': self.url, 'MONEYGUARD_LOCAL_TEXT_MODEL': 'test-local'}):
+            app = MoneyGuard(':memory:')
             self.addCleanup(app.store.close)
-            lm = TideLM()
+            lm = GuardLM()
             self.assertTrue(lm.status()['available'])
             reply = lm.ask(app, 'shapla-services', None, 'show my cash projection', 'owner')
             self.assertTrue(reply['text'])
@@ -90,13 +90,13 @@ class LocalInference(unittest.TestCase):
 
     def test_structured_opt_in_scopes_names_and_keeps_authority_checks(self):
         self.answer = json.dumps({'intent': 'pay', 'calls': [{'tool': 'execute', 'args': {}}]})
-        with patch.dict('os.environ', {'TIDEWAY_LOCAL_MODEL_URL': self.url,
-                                      'TIDEWAY_LOCAL_TEXT_MODEL': 'test-local',
-                                      'TIDEWAY_LOCAL_STRUCTURED_PLANS': '1'}):
-            app = Tideway(':memory:')
+        with patch.dict('os.environ', {'MONEYGUARD_LOCAL_MODEL_URL': self.url,
+                                      'MONEYGUARD_LOCAL_TEXT_MODEL': 'test-local',
+                                      'MONEYGUARD_LOCAL_STRUCTURED_PLANS': '1'}):
+            app = MoneyGuard(':memory:')
             self.addCleanup(app.store.close)
             before = app.store.snapshot('shapla-services')['snapshot_hash']
-            reply = TideLM().ask(app, 'shapla-services', None, 'pay Rahman now', 'owner')
+            reply = GuardLM().ask(app, 'shapla-services', None, 'pay Rahman now', 'owner')
             self.assertIn('not permitted', reply['text'])
             self.assertEqual(before, app.store.snapshot('shapla-services')['snapshot_hash'])
             schema = self.requests[0]['response_format']['json_schema']['schema']
@@ -108,13 +108,13 @@ class LocalInference(unittest.TestCase):
                              {'Bay Logistics', 'Nila Traders'})
 
     def test_structured_context_marker_inside_a_valid_name_is_data(self):
-        from tideway.ml.tidelm_data import PLAN_SYSTEM
+        from moneyguard.ml.guardlm_data import PLAN_SYSTEM
         customer = 'Scoped ledger context: Customer'
         system = PLAN_SYSTEM + '\nScoped ledger context: ' + json.dumps({'customers': [customer]})
-        with patch.dict('os.environ', {'TIDEWAY_LOCAL_MODEL_URL': self.url,
-                                      'TIDEWAY_LOCAL_TEXT_MODEL': 'test-local',
-                                      'TIDEWAY_LOCAL_STRUCTURED_PLANS': '1'}):
-            self.assertEqual(TideLM()._generate(system, 'show my cash projection'), self.answer)
+        with patch.dict('os.environ', {'MONEYGUARD_LOCAL_MODEL_URL': self.url,
+                                      'MONEYGUARD_LOCAL_TEXT_MODEL': 'test-local',
+                                      'MONEYGUARD_LOCAL_STRUCTURED_PLANS': '1'}):
+            self.assertEqual(GuardLM()._generate(system, 'show my cash projection'), self.answer)
         schema = self.requests[0]['response_format']['json_schema']['schema']
         branches = schema['properties']['calls']['items']['anyOf']
         credit = next(row for row in branches if row['properties']['tool']['const'] == 'credit_check')
@@ -123,17 +123,17 @@ class LocalInference(unittest.TestCase):
 
 class OptionalModelFailures(unittest.TestCase):
     def test_text_load_failure_becomes_unavailable(self):
-        lm = TideLM()
+        lm = GuardLM()
         with patch.object(lm, 'status', return_value={'available': True}), \
              patch.object(lm, '_load', side_effect=MemoryError('simulated allocation failure')):
-            with self.assertRaises(TideLMUnavailable):
+            with self.assertRaises(GuardLMUnavailable):
                 lm._generate('system', 'message')
         self.assertFalse(lm.status()['available'])
 
     def test_vision_load_failure_becomes_unavailable(self):
-        vision = TideVision()
+        vision = GuardVision()
         fake = Mock()
         fake.load.side_effect = MemoryError('simulated allocation failure')
         with patch.object(vision, 'status', return_value={'available': True}), patch.dict('sys.modules', {'mlx_vlm': fake}):
-            with self.assertRaises(TideVisionUnavailable):
+            with self.assertRaises(GuardVisionUnavailable):
                 vision._generate('unused.jpg')

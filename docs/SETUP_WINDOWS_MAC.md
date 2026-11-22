@@ -21,9 +21,9 @@ python3 run.py
 Open `http://127.0.0.1:8787`. Each machine keeps its own local database. Use
 `--db data/fresh-demo.sqlite3 --port 8788` for a separate clean demo. Copy the
 source ZIP between machines; do not copy real data, secrets or a running SQLite
-database. The deterministic assistant and TidePay work on both platforms.
+database. The deterministic assistant and GuardPay work on both platforms.
 
-## Apple Silicon: evaluated TideLM v2 adapter
+## Apple Silicon: evaluated GuardLM v2 adapter
 
 Use a dedicated environment and download the adapter once:
 
@@ -31,7 +31,7 @@ Use a dedicated environment and download the adapter once:
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install mlx-lm
-python3 scripts/get_tidelm.py
+python3 scripts/get_guardlm.py
 python3 run.py
 ```
 
@@ -56,14 +56,14 @@ Post-change native MLX text and vision inference remain outstanding. The Windows
 
 ## Optional checksum-pinned demo helper
 
-`scripts/local_demo_model.py` provisions a compatible GGUF text model and a pinned llama.cpp runtime. It supports Windows x64 and macOS arm64/x64; native macOS arm64 provisioning and Qwen3 inference were measured in the sealed v3 challenge. Native MLX/TideLM and receipt inference remain separate. Use Python **3.11.11 or newer** for hardened TAR extraction on Mac. This optional requirement does not change the core app's Python 3.11+ support.
+`scripts/local_demo_model.py` provisions a compatible GGUF text model and a pinned llama.cpp runtime. It supports Windows x64 and macOS arm64/x64; native macOS arm64 provisioning and Qwen3 inference were measured in the sealed v3 challenge. Native MLX/GuardLM and receipt inference remain separate. Use Python **3.11.11 or newer** for hardened TAR extraction on Mac. This optional requirement does not change the core app's Python 3.11+ support.
 
 | Profile | Exact model alias | Model download |
 |---|---|---:|
 | `compact` (default) | `Qwen2.5-1.5B-Instruct-Q4_K_M` | 1,117,320,736 bytes |
 | `qwen3-4b` | `Qwen3-4B-Instruct-2507-Q4_K_M` | 2,497,281,120 bytes |
 
-The helper pins model revisions, sizes and SHA-256 hashes and verifies the native runtime archive. Before serving, it extracts a fresh private runtime so stale cached executables or DLLs cannot be selected. The server binds to `127.0.0.1`; Ctrl+C stops it. Weights and native runtimes are excluded from the source package. Neither profile is the released MLX TideLM adapter.
+The helper pins model revisions, sizes and SHA-256 hashes and verifies the native runtime archive. Before serving, it extracts a fresh private runtime so stale cached executables or DLLs cannot be selected. The server binds to `127.0.0.1`; Ctrl+C stops it. Weights and native runtimes are excluded from the source package. Neither profile is the released MLX GuardLM adapter.
 
 Default downloads use ignored `models/local-demo/`. `--cache-dir` explicitly chooses another directory/drive; use the same path and profile for download and serve. The download guard requires the artifact's size plus 512 MiB free headroom; allow additional space for the extracted runtime and sufficient inference memory. Downloads require network; subsequent verification and cached inference do not.
 
@@ -77,9 +77,9 @@ python scripts/local_demo_model.py --serve --profile qwen3-4b --cache-dir E:/Mon
 Windows PowerShell, terminal B:
 
 ```powershell
-$env:TIDEWAY_LOCAL_MODEL_URL = 'http://127.0.0.1:8791/v1'
-$env:TIDEWAY_LOCAL_TEXT_MODEL = 'Qwen3-4B-Instruct-2507-Q4_K_M'
-$env:TIDEWAY_LOCAL_STRUCTURED_PLANS = '1'
+$env:MONEYGUARD_LOCAL_MODEL_URL = 'http://127.0.0.1:8791/v1'
+$env:MONEYGUARD_LOCAL_TEXT_MODEL = 'Qwen3-4B-Instruct-2507-Q4_K_M'
+$env:MONEYGUARD_LOCAL_STRUCTURED_PLANS = '1'
 python run.py
 ```
 
@@ -93,15 +93,15 @@ python3 scripts/local_demo_model.py --serve --profile qwen3-4b --cache-dir ~/Mon
 macOS Terminal B:
 
 ```bash
-export TIDEWAY_LOCAL_MODEL_URL=http://127.0.0.1:8791/v1
-export TIDEWAY_LOCAL_TEXT_MODEL=Qwen3-4B-Instruct-2507-Q4_K_M
-export TIDEWAY_LOCAL_STRUCTURED_PLANS=1
+export MONEYGUARD_LOCAL_MODEL_URL=http://127.0.0.1:8791/v1
+export MONEYGUARD_LOCAL_TEXT_MODEL=Qwen3-4B-Instruct-2507-Q4_K_M
+export MONEYGUARD_LOCAL_STRUCTURED_PLANS=1
 python3 run.py
 ```
 
 For the smaller default profile, use `--profile compact` and its exact alias from the table. The compact model retained mismatches (3/6, 2/6 and 4/6 authored requests across successive configurations); it is not a verified substitute for the final 4B demo configuration. On Windows, `--cpu` selects a separate pinned CPU runtime; provide it on both download and serve when using that fallback.
 
-Structured plans are **off by default**. Setting `TIDEWAY_LOCAL_STRUCTURED_PLANS=1` sends a scoped JSON Schema for text planning to a server that supports it. Unsupported servers fail without an unconstrained retry. This helps generation shape; the financial validators and human approval boundary remain authoritative.
+Structured plans are **off by default**. Setting `MONEYGUARD_LOCAL_STRUCTURED_PLANS=1` sends a scoped JSON Schema for text planning to a server that supports it. Unsupported servers fail without an unconstrained retry. This helps generation shape; the financial validators and human approval boundary remain authoritative.
 
 The final Windows Qwen3 4B configuration matched [6/6 authored requests](../evidence/readiness-v2/model/qwen3-final-smoke.json) and [12/12 expanded requests](../evidence/readiness-v2/model/qwen3-final-expanded.json), after an initial 5/6 result. These overlapping synthetic smoke sets are not a model accuracy benchmark, device-performance guarantee or MLX adapter evaluation. All earlier failures remain linked in [MODEL_REASONING_V2.md](MODEL_REASONING_V2.md).
 
@@ -116,18 +116,18 @@ does not follow redirects. This boundary does not audit the local server itself.
 Copy `.env.example` to `.env`, keep the cloud API key blank, and set:
 
 ```
-TIDEWAY_LOCAL_MODEL_URL=http://127.0.0.1:11434/v1
-TIDEWAY_LOCAL_TEXT_MODEL=YOUR_INSTALLED_LOCAL_MODEL_ID
-TIDEWAY_LOCAL_VISION_MODEL=
+MONEYGUARD_LOCAL_MODEL_URL=http://127.0.0.1:11434/v1
+MONEYGUARD_LOCAL_TEXT_MODEL=YOUR_INSTALLED_LOCAL_MODEL_ID
+MONEYGUARD_LOCAL_VISION_MODEL=
 ```
 
 Replace the example model ID with an actual installed model. To enable photos,
-set `TIDEWAY_LOCAL_VISION_MODEL` to a vision-capable installed model and install
+set `MONEYGUARD_LOCAL_VISION_MODEL` to a vision-capable installed model and install
 Pillow in MoneyGuard's environment. Leave both model IDs blank to use the default
 MLX/deterministic path. Restart MoneyGuard after changing configuration.
 
 This backend is labelled **Local model (unbenchmarked)**. It is not the
-released MLX TideLM adapter, and it does not inherit its benchmark scores.
+released MLX GuardLM adapter, and it does not inherit its benchmark scores.
 The same typed tool validator, role checks, draft confirmation and approval
 rules apply. Transport/boundary tests use a local test server; model quality and
 device performance must be measured with the actual installed model. The narrowly recorded Windows 4B smoke above does not establish compatibility or quality for other models/servers.
@@ -154,7 +154,7 @@ Node 22+ and installed Chrome/Edge. Set `CHROME` for another Chromium executable
 The new evaluation and linked demo commands use only the Python standard library:
 
 ```
-python3 scripts/evaluate_tidepay_v2.py
+python3 scripts/evaluate_guardpay_v2.py
 python3 scripts/evaluate_upgrade_scenarios.py
 python3 scripts/smoke_reasoning.py
 python3 scripts/demo_payment_delay.py
@@ -181,6 +181,6 @@ the repository or submission packages.
 
 ## Optional local semantic screening
 
-With the configured local text backend running, set `TIDEWAY_SEMANTIC_SCREENING=1` in the shell or `.env`. Windows PowerShell: `$env:TIDEWAY_SEMANTIC_SCREENING = '1'`; macOS: `export TIDEWAY_SEMANTIC_SCREENING=1`. Restart the app after changing the setting. Inbox extraction and photo-transcript review then make one additional bounded local classification. This can add latency and requires the optional text model. It never uses the optional cloud-provider path.
+With the configured local text backend running, set `MONEYGUARD_SEMANTIC_SCREENING=1` in the shell or `.env`. Windows PowerShell: `$env:MONEYGUARD_SEMANTIC_SCREENING = '1'`; macOS: `export MONEYGUARD_SEMANTIC_SCREENING=1`. Restart the app after changing the setting. Inbox extraction and photo-transcript review then make one additional bounded local classification. This can add latency and requires the optional text model. It never uses the optional cloud-provider path.
 
-The UI distinguishes attack warnings, payment-detail verification, disabled screening and inconclusive results. Missing/malformed/late model answers require human review; a benign label cannot remove rule warnings or authorize imports/payments. Photo screening sees the model transcript, which can omit visible instructions, and does not establish receipt extraction accuracy. With the option off, the existing deterministic warning rules remain available and every draft still needs confirmation. Fresh v6 results and raw outputs are in `evidence/screening-v6/`; these do not inherit historical TideLM benchmark scores.
+The UI distinguishes attack warnings, payment-detail verification, disabled screening and inconclusive results. Missing/malformed/late model answers require human review; a benign label cannot remove rule warnings or authorize imports/payments. Photo screening sees the model transcript, which can omit visible instructions, and does not establish receipt extraction accuracy. With the option off, the existing deterministic warning rules remain available and every draft still needs confirmation. Fresh v6 results and raw outputs are in `evidence/screening-v6/`; these do not inherit historical GuardLM benchmark scores.

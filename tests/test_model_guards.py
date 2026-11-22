@@ -1,23 +1,23 @@
-"""Regression coverage for the TideLM plan validation boundary."""
+"""Regression coverage for the GuardLM plan validation boundary."""
 import json
 import unittest
 
-from tideway.copilot import run_plan, validate_plan
-from tideway.domain import ValidationError
-from tideway.service import Tideway
-from tideway.tidelm import TideLM
+from moneyguard.copilot import run_plan, validate_plan
+from moneyguard.domain import ValidationError
+from moneyguard.service import MoneyGuard
+from moneyguard.guardlm import GuardLM
 
 
 BUSINESS = "shapla-services"
 
 
 def model(reply):
-    return TideLM(generator=lambda _system, _user: json.dumps(reply))
+    return GuardLM(generator=lambda _system, _user: json.dumps(reply))
 
 
 class ModelPlanGuards(unittest.TestCase):
     def setUp(self):
-        self.app = Tideway(":memory:")
+        self.app = MoneyGuard(":memory:")
 
     def ask(self, plan):
         return model(plan).ask(self.app, BUSINESS, None, "run this scenario", "owner")

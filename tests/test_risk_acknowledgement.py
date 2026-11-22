@@ -5,10 +5,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tideway import security
-from tideway.domain import ValidationError, canonical_json
-from tideway.server import Application
-from tideway.store import Store, json_hash
+from moneyguard import security
+from moneyguard.domain import ValidationError, canonical_json
+from moneyguard.server import Application
+from moneyguard.store import Store, json_hash
 
 
 BUSINESS = "shapla-services"
@@ -20,7 +20,7 @@ class RiskAcknowledgement(unittest.TestCase):
         self.addCleanup(self.app.store.close)
         self.owner = self.app.store.verify_pin("nadia", "2468")
         self.accountant = self.app.store.verify_pin("imran", "1357")
-        self.plan = self.app.tideway.propose(BUSINESS, None, "agent:test")
+        self.plan = self.app.moneyguard.propose(BUSINESS, None, "agent:test")
         # A real feasible cheaper alternative leaves substantially greater risk.
         self.bundle = next(bundle for bundle in self.plan["bundles"]
                            if bundle["feasible"] and bundle["probability_breach_after"] > self.plan["risk_target"])
@@ -88,7 +88,7 @@ class RiskAcknowledgement(unittest.TestCase):
         forged = copy.deepcopy(mandate)
         forged["approvals"][0]["risk_acknowledgement"]["probability_breach_after"] = .01
         self.assertFalse(self.app.store.verify_mandate_document(forged)["signature_valid"])
-        self.assertEqual(self.app.tideway.negotiate(BUSINESS, mandate["mandate_id"], "agent:test")["status"], "ready")
+        self.assertEqual(self.app.moneyguard.negotiate(BUSINESS, mandate["mandate_id"], "agent:test")["status"], "ready")
         receipt = self.app.store.execute(BUSINESS, mandate["mandate_id"], "risk-consent-once", self.owner, "operator:nadia")
         self.assertTrue(receipt["risk"]["acknowledgement_required"])
         self.assertEqual(receipt["risk"]["probability_breach_after"], self.bundle["probability_breach_after"])
@@ -132,7 +132,7 @@ class RiskAcknowledgement(unittest.TestCase):
 
     def test_superseded_or_stale_plan_consent_cannot_be_reused(self):
         old_consent = self.consent()
-        fresh = self.app.tideway.propose(BUSINESS, None, "agent:test")
+        fresh = self.app.moneyguard.propose(BUSINESS, None, "agent:test")
         bundle = next(item for item in fresh["bundles"] if item["bundle_id"] == self.bundle["bundle_id"])
         with self.assertRaises(ValidationError):
             self.approve(old_consent, plan=fresh, bundle=bundle)
@@ -165,7 +165,7 @@ class RiskAcknowledgement(unittest.TestCase):
         acknowledgement = self.consent()
         self.approve(acknowledgement)
         mandate = self.approve(acknowledgement, self.owner)["mandate"]
-        self.app.tideway.negotiate(BUSINESS, mandate["mandate_id"], "agent:test")
+        self.app.moneyguard.negotiate(BUSINESS, mandate["mandate_id"], "agent:test")
         for approval in mandate["approvals"]:
             approval.pop("risk_acknowledgement")
         mandate.pop("signature")

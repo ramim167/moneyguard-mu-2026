@@ -1,6 +1,6 @@
 """Run MoneyGuard's on-device models for real and record what happened (latency, answers, extracted records).
 
-Run: python3 scripts/smoke_models.py   (needs the TideLM adapter, mlx-lm, and for photos mlx-vlm + the vision model)
+Run: python3 scripts/smoke_models.py   (needs the GuardLM adapter, mlx-lm, and for photos mlx-vlm + the vision model)
 Writes evidence/ml/runtime_smoke.json. Loads one model at a time to stay within 16 GB.
 """
 from __future__ import annotations
@@ -18,9 +18,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from tideway.service import Tideway  # noqa: E402
-from tideway.tidelm import TideLM  # noqa: E402
-from tideway.vision import TideVision  # noqa: E402
+from moneyguard.service import MoneyGuard  # noqa: E402
+from moneyguard.guardlm import GuardLM  # noqa: E402
+from moneyguard.vision import GuardVision  # noqa: E402
 
 QUESTIONS = [
     ("en", "Should I give Nila Traders 30 days credit on 50,000?"),
@@ -61,10 +61,10 @@ def main():
     args = parser.parse_args()
     from run import load_env
     load_env()
-    app = Tideway(":memory:")
+    app = MoneyGuard(":memory:")
     report = {"run_at": time.strftime("%Y-%m-%d %H:%M"), "machine": f"{platform.system()} {platform.machine()}",
-              "tidelm": None, "vision": None, "post_fix_run": True}
-    lm = TideLM()
+              "guardlm": None, "vision": None, "post_fix_run": True}
+    lm = GuardLM()
     report['text_status'] = lm.status()
     if lm.status()["available"]:
         started = time.monotonic()
@@ -78,23 +78,23 @@ def main():
                             "plan": reply.get("plan"), "answer": reply["text"], "seconds": round(time.monotonic() - t, 2)})
         t = time.monotonic()
         greeting = lm.ask(app, "shapla-services", None, "hi", "owner", name="Nadia Rahman")
-        report["tidelm"] = {"load_and_cache_seconds": warm_seconds,
+        report["guardlm"] = {"load_and_cache_seconds": warm_seconds,
                             "answers": answers, "median_seconds": sorted(a["seconds"] for a in answers)[len(answers) // 2],
                             "small_talk_seconds": round(time.monotonic() - t, 3), "small_talk_routed": greeting.get("routed")}
         del lm
         gc.collect()
-    vision = TideVision()
+    vision = GuardVision()
     report['vision_status'] = vision.status()
     if vision.status()["available"]:
         t = time.monotonic()
         result = vision.read(app, "shapla-services", invoice_image())
         report["vision"] = {"seconds_including_load": round(time.monotonic() - t, 1), "suspicious": result["suspicious"],
                             "drafts": result["drafts"], "transcript": result["transcript"]}
-    report['complete'] = report['tidelm'] is not None and report['vision'] is not None
+    report['complete'] = report['guardlm'] is not None and report['vision'] is not None
     out = ROOT / args.out
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
-    print(json.dumps({"tidelm_median_s": (report["tidelm"] or {}).get("median_seconds"),
+    print(json.dumps({"guardlm_median_s": (report["guardlm"] or {}).get("median_seconds"),
                       "vision_s": (report["vision"] or {}).get("seconds_including_load")}))
     print(f"wrote {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
     app.store.close()

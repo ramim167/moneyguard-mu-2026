@@ -4,11 +4,11 @@ All reported results use synthetic data. They do not estimate real-world lending
 fraud-detection or production accuracy. Application permissions and human approval
 remain necessary even when a model produces a valid answer.
 
-## TidePay
+## GuardPay
 
 MoneyGuard's pure-Python softmax classifier predicts five invoice-lateness bands from
-14 features. The shipped artifact remains `tideway/ml/tidepay_model.json`, with
-its historical observation retained at `evidence/ml/tidepay_report.json`. The
+14 features. The shipped artifact remains `moneyguard/ml/guardpay_model.json`, with
+its historical observation retained at `evidence/ml/guardpay_report.json`. The
 historical prior baseline's MAE used the test delay mean; its split also lacked
 global date cutoffs and a payment-label maturity purge. Those observations are
 preserved rather than presented as a clean chronological benchmark. Legacy
@@ -18,7 +18,7 @@ The **exact deployed artifact** now has a separate fresh-cohort evaluation:
 **7,427 invoices from 80 new synthetic SMEs across four seeds**, issued
 1 November 2025–29 April 2026, with all labels matured by the fixed
 15 October 2026 ascertainment date. The frozen shipped weights have SHA-256
-`00639d9b3e408f1a51df20130e804db2f8a031772a772d706f09e6a7428aa466`.
+`81638ca0c17e3ca36c2168cfd2a9fa5ad360fb2520078a2a421b4011d5fc442d`.
 No training, calibration or model selection uses the fresh cohorts. Historical
 training statistics are reconstructed and matched exactly before fitting the
 frozen prior baseline; none of its statistics come from the test outcomes.
@@ -47,7 +47,7 @@ and the audit artifact has slightly better overall log loss. No automatic
 artifact replacement is justified by these observations.
 
 See [`DEPLOYED_MODEL_EVALUATION.md`](DEPLOYED_MODEL_EVALUATION.md) and
-[`evidence/readiness-v3/tidepay/report.json`](../evidence/readiness-v3/tidepay/report.json)
+[`evidence/readiness-v3/guardpay/report.json`](../evidence/readiness-v3/guardpay/report.json)
 for raw data, per-example predictions, class balances, hashes, all reliability
 bins and subgroups. The Overview card exposes this report separately from the
 earlier benchmark, and suppresses its scores if the report is missing, invalid
@@ -87,8 +87,8 @@ probability bins, counts and descriptive Wilson intervals. Per-business, sector,
 training-size, payment-term and relative-invoice-size results, SME-cluster metric
 intervals, per-example predictions, class balance, split/dataset hashes and
 machine/configuration information are saved in
-[`evidence/upgrade-v1/tidepay/`](../evidence/upgrade-v1/tidepay/report.md).
-See [the full audit](TIDEPAY_EVALUATION_V2.md) for definitions and caveats.
+[`evidence/upgrade-v1/guardpay/`](../evidence/upgrade-v1/guardpay/report.md).
+See [the full audit](GUARDPAY_EVALUATION_V2.md) for definitions and caveats.
 The test covers one synthetic generator seed and existing businesses/customers;
 there are no cold-start test customers. Maturity purging induces selection near
 boundaries. These scores are neither production generalisation nor calibrated
@@ -101,12 +101,12 @@ aggregation deployment. No protection against a curious server, collusion,
 client dropout or gradient reconstruction is established. Production federated
 learning and privacy guarantees remain future work.
 
-## TideLM v2
+## GuardLM v2
 
 This is a MoneyGuard-trained LoRA adapter on Qwen3-4B-Instruct-2507, converted to
 4-bit MLX format by mlx-community. The third-party base model is Apache-2.0.
 We trained the adapter, not the base model. The public adapter release is in the team's original
-development repository: `https://github.com/SadManQT/tideway/releases/tag/tidelm-v2`.
+development repository: `https://github.com/SadManQT/moneyguard/releases/tag/guardlm-v2`.
 
 The v2 evaluation uses 300 planning and 200 extraction examples. Names are held
 out, while training and test share generated template families. Exact plans:
@@ -115,7 +115,7 @@ These are template-based synthetic benchmark results, not a test of arbitrary
 real customer messages. Raw base and tuned outputs are in `evidence/ml/`.
 The v3 experiment performed worse on the v2 planning test and is not deployed.
 
-TideLM selects allow-listed tools and drafts records. It has no approval or
+GuardLM selects allow-listed tools and drafts records. It has no approval or
 execution tool. Validators resolve names and arguments; the application writes
 answers from tool output. People confirm extracted records before saving them.
 
@@ -140,15 +140,15 @@ The separately provisioned helper `scripts/local_demo_model.py` offers two profi
 
 Both upstream model cards identify Apache-2.0; [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES) links their provenance. Immutable revisions, exact filenames, sizes and SHA-256 pins are in the helper, with a separate pinned llama.cpp runtime. No weights/native runtimes are bundled. `--cache-dir` explicitly selects storage outside the default ignored `models/local-demo/`. Windows x64 and macOS arm64/x64 provisioning paths are defined, but native Mac helper execution was not run here. Hardened Mac TAR extraction requires Python 3.11.11+.
 
-Real Windows 11 x64 / Python 3.13.7 inference with the 4B profile and `TIDEWAY_LOCAL_STRUCTURED_PLANS=1` matched [6/6 authored requests](../evidence/readiness-v2/model/qwen3-final-smoke.json) and [12/12 expanded authored requests](../evidence/readiness-v2/model/qwen3-final-expanded.json), completing seven and fourteen generations respectively. Both final reports recorded zero executions and zero mandates issued. These overlapping synthetic smoke sets measure expected tool coverage; they are not a sealed accuracy benchmark, MLX adapter evaluation or proof of safety. The final evidence preserves raw outputs and timings. The runtime label remains **unbenchmarked**.
+Real Windows 11 x64 / Python 3.13.7 inference with the 4B profile and `MONEYGUARD_LOCAL_STRUCTURED_PLANS=1` matched [6/6 authored requests](../evidence/readiness-v2/model/qwen3-final-smoke.json) and [12/12 expanded authored requests](../evidence/readiness-v2/model/qwen3-final-expanded.json), completing seven and fourteen generations respectively. Both final reports recorded zero executions and zero mandates issued. These overlapping synthetic smoke sets measure expected tool coverage; they are not a sealed accuracy benchmark, MLX adapter evaluation or proof of safety. The final evidence preserves raw outputs and timings. The runtime label remains **unbenchmarked**.
 
 Earlier compact configurations matched **3/6, 2/6 and 4/6**, and the initial 4B run matched **5/6**. Failures were retained rather than replaced; see the full [run history](MODEL_REASONING_V2.md#evidence-actually-recorded). Prompt/schema revisions used observations from these cases, which limits generalisation claims. No arbitrary-language, receipt-extraction or cross-device quality result follows from these request sets.
 
 Structured planning is opt-in and off by default. Supporting local servers receive a scoped JSON Schema for tool/argument shape; unsupported servers fail without an unconstrained retry. The same role, name, amount, date and approval checks remain authoritative even when the model produces schema-valid output. See [SETUP_WINDOWS_MAC.md](SETUP_WINDOWS_MAC.md) for explicit provisioning and reproduction commands.
 
-## TideVision
+## GuardVision
 
-TideVision integrates the third-party Qwen2.5-VL-3B-Instruct model, converted by
+GuardVision integrates the third-party Qwen2.5-VL-3B-Instruct model, converted by
 mlx-community, without a MoneyGuard fine-tune. The base model has the Qwen Research
 license, not the application's MIT license. See `THIRD_PARTY_NOTICES` and
 `licenses/Qwen2.5-VL-3B-Research.txt`. Keep research/evaluation use and any future
@@ -163,19 +163,19 @@ No post-fix device accuracy or general receipt-reading accuracy is claimed.
 
 | Path | Requirements | Verified scope |
 |---|---|---|
-| Deterministic assistant and TidePay | Python 3.11+; Windows, Linux or macOS | Offline automated suite and browser demo |
-| TideLM | Apple Silicon, mlx-lm, v2 adapter, cached base model | Historical Apple Silicon evaluation; guarded runtime tests with injected outputs |
-| TideVision | Apple Silicon, mlx-vlm and Pillow, cached model | Historical pre-fix device observation and guarded regression tests |
+| Deterministic assistant and GuardPay | Python 3.11+; Windows, Linux or macOS | Offline automated suite and browser demo |
+| GuardLM | Apple Silicon, mlx-lm, v2 adapter, cached base model | Historical Apple Silicon evaluation; guarded runtime tests with injected outputs |
+| GuardVision | Apple Silicon, mlx-vlm and Pillow, cached model | Historical pre-fix device observation and guarded regression tests |
 | Optional compatible local server | Windows, macOS or Linux, installed model, literal loopback endpoint | Transport/guard tests; authored Windows Qwen3 4B text smoke 6/6 and expanded 12/12, not a general benchmark |
 | Optional cloud assistant | User key, network and per-message consent | Simulated transport tests; no measured live-provider run |
 
-First-time downloads require network access. The helper's cached inference is local; independently installed compatible servers must be trusted not to forward input elsewhere, which MoneyGuard's loopback check cannot audit. Local processing depends on host security. The default Windows path remains deterministic unless a local model is explicitly configured. Post-change Apple Silicon TideLM and post-fix vision verification remain outstanding.
+First-time downloads require network access. The helper's cached inference is local; independently installed compatible servers must be trusted not to forward input elsewhere, which MoneyGuard's loopback check cannot audit. Local processing depends on host security. The default Windows path remains deterministic unless a local model is explicitly configured. Post-change Apple Silicon GuardLM and post-fix vision verification remain outstanding.
 
 ## Reproduce and extend
 
-Run `python -m unittest discover -s tests -v`, `python -m tideway.selftest` and
+Run `python -m unittest discover -s tests -v`, `python -m moneyguard.selftest` and
 `python scripts/evaluate.py`. Run the audited prediction benchmark with
-`python scripts/evaluate_tidepay_v2.py`; it has no optional dependencies and
+`python scripts/evaluate_guardpay_v2.py`; it has no optional dependencies and
 writes its model only into versioned evidence. `scripts/smoke_models.py` requires Apple Silicon.
 For stronger generalisation evidence, collect consented, anonymised SME
 feedback and author new scenarios and message phrasings before evaluating them.

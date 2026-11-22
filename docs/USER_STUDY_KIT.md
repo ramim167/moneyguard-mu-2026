@@ -181,6 +181,6 @@ The current aggregate records **N=20 team-reported SME participants**. Its
 source hashes, consent basis, reported DeepSeek usage, missing session metadata
 and data-origin comparison are recorded in [the survey report](USER_STUDY_RESULTS.md).
 The supplied records are not independent verification of collection, native
-TideLM inference or representative usability. Future sessions must disclose
+GuardLM inference or representative usability. Future sessions must disclose
 recruitment, sample size, assistance, skipped tasks, model availability and
 remaining uncertainty alongside the aggregate results. Missing values stay null.

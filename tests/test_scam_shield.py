@@ -5,9 +5,9 @@ import threading
 import unittest
 from http.server import ThreadingHTTPServer
 
-from tideway import scam_shield
-from tideway.security import RateLimiter
-from tideway.server import Application, make_handler
+from moneyguard import scam_shield
+from moneyguard.security import RateLimiter
+from moneyguard.server import Application, make_handler
 
 GENUINE = ("You have received Tk 5,000.00 from 01712345678. Ref order 77. Fee Tk 0.00. Balance Tk 5,410.00. "
            "TrxID 8N7A6B5C4D at 20/11/2026 10:15")
@@ -161,7 +161,7 @@ class ScamShieldHTTP(unittest.TestCase):
         conn = http.client.HTTPConnection("127.0.0.1", cls.server.server_port, timeout=30)
         headers = {"Content-Type": "application/json"}
         if csrf:
-            headers["X-Tideway-Token"] = cls.app.csrf
+            headers["X-MoneyGuard-Token"] = cls.app.csrf
         if cookie:
             headers["Cookie"] = cookie
         conn.request("POST", path, json.dumps(body), headers)

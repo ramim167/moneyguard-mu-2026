@@ -13,8 +13,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tideway.server import Application
-from tideway.domain import ValidationError
+from moneyguard.server import Application
+from moneyguard.domain import ValidationError
 
 BUSINESS = "shapla-services"
 TARGET = "2026-10-31"

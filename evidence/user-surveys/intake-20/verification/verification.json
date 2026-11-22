@@ -1,5 +1,5 @@
 {
-  "schema_version": "tideway-survey-context-verification-v1",
+  "schema_version": "moneyguard-survey-context-verification-v1",
   "captured_at_utc": "2026-10-19T09:42:23.565962+00:00",
   "scope": "Current artifact measurements and supplied export linkage; historical session binding is unresolved.",
   "sources": {

@@ -87,7 +87,7 @@ class ScreeningEvaluatorArithmeticTests(unittest.TestCase):
     def test_source_manifest_covers_resources_and_ignores_generated_bytecode(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            package = root / "tideway"
+            package = root / "moneyguard"
             package.mkdir()
             (package / "dummy.py").write_text("# inert test file\n", encoding="utf-8")
             (package / "dummy.json").write_text("{}\n", encoding="utf-8")
@@ -95,10 +95,10 @@ class ScreeningEvaluatorArithmeticTests(unittest.TestCase):
             cache.mkdir()
             (cache / "dummy.pyc").write_bytes(b"generated")
             manifest = evaluator.implementation_manifest(root)
-            self.assertEqual(set(manifest), {"tideway/dummy.py", "tideway/dummy.json"})
-            initial_hash = manifest["tideway/dummy.json"]
+            self.assertEqual(set(manifest), {"moneyguard/dummy.py", "moneyguard/dummy.json"})
+            initial_hash = manifest["moneyguard/dummy.json"]
             (package / "dummy.json").write_text('{"changed":true}\n', encoding="utf-8")
-            self.assertNotEqual(evaluator.implementation_manifest(root)["tideway/dummy.json"], initial_hash)
+            self.assertNotEqual(evaluator.implementation_manifest(root)["moneyguard/dummy.json"], initial_hash)
 
 
 if __name__ == "__main__":

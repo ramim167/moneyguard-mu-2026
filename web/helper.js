@@ -3,7 +3,7 @@
 // Plain-language help layer. It only adds explanations and navigation shortcuts;
 // it never calls the API, approves, executes or changes records. Any failure here
 // is contained so the financial UI keeps working without help.
-window.TidewayHelp = (() => {
+window.MoneyGuardHelp = (() => {
   const escape = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
   const store = {
     get(key, fallback) { try { const v = localStorage.getItem(key); return v === null ? fallback : v; } catch { return fallback; } },
@@ -200,7 +200,7 @@ window.TidewayHelp = (() => {
     [["target date"], "Target date", "The day you care about, such as payroll day. MoneyGuard also looks 14 days beyond it so problems can't hide just after."],
     [["Monte Carlo"], "Monte Carlo", "Replaying the coming weeks many times with realistic random payment delays to estimate the chance of running short."],
     [["breach risk", "breach probability", "breach"], "Breach", "Cash falling below your reserve floor. The risk is the share of simulated futures where that happens."],
-    [["likely scenario", "likely path", "likely forecast"], "Likely scenario", "A forecast based on how each customer actually tends to pay, predicted by TidePay."],
+    [["likely scenario", "likely path", "likely forecast"], "Likely scenario", "A forecast based on how each customer actually tends to pay, predicted by GuardPay."],
     [["stress scenario", "stress path", "stress test"], "Stress scenario", "A cautious forecast in which slow payers are slower still."],
     [["mandate"], "Mandate", "A digitally signed permission slip listing exactly what people approved, for how much, and until when."],
     [["maker-checker"], "Maker-checker", "One person proposes and a different person approves: the standard bank control against mistakes and fraud."],
@@ -212,8 +212,8 @@ window.TidewayHelp = (() => {
     [["audit trail", "audit log", "audit"], "Audit trail", "A permanent record of who did what and when. Each entry is chained to the previous one."],
     [["hash"], "Hash", "A digital fingerprint of data. If anything changes, even one digit, the fingerprint changes."],
     [["injection"], "Injection", "Hidden instructions inside a message that try to trick an AI. MoneyGuard flags them and never obeys them."],
-    [["TidePay"], "TidePay", "MoneyGuard's own model that predicts how late each invoice is likely to be paid."],
-    [["TideLM"], "TideLM", "MoneyGuard's own language model that understands questions and pasted messages in several languages."],
+    [["GuardPay"], "GuardPay", "MoneyGuard's own model that predicts how late each invoice is likely to be paid."],
+    [["GuardLM"], "GuardLM", "MoneyGuard's own language model that understands questions and pasted messages in several languages."],
     [["DSO"], "DSO", "Days Sales Outstanding: on average, how many days customers take to pay you."],
     [["DPO"], "DPO", "Days Payable Outstanding: on average, how many days you take to pay suppliers."],
     [["HHI", "concentration"], "Concentration", "How dependent you are on a few customers. High concentration means one late payer can hurt a lot."],
@@ -241,7 +241,7 @@ window.TidewayHelp = (() => {
     .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})(?![\\w-])`, "i");
   const SKIP = "input,textarea,select,option,button,a,pre,code,script,style,svg,dialog,.tw-term,.tw-page-help,.msg.user,[data-currency-original],.nav-item,.pill,th";
 
-  const enabled = () => store.get("tideway.help.v1", "on") !== "off";
+  const enabled = () => store.get("moneyguard.help.v1", "on") !== "off";
   const currentView = () => { try { return typeof state !== "undefined" ? state.view : ""; } catch { return ""; } };
   const currentRole = () => { try { return typeof role === "function" ? role() : ""; } catch { return ""; } };
 
@@ -288,7 +288,7 @@ window.TidewayHelp = (() => {
     }
     const page = PAGES[view];
     if (!enabled() || !page) { host.hidden = true; host.dataset.view = ""; return; }
-    const folded = store.get(`tideway.help.fold.${view}`, "folded") === "folded";
+    const folded = store.get(`moneyguard.help.fold.${view}`, "folded") === "folded";
     const key = `${view}|${folded}|${currentRole()}|${state.lang}`;
     if (host.dataset.key === key && !host.hidden) return;
     host.dataset.key = key;
@@ -433,7 +433,7 @@ window.TidewayHelp = (() => {
     if (!target.closest(".tw-pop")) hideTerm();
     const fold = target.closest("[data-help-fold]");
     if (fold) {
-      const key = `tideway.help.fold.${fold.dataset.helpFold}`;
+      const key = `moneyguard.help.fold.${fold.dataset.helpFold}`;
       store.set(key, store.get(key, "folded") === "folded" ? "open" : "folded");
       pageCard();
       document.querySelector("[data-help-fold]")?.focus({preventScroll: true});
@@ -446,13 +446,13 @@ window.TidewayHelp = (() => {
         startTour();
       }
       if (tool.dataset.helpTool === "toggle") {
-        store.set("tideway.help.v1", enabled() ? "off" : "on");
+        store.set("moneyguard.help.v1", enabled() ? "off" : "on");
         if (!enabled()) document.querySelectorAll(".tw-term").forEach((el) => el.replaceWith(document.createTextNode(el.textContent)));
         pageCard(); refresh(); syncToolbar();
       }
       if (tool.dataset.helpTool === "text") {
         document.documentElement.classList.toggle("tw-large");
-        store.set("tideway.help.large", document.documentElement.classList.contains("tw-large") ? "on" : "off");
+        store.set("moneyguard.help.large", document.documentElement.classList.contains("tw-large") ? "on" : "off");
         syncToolbar();
       }
       return;
@@ -486,7 +486,7 @@ window.TidewayHelp = (() => {
   });
   window.addEventListener("scroll", hideTerm, {passive: true});
 
-  if (store.get("tideway.help.large", "off") === "on") document.documentElement.classList.add("tw-large");
+  if (store.get("moneyguard.help.large", "off") === "on") document.documentElement.classList.add("tw-large");
   document.addEventListener("DOMContentLoaded", refresh);
   return Object.freeze({refresh, startTour, pages: Object.keys(PAGES), terms: TERMS.length});
 })();

@@ -5,7 +5,7 @@
  "adapter": null,
  "adapter_sha256": null,
  "merged_lora": false,
- "test_set": "data\\tidelm",
+ "test_set": "data\\guardlm",
  "data_sha256": {
   "train.jsonl": "79482bdd3d4e660e1abda4acbbbc1741447a0c8bd54fa170992b247f492418b6",
   "valid.jsonl": "f0b6a35502f2fe214dfecf9f839609671828ff49b1c17b0a63fd9fa739a65b17",

@@ -1,4 +1,4 @@
-# Tideway live demonstration (recording deferred)
+# MoneyGuard live demonstration (recording deferred)
 
 Use [PAYMENT_DELAY_RUNBOOK.md](PAYMENT_DELAY_RUNBOOK.md) as the authoritative step-by-step script. Keep the normal demo under five minutes when rehearsing; no video was recorded for this upgrade.
 

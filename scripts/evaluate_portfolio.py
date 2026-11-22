@@ -22,8 +22,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from tideway import portfolio  # noqa: E402
-from tideway.ml.model import auc  # noqa: E402
+from moneyguard import portfolio  # noqa: E402
+from moneyguard.ml.model import auc  # noqa: E402
 
 
 def timed(callable_):
@@ -175,10 +175,10 @@ def main():
                             "per_portfolio": per_portfolio, "seconds": backtest_seconds},
         "security": base["security"],
         "limits": base["limits"] + [
-            "Realised futures come from the same generative family TidePay was trained on (in-distribution), "
+            "Realised futures come from the same generative family GuardPay was trained on (in-distribution), "
             "which flatters the radar relative to real data.",
             "The scheduled-projection baseline ignores lateness by construction; a stronger baseline (e.g. a "
-            "deterministic TidePay 'likely' projection) was not evaluated."],
+            "deterministic GuardPay 'likely' projection) was not evaluated."],
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

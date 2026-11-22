@@ -21,7 +21,7 @@
     "docs/architecture.pdf": "befb5075c66f65484eea24ccb5265670db2de0a2a357d904e60cf952cd1f8c2c",
     "docs/security-assessment.pdf": "3c898ff1afe50e12b2f4b3a185045e5a17a302b634747f9852cf06f98f881de9",
     "docs/submission-notes.pdf": "2bb0e2e2bbbdd4bededcea870648c4af4d1abd4db93bdf83b8355b778dcb6c8c",
-    "docs/Tideway_FinTechathon_2026_Roadmap.pdf": "e41ecbac0f41bdc83f138cf41534d2c2ec4d69d7ec604cbcc55e149f3f0572f4"
+    "docs/MoneyGuard_FinTechathon_2026_Roadmap.pdf": "e41ecbac0f41bdc83f138cf41534d2c2ec4d69d7ec604cbcc55e149f3f0572f4"
   },
   "scope": "Local synthetic checks; no hosted CI, model-quality rerun, SME participation or submission implied."
 }

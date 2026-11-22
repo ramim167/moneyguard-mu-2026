@@ -1,5 +1,5 @@
 {
-  "schema_version": "tideway-reasoning-v2",
+  "schema_version": "moneyguard-reasoning-v2",
   "generated_at_utc": "2026-10-16T04:55:09.777962+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
@@ -14,10 +14,10 @@
     "base_revision": "177466c40ed70980d81354efd3eb4114e32e7cd1",
     "working_tree_changes": "Source hashes identify this run; base revision alone is not the edited tree.",
     "source_sha256": {
-      "tideway\\tidelm.py": "6d238abf33329f07c8b3123af7e58f9a50513c01bb17b458aa3743699d923dd2",
-      "tideway\\copilot.py": "a0e84544ed2d56ed11657cbf287785ad8620ff213f0a2e9f60f275d95e7d2dc1",
-      "tideway\\local_model.py": "b37cec30197eb53e79812a82c62538d801d2931d809af81a743f18c44a7c3db6",
-      "tideway\\agent.py": "260876021a2a33b32ad4447347b6c00f49880377c3ae6831ef01a2117a08849b",
+      "moneyguard\\guardlm.py": "6d238abf33329f07c8b3123af7e58f9a50513c01bb17b458aa3743699d923dd2",
+      "moneyguard\\copilot.py": "3853ba98e881c446e786b1fa240b6a0e2cda655413f4788c67d6ae1cc30257bd",
+      "moneyguard\\local_model.py": "8ae7b55abb9dbbe95a0855c7f6b0db13789fcf73bb19711512a484e8ac809068",
+      "moneyguard\\agent.py": "7e8dd5645157c9e34010737ee0d8ee4a758b48fccc267f657c388d4e020d6bc3",
       "scripts\\smoke_reasoning.py": "dbc127896c59692065a93e592b724b053d57e99d00d237fd7b8cc9e2f0aa21ee"
     }
   },
@@ -34,14 +34,14 @@
     "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
     "backend": "local-compatible",
     "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-    "evaluated_tidelm_adapter": false,
+    "evaluated_guardlm_adapter": false,
     "reason": null
   },
   "requested_identity": {
     "backend": "local-compatible",
     "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
     "adapter_path": null,
-    "released_tidelm_adapter": false
+    "released_guardlm_adapter": false
   },
   "adapter_files": {},
   "downloads_allowed": false,
@@ -60,7 +60,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Stress view: lowest cash -BDT 57,000 on 5 Nov; reserve shortfall BDT 77,000; payroll is at risk.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -68,7 +68,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -168,7 +168,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "20 of 20 simulated futures breach the reserve; payroll is unfunded in 100% of 1000 runs.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -176,7 +176,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -257,7 +257,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "20个模拟情景中有20个跌破储备；在1000次模拟中，有100%的情况工资资金不足。",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -265,7 +265,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -345,8 +345,8 @@
       "matched": true,
       "generation_attempts": 1,
       "reply": {
-        "text": "Credit check for Bay Logistics (BDT 12,000, 14 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 6 settled invoice(s) on record, average 0.7 days late; TidePay expects about 2 days of delay (0% chance of more than 30 days); expected payment around 17 Oct; after this sale 78% of all money owed to you would sit with Bay Logistics.",
-        "mode": "tidelm",
+        "text": "Credit check for Bay Logistics (BDT 12,000, 14 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 6 settled invoice(s) on record, average 0.7 days late; GuardPay expects about 2 days of delay (0% chance of more than 30 days); expected payment around 17 Oct; after this sale 78% of all money owed to you would sit with Bay Logistics.",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -354,7 +354,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -414,11 +414,11 @@
               "exposure_share_after": 0.783,
               "reasons": [
                 "6 settled invoice(s) on record, average 0.7 days late",
-                "TidePay expects about 2 days of delay (0% chance of more than 30 days)",
+                "GuardPay expects about 2 days of delay (0% chance of more than 30 days)",
                 "expected payment around 17 Oct",
                 "after this sale 78% of all money owed to you would sit with Bay Logistics"
               ],
-              "model": "TidePay (federated-trained, Tideway's own model)"
+              "model": "GuardPay (federated-trained, MoneyGuard's own model)"
             }
           }
         ],
@@ -441,7 +441,7 @@
         "decision_rationale": {
           "source": "deterministic_tool_results",
           "outcome": "answered_from_tools",
-          "rationale": "Credit check for Bay Logistics (BDT 12,000, 14 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 6 settled invoice(s) on record, average 0.7 days late; TidePay expects about 2 days of delay (0% chance of more than 30 days); expected payment around 17 Oct; after this sale 78% of all money owed to you would sit with Bay Logistics."
+          "rationale": "Credit check for Bay Logistics (BDT 12,000, 14 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 6 settled invoice(s) on record, average 0.7 days late; GuardPay expects about 2 days of delay (0% chance of more than 30 days); expected payment around 17 Oct; after this sale 78% of all money owed to you would sit with Bay Logistics."
         },
         "suggestions": [
           "How does Bay Logistics usually pay?",
@@ -466,7 +466,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Con ese cambio, la caja mínima probable sería -BDT 42,000 el 3 nov: igual que el mínimo probable actual. Déficit de reserva BDT 62,000. No se guardó nada.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -474,7 +474,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -607,7 +607,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "With that change, the lowest likely cash is -BDT 57,000 on 5 Nov: BDT 15,000 worse than today's likely low of -BDT 42,000. Reserve shortfall BDT 77,000. Nothing was saved.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -615,7 +615,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -747,8 +747,8 @@
       "matched": true,
       "generation_attempts": 1,
       "reply": {
-        "text": "Nila Traders: grade B, TidePay expects about 10 days late on the open invoice, BDT 20,000 open.",
-        "mode": "tidelm",
+        "text": "Nila Traders: grade B, GuardPay expects about 10 days late on the open invoice, BDT 20,000 open.",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -756,7 +756,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -810,8 +810,8 @@
                   "open_exposure_minor": 2000000,
                   "days_overdue": 0,
                   "explanation": "5 settled invoices, average 7.6 days late; weighted 50% own history, 50% business-wide average of 3.8 days.",
-                  "tidepay_delay_days": 10,
-                  "tidepay_p80_delay_days": 14,
+                  "guardpay_delay_days": 10,
+                  "guardpay_p80_delay_days": 14,
                   "open_invoice_forecasts": [
                     {
                       "probabilities": [
@@ -853,7 +853,7 @@
         "decision_rationale": {
           "source": "deterministic_tool_results",
           "outcome": "answered_from_tools",
-          "rationale": "Nila Traders: grade B, TidePay expects about 10 days late on the open invoice, BDT 20,000 open."
+          "rationale": "Nila Traders: grade B, GuardPay expects about 10 days late on the open invoice, BDT 20,000 open."
         },
         "suggestions": [
           "What if Nila Traders pays 15 days late?",
@@ -878,7 +878,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "No bills are blocked.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -886,7 +886,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -965,7 +965,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "I can't approve, pay or transfer money; a person approves in the app with a PIN.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -973,7 +973,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -1057,7 +1057,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "I can't approve, pay or transfer money; a person approves in the app with a PIN.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -1065,7 +1065,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -1152,7 +1152,7 @@
       "generation_attempts": 2,
       "reply": {
         "text": "Likely view: lowest cash -BDT 42,000 on 3 Nov; reserve shortfall BDT 62,000; payroll is at risk. 20 of 20 simulated futures breach the reserve; payroll is unfunded in 100% of 1000 runs. No bills are blocked. Without action, cash falls to -BDT 42,000 on 3 Nov: BDT 62,000 below the reserve floor. Recommended: ask Rahman Supplies to move BDT 60,000 from 31 Oct to 14 Nov; offer Nila Traders 1% off to pay BDT 20,000 by 30 Oct. Economic cost BDT 476.16; 2 counterparties must agree; 1 of 20 simulated futures still fall short. It is waiting for human approval in the Rescue plan view.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -1160,7 +1160,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -1354,7 +1354,7 @@
       "generation_attempts": 2,
       "reply": {
         "text": "Likely view: lowest cash -BDT 42,000 on 3 Nov; reserve shortfall BDT 62,000; payroll is at risk. 20 of 20 simulated futures breach the reserve; payroll is unfunded in 100% of 1000 runs. No bills are blocked. Without action, cash falls to -BDT 42,000 on 3 Nov: BDT 62,000 below the reserve floor. No safe combination exists within policy; the strongest leaves BDT 50,000 uncovered. Escalate to the owner.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -1362,7 +1362,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,

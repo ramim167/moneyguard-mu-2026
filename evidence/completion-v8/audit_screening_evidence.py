@@ -74,7 +74,7 @@ def main():
         fixture = "screening_holdout_v7.json" if phase == "fresh" else "screening_holdout_v6.json"
         runs.append(audit("evidence/screening-v7/" + phase, "report.json", "tests/fixtures/" + fixture))
     status = {"mlx_installed": importlib.util.find_spec("mlx") is not None,
-              "historical_windows_model_file_available": Path("E:/Tideway-model-cache/Qwen3-4B-Instruct-2507-Q4_K_M.gguf").is_file(),
+              "historical_windows_model_file_available": Path("E:/MoneyGuard-model-cache/Qwen3-4B-Instruct-2507-Q4_K_M.gguf").is_file(),
               "model_downloaded": False, "actual_inference_performed": False}
     result = {"audited_at_utc": datetime.now(timezone.utc).isoformat(),
               "current_source_tree_sha256": source_digest()[0], "passed": all(row["passed"] for row in runs),

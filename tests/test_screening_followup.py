@@ -1,5 +1,5 @@
 import unittest
-from tideway.screening import scan_text
+from moneyguard.screening import scan_text
 
 
 class ScreeningFollowup(unittest.TestCase):

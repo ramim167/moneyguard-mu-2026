@@ -10,7 +10,7 @@ import pypdfium2 as pdfium
 from PIL import Image, ImageDraw
 
 FILES = ("slides/pitch.pdf", "docs/architecture.pdf", "docs/security-assessment.pdf",
-         "docs/submission-notes.pdf", "docs/Tideway_FinTechathon_2026_Roadmap.pdf")
+         "docs/submission-notes.pdf", "docs/MoneyGuard_FinTechathon_2026_Roadmap.pdf")
 
 
 def main():

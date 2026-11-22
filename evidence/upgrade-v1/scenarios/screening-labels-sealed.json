@@ -1,7 +1,7 @@
 {
-  "version": "tideway-screening-v2",
+  "version": "moneyguard-screening-v2",
   "sealed_at_utc": "2026-10-15T19:42:04+00:00",
-  "fixture_sha256": "6bd417b523b727354feb70bb5d2badb065456bbaf883687952c5839debf6029e",
+  "fixture_sha256": "0b626519f44ce395d5d319cfe1999f6abc3b64300f4a4940c7df8c92ba74069e",
   "message_labels": {
     "B01": false,
     "B02": false,

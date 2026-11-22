@@ -3,17 +3,17 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tideway.domain import ValidationError
-from tideway.selftest import SHAPLA, TARGET, _mandate, _ops
-from tideway.service import Tideway
+from moneyguard.domain import ValidationError
+from moneyguard.selftest import SHAPLA, TARGET, _mandate, _ops
+from moneyguard.service import MoneyGuard
 
 
 class MembershipRevocationTests(unittest.TestCase):
     def test_no_demo_does_not_advertise_fixture_logins(self):
-        from tideway.service import Tideway
+        from moneyguard.service import MoneyGuard
         for seed in (True, False):
             with self.subTest(seed=seed):
-                app = Tideway(":memory:", seed=seed)
+                app = MoneyGuard(":memory:", seed=seed)
                 try:
                     accounts = app.config()["demo_accounts"]
                     self.assertEqual({a["id"] for a in accounts}, {"nadia", "imran", "guest"} if seed else set())
@@ -23,13 +23,13 @@ class MembershipRevocationTests(unittest.TestCase):
     def test_removal_survives_restart_and_clears_pending_vote(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "demo.sqlite3"
-            app = Tideway(path)
+            app = MoneyGuard(path)
             owner, accountant, _ = _ops(app)
             plan = app.propose(SHAPLA, TARGET, "agent:revocation")
             app.store.approve(SHAPLA, plan["plan_id"], "recommended", accountant, "1357", "operator:imran")
             app.store.remove_member(SHAPLA, owner, accountant["id"])
             app.store.close()
-            app = Tideway(path)
+            app = MoneyGuard(path)
             self.assertIsNone(app.store.membership_role(accountant["id"], SHAPLA))
             self.assertEqual(app.store.membership_role(accountant["id"], "lotus-print"), "accountant")
             result = app.store.approve(SHAPLA, plan["plan_id"], "recommended", owner, "2468", "operator:nadia")
@@ -38,7 +38,7 @@ class MembershipRevocationTests(unittest.TestCase):
             app.store.close()
 
     def test_issuance_rechecks_existing_voter_role(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         owner, accountant, _ = _ops(app)
         plan = app.propose(SHAPLA, TARGET, "agent:revocation")
         app.store.approve(SHAPLA, plan["plan_id"], "recommended", accountant, "1357", "operator:imran")
@@ -50,7 +50,7 @@ class MembershipRevocationTests(unittest.TestCase):
         self.assertEqual([vote["operator_id"] for vote in result["approvals"]], [owner["id"]])
 
     def test_removed_approver_cannot_leave_a_stale_approval(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         owner, accountant, _ = _ops(app)
         plan = app.propose(SHAPLA, TARGET, "agent:revocation")
 
@@ -63,7 +63,7 @@ class MembershipRevocationTests(unittest.TestCase):
             self.assertIsNone(db.execute("SELECT 1 FROM approvals WHERE plan_id=?", (plan["plan_id"],)).fetchone())
 
     def test_removed_approver_cannot_execute_or_cancel_a_live_mandate(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         owner, accountant, _ = _ops(app)
         _, mandate = _mandate(app, SHAPLA)
         app.negotiate(SHAPLA, mandate["mandate_id"], "agent:revocation")

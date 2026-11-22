@@ -9,8 +9,8 @@ from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tideway import replay
-from tideway.server import Application
+from moneyguard import replay
+from moneyguard.server import Application
 from scripts.verify_submission import source_digest
 
 

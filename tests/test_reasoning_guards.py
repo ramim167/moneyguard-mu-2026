@@ -3,11 +3,11 @@ import json
 import unittest
 from unittest.mock import patch
 
-from tideway import copilot
-from tideway.agent import Agent
-from tideway.domain import ValidationError
-from tideway.service import Tideway
-from tideway.tidelm import TideLM, TideLMUnavailable, parse_json
+from moneyguard import copilot
+from moneyguard.agent import Agent
+from moneyguard.domain import ValidationError
+from moneyguard.service import MoneyGuard
+from moneyguard.guardlm import GuardLM, GuardLMUnavailable, parse_json
 
 
 BUSINESS = "shapla-services"
@@ -19,11 +19,11 @@ def plan(tool, **args):
 
 class ReasoningGuards(unittest.TestCase):
     def setUp(self):
-        self.app = Tideway(":memory:")
+        self.app = MoneyGuard(":memory:")
         self.addCleanup(self.app.store.close)
 
     def ask(self, selection, message="check this financial request", role="owner"):
-        return TideLM(generator=lambda _s, _u: json.dumps(selection)).ask(
+        return GuardLM(generator=lambda _s, _u: json.dumps(selection)).ask(
             self.app, BUSINESS, None, message, role)
 
     def test_rescue_followup_consumes_observed_tools_and_records_public_trace(self):
@@ -31,7 +31,7 @@ class ReasoningGuards(unittest.TestCase):
         def generator(system, user):
             inputs.append((system, user))
             return json.dumps(plan("propose_plan"))
-        reply = TideLM(generator=generator).ask(self.app, BUSINESS, None, "build a rescue plan", "owner")
+        reply = GuardLM(generator=generator).ask(self.app, BUSINESS, None, "build a rescue plan", "owner")
         self.assertEqual(reply["model_iterations"], 2)
         self.assertIn('"currency":"BDT"', inputs[0][0])
         self.assertIn("observed_tool_results", inputs[1][1])
@@ -120,7 +120,7 @@ class ReasoningGuards(unittest.TestCase):
 
     def test_followup_cannot_drop_original_owner_constraints(self):
         outputs = iter([plan("propose_plan", exclude_counterparties=["Rahman Supplies"]), plan("propose_plan")])
-        reply = TideLM(generator=lambda _s, _u: json.dumps(next(outputs))).ask(
+        reply = GuardLM(generator=lambda _s, _u: json.dumps(next(outputs))).ask(
             self.app, BUSINESS, None, "build a rescue excluding Rahman Supplies", "owner")
         self.assertIn("changed the requested proposal constraints", reply["text"])
         self.assertIsNone(self.app.store.latest_plan(BUSINESS, "2026-10-31"))
@@ -133,7 +133,7 @@ class ReasoningGuards(unittest.TestCase):
                     db.execute("UPDATE businesses SET opening_cash_minor=opening_cash_minor+100 WHERE id=?", (BUSINESS,))
             selections.append(True)
             return json.dumps(plan("propose_plan"))
-        reply = TideLM(generator=generator).ask(self.app, BUSINESS, None, "build a rescue plan", "owner")
+        reply = GuardLM(generator=generator).ask(self.app, BUSINESS, None, "build a rescue plan", "owner")
         self.assertIn("ledger changed", reply["text"])
         self.assertIsNone(self.app.store.latest_plan(BUSINESS, "2026-10-31"))
 
@@ -152,7 +152,7 @@ class ReasoningGuards(unittest.TestCase):
         with patch.object(self.app, "network", return_value={
                 "customers": [], "suppliers": [{"name": malicious, "description": "SECRET STORED DESCRIPTION"}],
                 "baseline": {"end_date": "2026-11-14"}}):
-            reply = TideLM(generator=generator).ask(self.app, BUSINESS, None, "build a rescue plan", "owner")
+            reply = GuardLM(generator=generator).ask(self.app, BUSINESS, None, "build a rescue plan", "owner")
         self.assertEqual(len(captured), 2)
         for system, user in captured:
             self.assertNotIn(malicious, system)
@@ -177,15 +177,15 @@ class ReasoningGuards(unittest.TestCase):
             copilot.validate_plan({**plan("simulate_risk"), "hidden_reasoning": "invented"})
 
     def test_output_and_call_budgets_prevent_execution(self):
-        with self.assertRaises(TideLMUnavailable):
+        with self.assertRaises(GuardLMUnavailable):
             self.ask({"padding": "x" * 20000})
         reply = self.ask({"calls": [{"tool": "simulate_risk"}] * 5})
         self.assertEqual(reply["trace"], [])
 
     def test_generation_timeout_does_not_reach_tools(self):
-        lm = TideLM(generator=lambda _s, _u: json.dumps(plan("propose_plan")))
-        with patch("tideway.tidelm.MAX_GENERATION_SECONDS", -1):
-            with self.assertRaises(TideLMUnavailable):
+        lm = GuardLM(generator=lambda _s, _u: json.dumps(plan("propose_plan")))
+        with patch("moneyguard.guardlm.MAX_GENERATION_SECONDS", -1):
+            with self.assertRaises(GuardLMUnavailable):
                 lm.ask(self.app, BUSINESS, None, "build a rescue plan", "owner")
         self.assertIsNone(self.app.store.latest_plan(BUSINESS, "2026-10-31"))
 

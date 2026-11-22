@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "method": "Fixed opening-cash perturbations in each fixture currency; compare a 14-day largest-permitted-bill rule with the unchanged Tideway optimiser. Authored before running this comparison.",
+  "method": "Fixed opening-cash perturbations in each fixture currency; compare a 14-day largest-permitted-bill rule with the unchanged MoneyGuard optimiser. Authored before running this comparison.",
   "scenarios": [
     {
       "id": "S01",

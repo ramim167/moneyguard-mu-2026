@@ -5,7 +5,7 @@ import json
 import threading
 import unittest
 
-from tideway.server import Application, make_handler
+from moneyguard.server import Application, make_handler
 
 
 class DecisionLabHTTP(unittest.TestCase):
@@ -31,7 +31,7 @@ class DecisionLabHTTP(unittest.TestCase):
     def login(cls, identifier, pin):
         conn = http.client.HTTPConnection("127.0.0.1", cls.port, timeout=15)
         conn.request("POST", "/api/session/login", json.dumps({"operator_id": identifier, "pin": pin}),
-                     {"Content-Type": "application/json", "X-Tideway-Token": cls.app.csrf})
+                     {"Content-Type": "application/json", "X-MoneyGuard-Token": cls.app.csrf})
         response = conn.getresponse()
         assert response.status == 200, response.read()
         cookie = response.getheader("Set-Cookie").split(";", 1)[0]
@@ -43,7 +43,7 @@ class DecisionLabHTTP(unittest.TestCase):
         conn = http.client.HTTPConnection("127.0.0.1", self.port, timeout=20)
         headers = {"Content-Type": "application/json"}
         if csrf:
-            headers["X-Tideway-Token"] = self.app.csrf
+            headers["X-MoneyGuard-Token"] = self.app.csrf
         if cookie:
             headers["Cookie"] = cookie
         conn.request("POST", "/api/lab/" + route, json.dumps(body), headers)

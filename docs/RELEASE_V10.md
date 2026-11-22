@@ -84,7 +84,7 @@ Only completed reports with matching source and archive hashes attest to the
 final package. Earlier reports are historical evidence, not current attestations.
 
 The committed v9 source, `6dbb315`, passed all nine hosted jobs in
-[run 14](https://github.com/SadManQT/tideway/actions/runs/39102943815).
+[run 14](https://github.com/SadManQT/moneyguard/actions/runs/39102943815).
 This does not attest to the unpushed v10 changes.
 
 Real SME participation remains zero. Native MLX planning/receipt inference,

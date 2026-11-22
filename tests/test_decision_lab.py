@@ -5,13 +5,13 @@ import os
 import unittest
 from unittest.mock import patch
 
-from tideway import analytics, bilateral, replay
-from tideway.agent import Agent, Pseudonyms
-from tideway.decision_lab import DecisionLab
-from tideway.domain import OPEN_INVOICE_STATUSES, ValidationError, add_days, canonical_json
-from tideway.resilience import Context, digest, promise_stress, reverse_stress
-from tideway.server import Application
-from tideway.store import json_hash
+from moneyguard import analytics, bilateral, replay
+from moneyguard.agent import Agent, Pseudonyms
+from moneyguard.decision_lab import DecisionLab
+from moneyguard.domain import OPEN_INVOICE_STATUSES, ValidationError, add_days, canonical_json
+from moneyguard.resilience import Context, digest, promise_stress, reverse_stress
+from moneyguard.server import Application
+from moneyguard.store import json_hash
 
 BID = "shapla-services"
 INVOICE = "inv-shapla-nila-oct"
@@ -23,7 +23,7 @@ LEDGER = dict(opening_cash_minor=6000000, reserve_floor_minor=1000000, payroll_m
 class LabCase(unittest.TestCase):
     def setUp(self):
         self.http = Application(":memory:")
-        self.app, self.store, self.lab = self.http.tideway, self.http.store, self.http.lab
+        self.app, self.store, self.lab = self.http.moneyguard, self.http.store, self.http.lab
         self.addCleanup(self.store.close)
         self.owner = self.store.verify_pin("nadia", "2468")
 
@@ -135,7 +135,7 @@ class ResilienceTests(LabCase):
             self.lab.context(BID, bundle_id="foreign")
 
     def test_feature_flag_blocks_agent_read_tools_too(self):
-        with patch.dict(os.environ, TIDEWAY_DECISION_LAB="0"):
+        with patch.dict(os.environ, MONEYGUARD_DECISION_LAB="0"):
             with self.assertRaisesRegex(ValidationError, "disabled"):
                 self.http.agent.tool("reverse_stress", BID, None, "agent:test", [])
 

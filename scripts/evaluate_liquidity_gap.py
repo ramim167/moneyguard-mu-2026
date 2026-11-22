@@ -15,8 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scripts.evaluate_upgrade_scenarios import FIXTURE, load_spec, new_business
 from scripts.verify_submission import source_digest
-from tideway import analytics, planner
-from tideway.service import Tideway
+from moneyguard import analytics, planner
+from moneyguard.service import MoneyGuard
 
 
 def interval(count, total):
@@ -35,7 +35,7 @@ def main():
     digest = source_digest()[0]
     spec = load_spec()
     case = next(case for case in spec["scenarios"] if case["id"] == "H11")
-    app = Tideway(":memory:", seed=False)
+    app = MoneyGuard(":memory:", seed=False)
     try:
         identifier = new_business(app, case, spec["defaults"])
         snapshot = app.store.snapshot(identifier)

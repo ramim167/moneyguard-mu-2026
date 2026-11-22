@@ -1,21 +1,21 @@
 # Pitch video pipeline
 
-Renders the Tideway demo/pitch video (at most 4:55) from `storyboard.json` in one command.
+Renders the MoneyGuard demo/pitch video (at most 4:55) from `storyboard.json` in one command.
 Narration is synthesised, the live app is recorded in headless Chrome, and ffmpeg composes
 the final MP4. Everything runs locally against a fresh synthetic database.
 
 ## Re-render (one command)
 
 ```powershell
-C:\Users\Administrator\tideway-tools-venv\Scripts\python.exe scripts\pitch_video\build.py
+C:\Users\Administrator\moneyguard-tools-venv\Scripts\python.exe scripts\pitch_video\build.py
 ```
 
 Outputs (all under the git-ignored `dist/video/`):
 
 | File | What it is |
 |---|---|
-| `tideway-pitch.mp4` | H.264 High + AAC, 1920x1080, 30 fps, yuv420p, `+faststart`, burned-in captions |
-| `tideway-pitch.srt` | Sidecar captions with the same timing |
+| `moneyguard-pitch.mp4` | H.264 High + AAC, 1920x1080, 30 fps, yuv420p, `+faststart`, burned-in captions |
+| `moneyguard-pitch.srt` | Sidecar captions with the same timing |
 | `build-log.json` | Scene start times and lengths, skipped scenes, voice, TTS engine, ffmpeg/Node/Chrome versions, source commit, SHA-256 |
 | `stills/still-{10,35,60,85}.jpg` | Review frames at 10/35/60/85% of the video |
 | `app.log`, `work/` | App log, cached narration audio, slide HTML and failure screenshots (`work/debug/`) |
@@ -42,11 +42,11 @@ Options:
 The tools venv lives outside the repo:
 
 ```powershell
-& "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe" -m venv C:\Users\Administrator\tideway-tools-venv
-C:\Users\Administrator\tideway-tools-venv\Scripts\python.exe -m pip install --no-cache-dir imageio-ffmpeg edge-tts
+& "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe" -m venv C:\Users\Administrator\moneyguard-tools-venv
+C:\Users\Administrator\moneyguard-tools-venv\Scripts\python.exe -m pip install --no-cache-dir imageio-ffmpeg edge-tts
 ```
 
-You also need Node 22+ and Google Chrome. The app itself runs with the system Python 3.11 (override with `TIDEWAY_PYTHON`).
+You also need Node 22+ and Google Chrome. The app itself runs with the system Python 3.11 (override with `MONEYGUARD_PYTHON`).
 
 - **Voice:** edge-tts needs network access. If it fails, `narrate.py` falls back to Windows SAPI (System.Speech), and `build-log.json` records which engine was used.
 - **ffmpeg:** `imageio_ffmpeg.get_ffmpeg_exe()` is used, or the `FFMPEG` environment variable if set.
@@ -56,7 +56,7 @@ You also need Node 22+ and Google Chrome. The app itself runs with the system Py
 - **Viewport and frames:** the browser uses a 1280x720 CSS viewport at device scale 1.5, so every frame is a sharp 1920x1080 image with text that is 1.5 times larger and legible.
 - **Capture:** `Page.startScreencast` frames are kept in memory, resampled to a constant 30 fps and piped straight into ffmpeg. No frame files touch the disk.
 - **Scene length:** `lead + narration + tail + crossfade`, or longer if the recorded actions take more time. Audio and picture cannot drift apart.
-- **Slides:** `slide.html` uses Tideway's own fonts (`web/fonts`) and colours (`web/styles.css`). Slide elements animate in once recording starts.
+- **Slides:** `slide.html` uses MoneyGuard's own fonts (`web/fonts`) and colours (`web/styles.css`). Slide elements animate in once recording starts.
 
 ## Add or change a scene
 
@@ -104,7 +104,7 @@ Available step operations (`do`):
 | `wait` | `for` (JS), `timeout` | Waits until the JS expression is truthy |
 | `pause` | `ms` | Waits for a fixed time |
 | `scroll` | `selector` with `block`/`offset`, or `by`, or `y` | Smooth scroll |
-| `storage` | `key`, `value` | Sets a `localStorage` value, for example `tideway.help.v1 = off` |
+| `storage` | `key`, `value` | Sets a `localStorage` value, for example `moneyguard.help.v1 = off` |
 | `eval` | `js` | Runs arbitrary page JS (an awaited promise is allowed) |
 
 After editing, run `node scripts/pitch_video/format_storyboard.mjs` to keep one step per line.

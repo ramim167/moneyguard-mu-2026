@@ -9,7 +9,7 @@ MoneyGuard adapted for the MU CSE Fest 2026 AI Builders Hackathon, track 04 FinT
   Inbox warning. See [SCAM_SHIELD.md](SCAM_SHIELD.md).
 - **বাংলা assistant.** Bangla-script questions are detected and answered in Bangla using the same tools and figures as
   English. Bangla digits, small talk, payroll, risk, late payers, what-if, credit check, rescue plan, explanation and
-  money-refusal flows. Templates in `tideway/i18n_bn.py`.
+  money-refusal flows. Templates in `moneyguard/i18n_bn.py`.
 
 ## Changed
 

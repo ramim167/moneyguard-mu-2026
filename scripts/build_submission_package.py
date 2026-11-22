@@ -16,7 +16,7 @@ from verify_submission import source_digest  # noqa: E402
 
 EXCLUDED_ROOTS = {".git", ".aws", ".vscode",
                   ".venv", "venv", "node_modules", "data", "models", "tmp", "dist", "demo", "personal-prep"}
-RELEASE_FOLDERS = {"tideway", "web", "scripts", "tests", "docs", "slides", "evidence", "licenses", "examples"}
+RELEASE_FOLDERS = {"moneyguard", "web", "scripts", "tests", "docs", "slides", "evidence", "licenses", "examples"}
 RELEASE_CONFIG_FILES = {".github/workflows/ci.yml"}
 RELEASE_ROOT_FILES = {"README.md", "LICENSE", "THIRD_PARTY_NOTICES", "Makefile", "Dockerfile", ".dockerignore",
                       ".gitignore", ".gitattributes", ".python-version", ".env.example", "requirements.txt",
@@ -108,7 +108,7 @@ def main():
     team = json.loads(team_path.read_text(encoding="utf-8")) if team_path.is_file() else {}
     gaps = team_gaps(team)
     gaps.append("Demo video explicitly deferred by the team; add before sending or clarify evidence requirement")
-    gaps.append("Native MLX/TideLM adapter and receipt-model device verification (compatible Qwen3 inference is separate)")
+    gaps.append("Native MLX/GuardLM adapter and receipt-model device verification (compatible Qwen3 inference is separate)")
     gaps.append("Consented SME feedback, stronger unseen instruction screening and independent security review")
     if (ROOT / ".git").exists():
         names = subprocess.check_output(["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],

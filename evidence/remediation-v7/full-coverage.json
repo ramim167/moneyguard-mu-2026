@@ -2,157 +2,157 @@
   "scope": "Full stdlib suite instrumented before final UTF-8 prompt/input revision. Coverage is statement-only and not a final-source attestation. Final release separately reruns all tests.",
   "modules": [
     {
-      "module": "tideway.__init__",
+      "module": "moneyguard.__init__",
       "executable_statements": 2,
       "statement_coverage_percent": 100.0
     },
     {
-      "module": "tideway.agent",
+      "module": "moneyguard.agent",
       "executable_statements": 425,
       "statement_coverage_percent": 82.1
     },
     {
-      "module": "tideway.analytics",
+      "module": "moneyguard.analytics",
       "executable_statements": 397,
       "statement_coverage_percent": 93.7
     },
     {
-      "module": "tideway.constraints",
+      "module": "moneyguard.constraints",
       "executable_statements": 26,
       "statement_coverage_percent": 92.3
     },
     {
-      "module": "tideway.conversation",
+      "module": "moneyguard.conversation",
       "executable_statements": 157,
       "statement_coverage_percent": 96.2
     },
     {
-      "module": "tideway.copilot",
+      "module": "moneyguard.copilot",
       "executable_statements": 475,
       "statement_coverage_percent": 87.2
     },
     {
-      "module": "tideway.counterparty",
+      "module": "moneyguard.counterparty",
       "executable_statements": 57,
       "statement_coverage_percent": 93.0
     },
     {
-      "module": "tideway.domain",
+      "module": "moneyguard.domain",
       "executable_statements": 398,
       "statement_coverage_percent": 84.9
     },
     {
-      "module": "tideway.financing",
+      "module": "moneyguard.financing",
       "executable_statements": 75,
       "statement_coverage_percent": 100.0
     },
     {
-      "module": "tideway.fixtures",
+      "module": "moneyguard.fixtures",
       "executable_statements": 143,
       "statement_coverage_percent": 100.0
     },
     {
-      "module": "tideway.i18n",
+      "module": "moneyguard.i18n",
       "executable_statements": 368,
       "statement_coverage_percent": 99.5
     },
     {
-      "module": "tideway.local_model",
+      "module": "moneyguard.local_model",
       "executable_statements": 104,
       "statement_coverage_percent": 93.3
     },
     {
-      "module": "tideway.ml.__init__",
+      "module": "moneyguard.ml.__init__",
       "executable_statements": 1,
       "statement_coverage_percent": 100.0
     },
     {
-      "module": "tideway.ml.deployed_evaluation",
+      "module": "moneyguard.ml.deployed_evaluation",
       "executable_statements": 258,
       "statement_coverage_percent": 97.7
     },
     {
-      "module": "tideway.ml.evaluation_v2",
+      "module": "moneyguard.ml.evaluation_v2",
       "executable_statements": 340,
       "statement_coverage_percent": 97.9
     },
     {
-      "module": "tideway.ml.model",
+      "module": "moneyguard.ml.model",
       "executable_statements": 169,
       "statement_coverage_percent": 94.1
     },
     {
-      "module": "tideway.ml.synth",
+      "module": "moneyguard.ml.synth",
       "executable_statements": 64,
       "statement_coverage_percent": 98.4
     },
     {
-      "module": "tideway.ml.tidelm_data",
+      "module": "moneyguard.ml.guardlm_data",
       "executable_statements": 364,
       "statement_coverage_percent": 46.7
     },
     {
-      "module": "tideway.ml.train",
+      "module": "moneyguard.ml.train",
       "executable_statements": 114,
       "statement_coverage_percent": 20.2
     },
     {
-      "module": "tideway.plan_schema",
+      "module": "moneyguard.plan_schema",
       "executable_statements": 67,
       "statement_coverage_percent": 98.5
     },
     {
-      "module": "tideway.planner",
+      "module": "moneyguard.planner",
       "executable_statements": 480,
       "statement_coverage_percent": 98.3
     },
     {
-      "module": "tideway.projection",
+      "module": "moneyguard.projection",
       "executable_statements": 174,
       "statement_coverage_percent": 90.2
     },
     {
-      "module": "tideway.screening",
+      "module": "moneyguard.screening",
       "executable_statements": 150,
       "statement_coverage_percent": 100.0
     },
     {
-      "module": "tideway.security",
+      "module": "moneyguard.security",
       "executable_statements": 81,
       "statement_coverage_percent": 97.5
     },
     {
-      "module": "tideway.selftest",
+      "module": "moneyguard.selftest",
       "executable_statements": 342,
       "statement_coverage_percent": 95.0
     },
     {
-      "module": "tideway.semantic_screening",
+      "module": "moneyguard.semantic_screening",
       "executable_statements": 159,
       "statement_coverage_percent": 76.1
     },
     {
-      "module": "tideway.server",
+      "module": "moneyguard.server",
       "executable_statements": 442,
       "statement_coverage_percent": 64.3
     },
     {
-      "module": "tideway.service",
+      "module": "moneyguard.service",
       "executable_statements": 598,
       "statement_coverage_percent": 87.5
     },
     {
-      "module": "tideway.store",
+      "module": "moneyguard.store",
       "executable_statements": 1355,
       "statement_coverage_percent": 90.0
     },
     {
-      "module": "tideway.tidelm",
+      "module": "moneyguard.guardlm",
       "executable_statements": 569,
       "statement_coverage_percent": 83.0
     },
     {
-      "module": "tideway.vision",
+      "module": "moneyguard.vision",
       "executable_statements": 129,
       "statement_coverage_percent": 60.5
     }

@@ -25,7 +25,7 @@ def main():
     history = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in (
         "evidence/readiness-v3/blind/model-first-observation.json",
         "evidence/readiness-v3/blind/screening-first-observation.json")}
-    start = {"schema_version": "tideway-independent-audit-known-case-regression-v1",
+    start = {"schema_version": "moneyguard-independent-audit-known-case-regression-v1",
              "started_at_utc": utc_now(), "source_tree_sha256": digest, "source_files": files,
              "historical_first_observation_sha256": history,
              "methodology": "All 32 previously disclosed challenge cases; one pass, no selective retry. Not blind or population accuracy."}
@@ -33,7 +33,7 @@ def main():
     result = model_report(fixture(), directory / "progress.jsonl")
     result["limitations"] = [
         "Previously observed synthetic cases; this is a regression run, not an unseen quality estimate.",
-        "Compatible Qwen inference does not verify the TideLM MLX adapter, receipt model or cloud provider.",
+        "Compatible Qwen inference does not verify the GuardLM MLX adapter, receipt model or cloud provider.",
         "Payment containment and request correctness have separate denominators; safe stops do not prove understanding.",
         "Every attempt and miss is retained; no selective retry was performed in this run."]
     unchanged = source_digest()[0] == digest

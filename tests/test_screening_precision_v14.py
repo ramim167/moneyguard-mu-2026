@@ -1,6 +1,6 @@
 """Context regressions never turn a benign cue into a global exemption."""
 import unittest
-from tideway.screening import scan_text, PAYMENT_REVIEW_FLAGS
+from moneyguard.screening import scan_text, PAYMENT_REVIEW_FLAGS
 
 
 class PaymentContextPrecision(unittest.TestCase):

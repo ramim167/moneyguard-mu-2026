@@ -1,6 +1,6 @@
 {
-  "_about": "Tideway pitch video storyboard. Scenes play in order. kind=slide renders slide.html; kind=app drives the live app. 'setup' steps run before recording starts; 'steps' are recorded. A step's 'at' (0-1) delays it until that fraction of the scene's narration. 'requires' is a CSS selector that must exist (checked after setup) or the scene is skipped when 'optional' is true. 'enabled': false skips a scene entirely. Narration must stay true to README/docs.",
-  "title": "Tideway: AI as a financial participant, with people in charge",
+  "_about": "MoneyGuard pitch video storyboard. Scenes play in order. kind=slide renders slide.html; kind=app drives the live app. 'setup' steps run before recording starts; 'steps' are recorded. A step's 'at' (0-1) delays it until that fraction of the scene's narration. 'requires' is a CSS selector that must exist (checked after setup) or the scene is skipped when 'optional' is true. 'enabled': false skips a scene entirely. Narration must stay true to README/docs.",
+  "title": "MoneyGuard: AI as a financial participant, with people in charge",
   "voice": "en-US-AndrewNeural",
   "rate": "+4%",
   "max_seconds": 295,
@@ -21,10 +21,10 @@
     {
       "id": "one-line",
       "kind": "slide",
-      "narration": "Tideway makes AI a financial participant, with hard limits. The agent can read, analyse and propose, but never approve or execute. People approve with a PIN, under a signed, scoped mandate. Everything runs in a synthetic sandbox, with no real money.",
+      "narration": "MoneyGuard makes AI a financial participant, with hard limits. The agent can read, analyse and propose, but never approve or execute. People approve with a PIN, under a signed, scoped mandate. Everything runs in a synthetic sandbox, with no real money.",
       "slide": {
         "layout": "cards",
-        "kicker": "Tideway in one line",
+        "kicker": "MoneyGuard in one line",
         "title": "An AI that proposes.|People who decide.",
         "items": [
           {"tag":"Agent","h":"Reads, analyses, proposes","p":"Projects cash, simulates risk, searches recovery options and negotiates with simulated counterparties."},
@@ -39,7 +39,7 @@
       "kind": "app",
       "setup": [
         {"do":"navigate","url":"/","ready":"document.querySelectorAll('[data-action=demo-login]').length===3"},
-        {"do":"storage","key":"tideway.help.v1","value":"off"},
+        {"do":"storage","key":"moneyguard.help.v1","value":"off"},
         {"do":"eval","js":"window.scrollTo(0,0),true"},
         {"do":"pause","ms":600}
       ],
@@ -64,7 +64,7 @@
         {"do":"scroll","selector":"#view .metric","block":"center"},
         {"do":"pause","ms":400}
       ],
-      "narration": "Cash weather projects every receipt and bill under scheduled, likely and stress scenarios, with a fourteen-day look-ahead. Cash breaches the reserve on payroll day, and the seeded risk simulation finds a breach in every run. TidePay, our payment-timing model, shows why: these customers usually pay late.",
+      "narration": "Cash weather projects every receipt and bill under scheduled, likely and stress scenarios, with a fourteen-day look-ahead. Cash breaches the reserve on payroll day, and the seeded risk simulation finds a breach in every run. GuardPay, our payment-timing model, shows why: these customers usually pay late.",
       "steps": [
         {"do":"pause","ms":500},
         {"do":"scroll","by":620,"at":0.3},
@@ -78,7 +78,7 @@
       "setup": [
         {"do":"view","name":"assistant"}
       ],
-      "narration": "Owners can simply ask. Greet Tideway in Chinese, and it replies in Chinese with a cash briefing built from its own tools. Ask it to pay a supplier, and it refuses: there is no payment tool. With TideLM, our on-device model, full questions work in eight languages.",
+      "narration": "Owners can simply ask. Greet MoneyGuard in Chinese, and it replies in Chinese with a cash briefing built from its own tools. Ask it to pay a supplier, and it refuses: there is no payment tool. With GuardLM, our on-device model, full questions work in eight languages.",
       "steps": [
         {"do":"pause","ms":600},
         {"do":"type","selector":"#chat-input","text":"你好","cps":4},
@@ -129,13 +129,13 @@
       "kind": "app",
       "setup": [
         {"do":"login","id":"imran","pin":"1357"},
-        {"do":"eval","js":"(async()=>{const d=state.dashboard;const plan=d.plan;const approved=new Set((plan.approvals||[]).map(a=>a.bundle_id));const bundle=plan.bundles.find(b=>approved.has(b.bundle_id))||plan.bundles.find(b=>b.feasible);const ack=bundle.probability_breach_after>plan.risk_target?{acknowledged:true,plan_id:plan.plan_id,plan_hash:plan.plan_hash,bundle_id:bundle.bundle_id,probability_breach_after:bundle.probability_breach_after,risk_target:plan.risk_target}:null;const c=await(await fetch('/api/config')).json();const r=await fetch('/api/plan/approve',{method:'POST',headers:{'Content-Type':'application/json','X-Tideway-Token':c.csrf_token},body:JSON.stringify({business_id:state.businessId,plan_id:plan.plan_id,bundle_id:bundle.bundle_id,pin:'1357',review_ms:9000,confirm_amount_minor:bundle.exposure_minor,risk_acknowledgement:ack})});const a=await r.json();if(!r.ok)throw new Error(a.error);return a.status;})()"},
+        {"do":"eval","js":"(async()=>{const d=state.dashboard;const plan=d.plan;const approved=new Set((plan.approvals||[]).map(a=>a.bundle_id));const bundle=plan.bundles.find(b=>approved.has(b.bundle_id))||plan.bundles.find(b=>b.feasible);const ack=bundle.probability_breach_after>plan.risk_target?{acknowledged:true,plan_id:plan.plan_id,plan_hash:plan.plan_hash,bundle_id:bundle.bundle_id,probability_breach_after:bundle.probability_breach_after,risk_target:plan.risk_target}:null;const c=await(await fetch('/api/config')).json();const r=await fetch('/api/plan/approve',{method:'POST',headers:{'Content-Type':'application/json','X-MoneyGuard-Token':c.csrf_token},body:JSON.stringify({business_id:state.businessId,plan_id:plan.plan_id,bundle_id:bundle.bundle_id,pin:'1357',review_ms:9000,confirm_amount_minor:bundle.exposure_minor,risk_acknowledgement:ack})});const a=await r.json();if(!r.ok)throw new Error(a.error);return a.status;})()"},
         {"do":"login","id":"nadia","pin":"2468"},
         {"do":"view","name":"rescue"},
         {"do":"wait","for":"!!document.querySelector('[data-action=negotiate], [data-action=execute]')"},
         {"do":"scroll","selector":"[data-action=negotiate], [data-action=execute]","block":"center"}
       ],
-      "narration": "After Imran, the accountant, gives the second approval, Tideway issues an HMAC-signed mandate bound to these exact actions. Simulated counterparties agree, and the mandate executes once in the sandbox, verified by read-back.",
+      "narration": "After Imran, the accountant, gives the second approval, MoneyGuard issues an HMAC-signed mandate bound to these exact actions. Simulated counterparties agree, and the mandate executes once in the sandbox, verified by read-back.",
       "steps": [
         {"do":"pause","ms":900},
         {"do":"click","selector":"[data-action=negotiate]","optional":true,"at":0.25},
@@ -157,7 +157,7 @@
         {"do":"wait","for":"!!document.querySelector(\"tr.flagged\")"},
         {"do":"scroll","selector":"#record-filter","block":"start","offset":30}
       ],
-      "narration": "Message text never carries authority. Harbourline Traders, a fictional wholesaler, has a poisoned bill whose text tries to give instructions, a changed bank account and a look-alike payee. Tideway quarantines the text as data and blocks every action on those bills.",
+      "narration": "Message text never carries authority. Harbourline Traders, a fictional wholesaler, has a poisoned bill whose text tries to give instructions, a changed bank account and a look-alike payee. MoneyGuard quarantines the text as data and blocks every action on those bills.",
       "steps": [
         {"do":"pause","ms":900},
         {"do":"highlight","selector":"tr.flagged","ms":2200,"at":0.25},
@@ -170,7 +170,7 @@
       "setup": [
         {"do":"eval","js":"(()=>{const s=document.querySelector(\"#business-select\");s.value=\"shapla-services\";s.dispatchEvent(new Event(\"change\",{bubbles:true}));return true;})()"},
         {"do":"wait","for":"document.querySelector(\"#eyebrow\").textContent.includes(\"Shapla\") && !state.busy","timeout":30000},
-        {"do":"storage","key":"tideway.help.v1","value":"on"},
+        {"do":"storage","key":"moneyguard.help.v1","value":"on"},
         {"do":"reload"},
         {"do":"view","name":"overview"},
         {"do":"eval","js":"(()=>{const b=document.querySelector('[data-action=owner-simple]');if(b)b.click();return true;})()"},
@@ -197,7 +197,7 @@
       "id": "security",
       "kind": "app",
       "setup": [
-        {"do":"storage","key":"tideway.help.v1","value":"off"},
+        {"do":"storage","key":"moneyguard.help.v1","value":"off"},
         {"do":"reload"},
         {"do":"view","name":"security"},
         {"do":"click","selector":"[data-action=selftest]","highlight":false},
@@ -283,14 +283,14 @@
     {
       "id": "own-ai",
       "kind": "slide",
-      "narration": "Tideway’s AI is its own. TidePay, trained with simulated federated learning, predicts payment lateness: on 7,427 unseen synthetic invoices, its average error is 8.56 days, versus 10.23 for a history heuristic. TideLM, our LoRA adapter on Qwen3, reaches 96.7 percent exact tool plans on its synthetic test set, up from 26.7.",
+      "narration": "MoneyGuard’s AI is its own. GuardPay, trained with simulated federated learning, predicts payment lateness: on 7,427 unseen synthetic invoices, its average error is 8.56 days, versus 10.23 for a history heuristic. GuardLM, our LoRA adapter on Qwen3, reaches 96.7 percent exact tool plans on its synthetic test set, up from 26.7.",
       "slide": {
         "layout": "stats",
-        "kicker": "Tideway's own AI · synthetic evaluations",
+        "kicker": "MoneyGuard's own AI · synthetic evaluations",
         "title": "Trained here. Bounded by design.",
         "stats": [
-          {"label":"TidePay · payment timing","value":"MAE 8.56 days","note":"vs 10.23 history heuristic, on 7,427 unseen synthetic invoices. Simulated federated training (FedAvg) across 40 synthetic SMEs."},
-          {"label":"TideLM · multilingual tool plans","value":"96.7% exact plans","note":"up from 26.7% before fine-tuning; LoRA on Qwen3-4B, held-out synthetic test set, eight languages."}
+          {"label":"GuardPay · payment timing","value":"MAE 8.56 days","note":"vs 10.23 history heuristic, on 7,427 unseen synthetic invoices. Simulated federated training (FedAvg) across 40 synthetic SMEs."},
+          {"label":"GuardLM · multilingual tool plans","value":"96.7% exact plans","note":"up from 26.7% before fine-tuning; LoRA on Qwen3-4B, held-out synthetic test set, eight languages."}
         ],
         "footnote": "Scores apply to the listed synthetic test sets only, not real-world accuracy. Models read and propose; they cannot approve or execute."
       }
@@ -329,7 +329,7 @@
     {
       "id": "team",
       "kind": "slide",
-      "narration": "Tideway is built by The Last BrainCell, a team from Bangladesh University of Engineering and Technology.",
+      "narration": "MoneyGuard is built by The Last BrainCell, a team from Bangladesh University of Engineering and Technology.",
       "slide": {
         "layout": "team",
         "kicker": "Team",
@@ -341,11 +341,11 @@
     {
       "id": "close",
       "kind": "slide",
-      "narration": "Tideway sees the cash gap coming, proposes the rescue, and leaves the decision with people. Thank you.",
+      "narration": "MoneyGuard sees the cash gap coming, proposes the rescue, and leaves the decision with people. Thank you.",
       "min_seconds": 7,
       "slide": {
         "layout": "hero",
-        "kicker": "Tideway",
+        "kicker": "MoneyGuard",
         "title": "See the gap.|Propose the rescue.|*People decide.*",
         "chips": ["python run.py","Synthetic sandbox","Approval-gated by design"]
       }

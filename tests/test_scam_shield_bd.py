@@ -1,7 +1,7 @@
 """Scam Shield on real-world Bangladeshi scam scripts, with an independent test set kept out of training."""
 import unittest
 
-from tideway import scam_shield
+from moneyguard import scam_shield
 
 
 def verdict(text, sender=""):

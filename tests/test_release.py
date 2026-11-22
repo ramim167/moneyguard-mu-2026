@@ -7,7 +7,7 @@ from scripts.verify_submission import source_digest, line_ending_issues
 class ReleaseSourcePolicy(unittest.TestCase):
     def fixture(self, directory, ending):
         root=Path(directory)
-        for folder in ('tideway','tests','web','scripts'):(root/folder).mkdir(exist_ok=True)
+        for folder in ('moneyguard','tests','web','scripts'):(root/folder).mkdir(exist_ok=True)
         (root/'run.py').write_bytes(b'print("sandbox")'+ending)
         return root
 

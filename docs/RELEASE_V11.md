@@ -12,7 +12,7 @@ This local upgrade adds seven connected decision-support features to MoneyGuard'
 6. The privacy inspector shares the actual initial cloud request builder, previews the relevant limited chat history, removes known names/accounts and email/possible-phone patterns, and makes no provider call or consent change. Unrecognised personal text can remain.
 7. Two-business synthetic negotiation checks buyer and supplied supplier reserve/payroll paths. Compatible quotes create ordinary proposals; assumptions are displayed, hash-bound and rechecked at approval/execution, including retained counter-offer requests.
 
-The UI, three new read-only model tools, strict schemas, authenticated HTTP routes, release automation, CI browser command and reviewer documentation are integrated. Set `TIDEWAY_DECISION_LAB=0` to disable the lab. See [the feature guide](DECISION_LAB.md).
+The UI, three new read-only model tools, strict schemas, authenticated HTTP routes, release automation, CI browser command and reviewer documentation are integrated. Set `MONEYGUARD_DECISION_LAB=0` to disable the lab. See [the feature guide](DECISION_LAB.md).
 
 ## Verification
 
@@ -29,7 +29,7 @@ Actual compatible Qwen model runs preserve every attempt: the first two known-ca
 ## Still outside this implementation
 
 - Real SME participants remain zero. Scripted simulations do not become human evidence.
-- Native Apple Silicon MLX/TideLM adapter and receipt-model device checks remain deferred until Mac access is available. Windows compatible Qwen inference is separate evidence.
+- Native Apple Silicon MLX/GuardLM adapter and receipt-model device checks remain deferred until Mac access is available. Windows compatible Qwen inference is separate evidence.
 - External security review and new genuinely unseen screening validation remain open. Known-case improvements do not erase first observations.
 - H11's original unfunded reserve risk remains 11.78%; the additional-cash calculation remains conditional and unexecuted. Explicit acknowledgement does not reduce that risk.
 - Team leader, contribution roles, registration/eligibility confirmation and related submission administration await the team. Video remains deferred by the team.

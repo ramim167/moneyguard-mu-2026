@@ -13,15 +13,15 @@ python3 scripts/evaluate_upgrade_scenarios.py
 python3 -m unittest discover -s tests -p test_upgrade_scenarios.py -v
 ```
 
-No model weights, provider, browser, optional package or live database are needed. Each workflow uses a fresh in-memory database containing its own synthetic ledger. Runtime measurements exclude database creation and PIN hashing. `--out /tmp/tideway-scenario-rerun` preserves the checked-in report; `--skip-timing` omits timings for a quick functional rerun.
+No model weights, provider, browser, optional package or live database are needed. Each workflow uses a fresh in-memory database containing its own synthetic ledger. Runtime measurements exclude database creation and PIN hashing. `--out /tmp/moneyguard-scenario-rerun` preserves the checked-in report; `--skip-timing` omits timings for a quick functional rerun.
 
 ## Inputs and definitions
 
 The versioned fixture is [upgrade_scenarios_v2.json](../tests/fixtures/upgrade_scenarios_v2.json), with the original outcome manifest in [expectations-sealed.json](../evidence/upgrade-v1/scenarios/expectations-sealed.json). SHA-256 of the immutable fixture:
 
-`0fd9b482d1a13bb91d5126ab751db2b4eb019c3fcefee8d1063c47f0460d4a46`
+`312b07d718914d5d78179b6768ac9da204ec82d320d9f3f33f5d4b27d1cc4e80`
 
-Every case has its own ledger, currency, business condition and expected outcome reason. They cover dated receipts; sparse and slow payment histories; correlated customer concentration; flexible, strict and countering suppliers; payroll in bills and transaction descriptions; starting reserve pressure; per-action/daily limits; partial payment; exact minor units; inside/outside the look-ahead boundary; multiple currencies; cross-currency rejection; missing amounts; and harmless text noise. Raw records are validated through the normal import path. Financial decisions use the actual TidePay-derived likely dates and deterministic planner, rather than expected dates supplied as an answer key.
+Every case has its own ledger, currency, business condition and expected outcome reason. They cover dated receipts; sparse and slow payment histories; correlated customer concentration; flexible, strict and countering suppliers; payroll in bills and transaction descriptions; starting reserve pressure; per-action/daily limits; partial payment; exact minor units; inside/outside the look-ahead boundary; multiple currencies; cross-currency rejection; missing amounts; and harmless text noise. Raw records are validated through the normal import path. Financial decisions use the actual GuardPay-derived likely dates and deterministic planner, rather than expected dates supplied as an answer key.
 
 Four outcome classes are scored separately:
 
@@ -32,7 +32,7 @@ Four outcome classes are scored separately:
 
 Workflow success means the expected class matches the observed class **and** safety checks pass. Successful handling of an infeasible case does not count as a cash rescue. Shortfall is `max(0, reserve - minimum daily projected cash)` from the opening day through target plus look-ahead. Payroll is funded when end-of-day cash is nonnegative on every payroll day; this is separate from keeping a positive reserve. The after metrics describe the actual live sandbox state after the workflow, including unchanged states after refusals, rather than a hypothetical draft.
 
-Economic cost is the early-payment discount plus a comparison cost of deferred amount × days × 12% / 365, rounded down to minor units. No real fee or money movement occurs. Costs are reported per case in that case's currency; they are not summed across currencies. Cash risk is the fraction of 400 seeded TidePay payment futures that breach the reserve, with one common lateness draw per customer. It is model-based synthetic uncertainty, not classification accuracy against realised cash events.
+Economic cost is the early-payment discount plus a comparison cost of deferred amount × days × 12% / 365, rounded down to minor units. No real fee or money movement occurs. Costs are reported per case in that case's currency; they are not summed across currencies. Cash risk is the fraction of 400 seeded GuardPay payment futures that breach the reserve, with one common lateness draw per customer. It is model-based synthetic uncertainty, not classification accuracy against realised cash events.
 
 The runner checks the financial-state hash after every no-mandate execution attempt, after proposal creation and after workflows that do not execute. Audit and proposal writes are expected and are excluded from the financial-state hash. Invalid imports are separately checked for any partially written financial records. Injected model failure cases additionally check for unexpectedly created proposals.
 
@@ -109,6 +109,6 @@ Checks actually run for this work:
 - `python3 scripts/evaluate_upgrade_scenarios.py`: all 24 defined workflows handled as expected, 14/14 containment cases, timings and screening evidence written.
 - `python3 -m unittest discover -s tests -p test_upgrade_scenarios.py -v`: 15 tests passed.
 - `python3 -m unittest discover -s tests -p test_core.py -v`: 15 tests passed.
-- `python3 -m tideway.selftest`: existing 5/5 tasks and 25/25 attacks passed.
+- `python3 -m moneyguard.selftest`: existing 5/5 tasks and 25/25 attacks passed.
 
 The historical [scenario-comparison.json](../evidence/scenario-comparison.json), its three-fixture perturbation spec and its evaluator remain unchanged. No new generic-LLM comparator, real user study, external security audit, another operating system, Docker build or real-device language-model run is claimed by this evaluation.

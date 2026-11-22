@@ -1,6 +1,6 @@
 # Archive: FinTechathon 2026 (Shenzhen) material
 
-Tideway was first built for the FinTechathon 2026 International Track (Topic E: SME Finance Copilot).
+MoneyGuard was first built for the FinTechathon 2026 International Track (Topic E: SME Finance Copilot).
 The project now competes in the **MU CSE Fest 2026 AI Builders Hackathon, FinTech & Financial Intelligence track**,
 and the organisers confirmed an existing project may be adapted.
 

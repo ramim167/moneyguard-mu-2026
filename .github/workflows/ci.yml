@@ -39,11 +39,11 @@ jobs:
         if: runner.os == 'Windows'
         run: python -c "import locale, sys; print('UTF8 mode:', sys.flags.utf8_mode, 'file encoding:', locale.getencoding()); assert sys.flags.utf8_mode == 0; assert locale.getencoding().lower() in ('cp1252', 'windows-1252'), 'Windows locale changed; restore a CP1252 test lane'"
       - name: Compile sources without site packages
-        run: python -S -m compileall -q run.py tideway scripts tests
+        run: python -S -m compileall -q run.py moneyguard scripts tests
       - name: Run complete stdlib test suite and record actual counts
         run: python -S scripts/verify_submission.py
       - name: Run task and approval-boundary scorecard
-        run: python -S -m tideway.selftest
+        run: python -S -m moneyguard.selftest
       - name: Preserve test evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2, Node 24

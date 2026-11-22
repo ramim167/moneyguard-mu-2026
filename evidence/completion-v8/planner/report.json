@@ -3,11 +3,11 @@
   "run_at_utc": "2026-10-17T14:30:12+00:00",
   "source_tree_sha256": "cf7530d43517bb2a87f85b2b434f2e00d113b942e4f5cd28ad54f2b53405f5af",
   "source_unchanged_during_run": true,
-  "evaluation_script_sha256": "6f4439618cb62689a647be0c54602b710ac05f9993a3dd9a64de580857b20ec2",
-  "fixture_sha256": "0fd9b482d1a13bb91d5126ab751db2b4eb019c3fcefee8d1063c47f0460d4a46",
+  "evaluation_script_sha256": "2f365a8f6339703ec7b81c522d5a51517c73c8a570f895243df1d298a87a0792",
+  "fixture_sha256": "312b07d718914d5d78179b6768ac9da204ec82d320d9f3f33f5d4b27d1cc4e80",
   "historical_baseline": {
     "path": "baseline-scenarios.json",
-    "sha256": "f8dab1814eae6afab2fed702a87b0b5ef77bbe1994121dcb965c38df4e09d6f2",
+    "sha256": "4bcc88ab196341b22506dcad8e750ec04790711abd1957efc484f800aad4eeb1",
     "original_run_at_utc": "2026-10-17T05:56:43+00:00",
     "comparison_note": "Immutable recorded outcomes, not a rerun of old source. Changes in model draw alignment and final-estimate sampling are included; do not attribute the entire difference solely to candidate selection. Timings across those runs are not a controlled speed comparison."
   },
@@ -1141,7 +1141,7 @@
   "limitations": [
     "Known disclosed synthetic cases reused after inspecting failures; not fresh held-out performance.",
     "Receipt timing is uncertain; accepted early-payment agreements are fixed in the sandbox simulation. Their real-world reliability is not measured.",
-    "Fresh seeds reduce Monte Carlo sampling noise, not TidePay model error or unmodelled business risks.",
+    "Fresh seeds reduce Monte Carlo sampling noise, not GuardPay model error or unmodelled business risks.",
     "Below-target estimates are not guarantees; above-target approvals still require exact bound residual-risk acknowledgement from each approver.",
     "No real money, genuine counterparties, model inference or external services tested."
   ]

@@ -5,8 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from unittest.mock import patch
 
-from tideway.domain import ValidationError
-from tideway.server import Application
+from moneyguard.domain import ValidationError
+from moneyguard.server import Application
 from scripts.demo_payment_delay import rehearse
 
 B = 'shapla-services'
@@ -91,7 +91,7 @@ class DemoDelay(unittest.TestCase):
             self.app.post('/api/demo/payment-delay', self.request(), None, None)
 
     def test_real_workspace_and_cross_tenant_invoice_are_refused(self):
-        business, who = self.app.tideway.signup({'business_name': 'Private Ledger', 'currency': 'USD', 'country': 'US',
+        business, who = self.app.moneyguard.signup({'business_name': 'Private Ledger', 'currency': 'USD', 'country': 'US',
               'opening_cash': '1000', 'reserve_floor': '100', 'owner_name': 'Owner', 'username': 'owner-test', 'pin': '739162'})
         body = self.request(business_id=business['business_id'], expected_snapshot=self.app.store.snapshot(business['business_id'])['snapshot_hash'], pin='739162')
         with self.assertRaises(ValidationError):
@@ -107,7 +107,7 @@ class DemoDelay(unittest.TestCase):
             self.apply(self.request())
 
     def test_stale_approval_is_refused_after_mutation(self):
-        plan = self.app.tideway.propose(B, None, 'agent:test')
+        plan = self.app.moneyguard.propose(B, None, 'agent:test')
         self.apply(self.request())
         bundle = plan['bundles'][0]
         with self.assertRaises(ValidationError):
@@ -132,5 +132,5 @@ class DemoDelay(unittest.TestCase):
 
     def test_hypothetical_scenario_is_read_only(self):
         before = self.app.store.snapshot(B)['snapshot_hash']
-        self.app.tideway.what_if(B, None, {'customer_delays': {'Bay Logistics': 20}})
+        self.app.moneyguard.what_if(B, None, {'customer_delays': {'Bay Logistics': 20}})
         self.assertEqual(before, self.app.store.snapshot(B)['snapshot_hash'])

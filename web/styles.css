@@ -353,7 +353,7 @@ li + li { margin-top: 4px; }
 
 .fx-note { color: var(--blue); border-color: #c9dcee; background: var(--blue-soft); }
 
-/* TideLM copilot and inbox */
+/* GuardLM copilot and inbox */
 .pill.teal { color: var(--teal); background: var(--teal-soft); }
 .chat.with-mode { grid-template-rows: auto minmax(0, 1fr) auto; }
 .chat-mode { padding-bottom: 10px; }

@@ -4,9 +4,9 @@ import tempfile
 import unittest
 from datetime import date
 
-from tideway import inbox_rules, scam_shield
-from tideway.domain import ValidationError, minor_value, parse_amount
-from tideway.server import Application
+from moneyguard import inbox_rules, scam_shield
+from moneyguard.domain import ValidationError, minor_value, parse_amount
+from moneyguard.server import Application
 
 PIN = "739215"
 OWNER = {"id": "alice", "name": "Alice", "role": "owner"}

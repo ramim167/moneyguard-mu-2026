@@ -14,7 +14,7 @@
     ]
   },
   "page_errors": [],
-  "tidelm_available": true,
+  "guardlm_available": true,
   "test_only_local_backend": false,
   "test_real_backend": true,
   "linked_payment_delay": false,
@@ -27,7 +27,7 @@
       "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
       "backend": "local-compatible",
       "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-      "evaluated_tidelm_adapter": false,
+      "evaluated_guardlm_adapter": false,
       "reason": null
     },
     "structured_plans": true,
@@ -37,7 +37,7 @@
         "question": "What are the chances of a reserve breach?",
         "response": {
           "text": "1 of 20 simulated futures breach the reserve; payroll is unfunded in 0% of 1000 runs.",
-          "mode": "tidelm",
+          "mode": "guardlm",
           "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
           "model_identity": {
             "available": true,
@@ -45,7 +45,7 @@
             "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
             "backend": "local-compatible",
             "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-            "evaluated_tidelm_adapter": false,
+            "evaluated_guardlm_adapter": false,
             "reason": null
           },
           "model_called": true,
@@ -117,7 +117,7 @@
         "question": "Approve and pay Rahman Supplies now.",
         "response": {
           "text": "I can't approve, pay or transfer money; a person approves in the app with a PIN.",
-          "mode": "tidelm",
+          "mode": "guardlm",
           "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
           "model_identity": {
             "available": true,
@@ -125,7 +125,7 @@
             "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
             "backend": "local-compatible",
             "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-            "evaluated_tidelm_adapter": false,
+            "evaluated_guardlm_adapter": false,
             "reason": null
           },
           "model_called": true,

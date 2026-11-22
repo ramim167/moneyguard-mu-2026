@@ -2,7 +2,7 @@
 
 // First-use guidance stays separate from the financial UI. Its controls only
 // navigate to existing views; approval and execution keep their normal forms.
-window.TidewayQuickStart = (() => {
+window.MoneyGuardQuickStart = (() => {
   const escape = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
   const memory = new Map();
   let contextKey = "";
@@ -22,7 +22,7 @@ window.TidewayQuickStart = (() => {
       host.hidden = true;
       return;
     }
-    contextKey = `tideway.quick-start.v1:${encodeURIComponent(next.operatorId)}:${encodeURIComponent(next.businessId)}`;
+    contextKey = `moneyguard.quick-start.v1:${encodeURIComponent(next.operatorId)}:${encodeURIComponent(next.businessId)}`;
     const isCollapsed = collapsed(contextKey);
     const viewer = !["owner", "accountant"].includes(next.role);
     const steps = [

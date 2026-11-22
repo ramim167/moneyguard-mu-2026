@@ -7,8 +7,8 @@ import threading
 import unittest
 from http.server import ThreadingHTTPServer
 
-from tideway.security import RateLimiter
-from tideway.server import Application, make_handler
+from moneyguard.security import RateLimiter
+from moneyguard.server import Application, make_handler
 
 B = "shapla-services"
 
@@ -50,7 +50,7 @@ class TreasuryHTTP(unittest.TestCase):
         if body is not None:
             headers["Content-Type"] = "application/json"
             if csrf:
-                headers["X-Tideway-Token"] = cls.app.csrf
+                headers["X-MoneyGuard-Token"] = cls.app.csrf
         if cookie:
             headers["Cookie"] = cookie
         conn.request(method, path, json.dumps(body) if body is not None else None, headers)

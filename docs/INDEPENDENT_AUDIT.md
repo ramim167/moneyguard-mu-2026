@@ -48,10 +48,10 @@ were not independently verified. Do not invent organiser confirmation.
 |---|---|---|
 | A01 / high | A truncated signing-key file was silently replaced. Concurrent initial callers received different keys, invalidating each other's signatures. | Existing invalid files fail closed and remain byte-identical. New keys are fully written and synced before atomic create-if-absent publication; concurrent starts read the winning key. Tests cover corrupt/empty/non-hex keys and 24 concurrent loads. |
 | A02 / medium | A 64-character non-ASCII signature raised `TypeError` instead of returning an invalid-signature result. | Strict lowercase SHA-256 hex validation precedes constant-time comparison. Malformed signatures return false; authentic and tampered documents are tested. |
-| A03 / medium | `.env.example` documented `TIDEWAY_LOCAL_STRUCTURED_PLANS`, but startup omitted it from the environment allowlist. | Startup now loads the flag, preserves explicit shell settings, and ignores unrelated variables. |
+| A03 / medium | `.env.example` documented `MONEYGUARD_LOCAL_STRUCTURED_PLANS`, but startup omitted it from the environment allowlist. | Startup now loads the flag, preserves explicit shell settings, and ignores unrelated variables. |
 | A04 / high | Profiles and empirical fallback used paid history dated after the simulation date; the model itself already applied the cutoff. Dashboard overdue days also lacked the snapshot date. | Profiles, fallback and the illustrative leave-one-out backtest share the snapshot cutoff; `Store.derived` passes current date. Tests cover future labels, inclusive cutoff, fallback and model/profile consistency. This does not turn the illustrative backtest into a chronological model benchmark. |
 | A05 / medium | A receivable already used in an accepted early-payment adjustment could still satisfy mock invoice-advance collateral. Not-yet-issued invoices were also counted. | Mock collateral excludes committed and future-issued invoices. The comparison remains read-only and lender eligibility remains unverified. |
-| A06 / medium | Four CRLF files in this Windows checkout contradicted the LF policy. The installed model's raw hash differed from its evaluation, making the deployed-model card unavailable. | Restored actual LF bytes, preserving parsed JSON and model weights. Installed SHA-256 again equals `00639d9b3e408f1a51df20130e804db2f8a031772a772d706f09e6a7428aa466`. Strict byte checks were retained. These byte repairs need not appear as semantic Git diffs. |
+| A06 / medium | Four CRLF files in this Windows checkout contradicted the LF policy. The installed model's raw hash differed from its evaluation, making the deployed-model card unavailable. | Restored actual LF bytes, preserving parsed JSON and model weights. Installed SHA-256 again equals `81638ca0c17e3ca36c2168cfd2a9fa5ad360fb2520078a2a421b4011d5fc442d`. Strict byte checks were retained. These byte repairs need not appear as semantic Git diffs. |
 | A07 / medium | The old-schema migration test left a raw SQLite connection open; Windows refused temporary-directory cleanup. | Explicit connection closing preserves transaction checks and makes cleanup pass without suppressing errors. |
 | A08 / medium | Pitch script and technical/checklist text still described compatible inference as unavailable and led with scores for different model weights. | Current text leads with the shipped artifact's evaluation and distinguishes measured compatible inference from pending MLX/vision/cloud paths. Unresolved video and administrative items remain visible. |
 
@@ -82,7 +82,7 @@ counts and source digest are authoritative in `evidence/test-summary.json`.
 - Additional actual-backend browser evidence, with runtime identity and UI
   result checks: `evidence/independent-audit/browser-real-model/`.
 - The full 7,427-invoice deployed-model evaluation was also reproduced on
-  Windows into `evidence/independent-audit/tidepay-reproduction/`. Overall
+  Windows into `evidence/independent-audit/guardpay-reproduction/`. Overall
   results, cohort balance and subgroups match the saved report exactly;
   `comparison.json` records both report hashes. This repeats disclosed cohorts
   to check reproducibility and is not a new unseen evaluation.
@@ -117,7 +117,7 @@ daemon was unavailable in earlier work; no successful container build is claimed
    against a newly sealed, independently authored set after future changes.
    Structural payment authority remains essential even with a better detector.
 5. **Model validation:** actual compatible Qwen inference is verified for listed
-   requests, but native MLX/TideLM, receipt quality, real cloud latency, real-data
+   requests, but native MLX/GuardLM, receipt quality, real cloud latency, real-data
    calibration and overdue/default generalization are not established. Shipped
    cold-start probability quality needs attention. Retain the baseline failures.
    Only seven of nine executed scenario rescues meet the 10% simulated reserve

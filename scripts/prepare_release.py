@@ -30,8 +30,8 @@ def main():
         parser.exit(1, 'Source bytes violate .gitattributes LF policy: ' + ', '.join(issues) + '\nUse a fresh LF checkout before release; hashes are never normalized.\n')
     digest, _ = source_digest()
     env = os.environ.copy()
-    env.update(OPENAI_API_KEY='', TIDEWAY_LOCAL_MODEL_URL='', TIDEWAY_LOCAL_TEXT_MODEL='',
-               TIDEWAY_LOCAL_VISION_MODEL='', TIDEWAY_LOCAL_STRUCTURED_PLANS='', TIDEWAY_SEMANTIC_SCREENING='', PYTHON=sys.executable)
+    env.update(OPENAI_API_KEY='', MONEYGUARD_LOCAL_MODEL_URL='', MONEYGUARD_LOCAL_TEXT_MODEL='',
+               MONEYGUARD_LOCAL_VISION_MODEL='', MONEYGUARD_LOCAL_STRUCTURED_PLANS='', MONEYGUARD_SEMANTIC_SCREENING='', PYTHON=sys.executable)
     out = ROOT / args.evidence_dir
     out.mkdir(parents=True, exist_ok=True)
     stages = []
@@ -46,7 +46,7 @@ def main():
         stages.append(name)
 
     python = [sys.executable] + (['-S'] if sys.flags.no_site else [])
-    run('Python compile', python + ['-m', 'compileall', '-q', 'run.py', 'tideway', 'scripts', 'tests'])
+    run('Python compile', python + ['-m', 'compileall', '-q', 'run.py', 'moneyguard', 'scripts', 'tests'])
     run('JavaScript syntax', ['node', 'scripts/check_javascript.mjs'])
     run('Decision-review financial explanations', ['node', 'scripts/test_decision_review.mjs'])
     run('Exact currency conversion and unchanged-input round-trips', ['node','scripts/test_currency.mjs','--out',str(out / 'currency-checks.json')])
@@ -64,7 +64,7 @@ def main():
         if not args.reuse_pdfs:
             run('PDF deliverables', python + ['scripts/build_submission_pdfs.py'])
         pdfs = ['slides/pitch.pdf', 'docs/architecture.pdf', 'docs/security-assessment.pdf',
-                'docs/submission-notes.pdf', 'docs/Tideway_FinTechathon_2026_Roadmap.pdf']
+                'docs/submission-notes.pdf', 'docs/MoneyGuard_FinTechathon_2026_Roadmap.pdf']
         report = {'run_at_utc': datetime.now(timezone.utc).isoformat(timespec='seconds'),
                   'source_tree_sha256': digest, 'stages_passed': stages,
                   'pdfs_rebuilt': not args.reuse_pdfs, 'visual_review_automated': False,

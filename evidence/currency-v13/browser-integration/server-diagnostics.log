@@ -1,5 +1,5 @@
-Local compatible model configured; its results are not the TideLM v2 benchmark.
-Tideway is ready: http://127.0.0.1:8799
+Local compatible model configured; its results are not the GuardLM v2 benchmark.
+MoneyGuard is ready: http://127.0.0.1:8799
 Demo sign-in (synthetic sandbox): owner Nadia PIN 2468 · accountant Imran PIN 1357 · viewer Guest PIN 0000
 Local agent mode (no network). Set OPENAI_API_KEY in .env to try the optional LLM mode.
 [18/Oct/2026 19:25:25] "GET /api/config HTTP/1.1" 200 -

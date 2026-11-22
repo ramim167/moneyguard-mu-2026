@@ -26,7 +26,7 @@ def main(argv=None):
                    if study_n else 'Kit and analysis available; no real-user claim')
     model = read('evidence/readiness-v3/blind/model-first-observation.json')
     screening = read('evidence/readiness-v3/blind/screening-first-observation.json')
-    pay = read('evidence/readiness-v3/tidepay/report.json')
+    pay = read('evidence/readiness-v3/guardpay/report.json')
     current = args.evidence_dir or ('evidence/upgrade-v14' if (ROOT / 'evidence/upgrade-v14/scenarios/report.json').is_file()
                                   else 'evidence/currency-v13' if (ROOT / 'evidence/currency-v13/scenarios/report.json').is_file()
                                   else 'evidence/owner-view-v12' if (ROOT / 'evidence/owner-view-v12/scenarios/report.json').is_file()
@@ -78,7 +78,7 @@ Historical upgrade and Windows reports describe earlier source versions.
 - Mock financing compares arrival date, fee, APR convention, total repayment,
   unverified eligibility and the cash/payroll path through repayment. Borrowing
   cannot appear feasible merely because repayment falls beyond the first horizon.
-- Exact shipped TidePay weights now have a separate frozen-artifact evaluation,
+- Exact shipped GuardPay weights now have a separate frozen-artifact evaluation,
   exposed in the app with integrity and artifact-hash checks. Audited-model scores
   remain separate. The low-history limitation is visible.
 - A new independent challenge set was sealed before first observation. Actual
@@ -107,7 +107,7 @@ Historical upgrade and Windows reports describe earlier source versions.
 | Latest stored full unit run | {tests['tests_run']} run; {tests['failures']} failures; {tests['errors']} errors; {tests['skipped']} skipped | Python {tests['python']}, {tests['platform']}; the report records its own source hash; injected outputs are not model quality |
 | Additional standard-library run | {python311['tests_run']} run; {python311['failures']} failures; {python311['errors']} errors; {python311['skipped']} skipped | Python {python311['python']}; optional photo tests require Pillow; report records its own source hash |
 | Financial scenarios | {cases['workflow_successes']}/{cases['cases']} expected workflows; {cases['executed_rescues']} rescues | {risk_met}/{cases['executed_rescues']} executed rescues meet the 10% simulated risk target |
-| Shipped TidePay | {results['deployed']['n']:,} unseen synthetic invoices; MAE {results['deployed']['mae_days']:.4f} days | Heuristic {results['customer_history_heuristic']['mae_days']:.4f}; training-only prior {results['historical_training_prior']['mae_days']:.4f}; no weight changes |
+| Shipped GuardPay | {results['deployed']['n']:,} unseen synthetic invoices; MAE {results['deployed']['mae_days']:.4f} days | Heuristic {results['customer_history_heuristic']['mae_days']:.4f}; training-only prior {results['historical_training_prior']['mae_days']:.4f}; no weight changes |
 | First actual Qwen3 challenge | {model['matched']['numerator']}/{model['requests']} correct; {model['containment']['numerator']}/{model['containment']['denominator']} contained | Four retained misses; no mandate, execution or financial-ledger mutation |
 | Post-fix Qwen3 regression | {regression['matched']['numerator']}/{regression['requests']} known cases handled; {regression['safe_stop_handled']['numerator']}/{regression['safe_stop_handled']['denominator']} safe stops | One real-model pass after disclosed guard fixes; not a new blind score |
 | Independent-audit Windows Qwen3 rerun | {audit_result} | Actual compatible inference on disclosed cases; retains every output; not blind |
@@ -181,7 +181,7 @@ Instruction screening has finite coverage. The v5 and v6 first observations belo
 are separate authored sets; they cannot be compared as an uncontrolled percentage
 improvement. Optional semantic checks remain advisory and require a local model.
 Independent verification of the supplied SME observations, usability re-testing,
-current MLX/TideLM planning and receipt-model evaluation,
+current MLX/GuardLM planning and receipt-model evaluation,
 external security testing and real-data calibration remain outstanding.
 Partial settlements, reversals and real lender eligibility require separate
 financial design before live integration. {ci_status}
@@ -215,7 +215,7 @@ be guaranteed from synthetic checks while these validation gaps remain.
   labels and first observation remain in `evidence/screening-v5/`.
 - Optional local semantic screening adds a strict typed classification with one
   bounded generation, preserved errors and raw output, and explicit uncertainty.
-  `TIDEWAY_SEMANTIC_SCREENING=1` enables it for Inbox messages and photo transcripts.
+  `MONEYGUARD_SEMANTIC_SCREENING=1` enables it for Inbox messages and photo transcripts.
   It never authorizes a record or financial action; model-free rules remain available.
 - [V6 independently authored first pass](../evidence/screening-v6/first-pass/first-pass-results.json)
   records actual local inference, rules/semantic/combined denominators, uncertainty,
@@ -255,7 +255,7 @@ be guaranteed from synthetic checks while these validation gaps remain.
             doc += f'- {phase}: no completed report; quality verification remains outstanding.\n'
     doc += ('\nDevelopment cases are disclosed v6 regressions. The fresh set is separately AI-authored, '
             'not an external or human-blind assessment. Native MLX classification cannot inherit '
-            'Windows GGUF or historical TideLM planning scores. Every miss and raw output is retained. '
+            'Windows GGUF or historical GuardLM planning scores. Every miss and raw output is retained. '
             'The native classifier uses the already cached base model without the planning LoRA; '
             'the planning backend is unchanged. Independent remediation review agents were unavailable '
             'because of an account usage limit; no independent review pass is claimed.\n')

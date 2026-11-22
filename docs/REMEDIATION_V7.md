@@ -86,7 +86,7 @@ v7 measurements are historical evidence rather than a current Windows rerun.
    Planning/extraction behavior is unchanged, compatible local backends remain
    supported, and no model weights were downloaded. Base loading uses a local
    cache path and fails closed if it is unavailable. Classification does not
-   inherit TideLM planning benchmark scores.
+   inherit GuardLM planning benchmark scores.
 5. Above-target risk was rounded to whole percentages in the rescue notice.
    Display precision now preserves an excess above target, including floating
    point boundary cases; exact server-bound consent was already enforced and

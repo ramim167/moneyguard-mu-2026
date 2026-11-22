@@ -13,7 +13,7 @@ function setup() {
     toast:()=>{},api:(_url,payload)=>new Promise((resolve,reject)=>pending.push({payload,resolve,reject})),
     act:async(_label,work)=>{try{return await work();}catch{return null;}}};
   vm.runInNewContext(source, context);
-  const ui = context.window.TidewayShield;
+  const ui = context.window.MoneyGuardShield;
   ui.bind(()=>{host.innerHTML=ui.render();});
   const input = (id,value)=>listeners.input({target:{id,value}});
   const submit = ()=>listeners.submit({target:{id:'shield-form'},preventDefault(){}});

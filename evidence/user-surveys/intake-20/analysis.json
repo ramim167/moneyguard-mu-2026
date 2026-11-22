@@ -1,5 +1,5 @@
 {
-  "schema_version": "tideway-survey-intake-analysis-v1",
+  "schema_version": "moneyguard-survey-intake-analysis-v1",
   "classification": "team_reported_pre_v14_usability_study",
   "sources": {
     "sme": {
@@ -69,7 +69,7 @@
     "quantization": "Q4_K_M",
     "runtime": "llama.cpp b11678",
     "device": "Windows laptop; Intel Core i5; 16 GB RAM; Windows 11",
-    "execution_context": "Local, inside Tideway through a loopback server.",
+    "execution_context": "Local, inside MoneyGuard through a loopback server.",
     "basis": "Team report; survey-linked artifact hashes have not been inspected."
   },
   "cohorts": {
@@ -89,7 +89,7 @@
     "Follow-up metadata is attributed to the user; database resets use the latest affirmative correction. The analysis source digest is not substituted for the historically reported commit."
   ],
   "sme": {
-    "schema_version": "tideway-user-study-v1",
+    "schema_version": "moneyguard-user-study-v1",
     "excluded_rows_without_consent": 0,
     "roles": {
       "accountant": 4,
@@ -242,7 +242,7 @@
     }
   },
   "security": {
-    "schema_version": "tideway-supplied-security-assistance-v1",
+    "schema_version": "moneyguard-supplied-security-assistance-v1",
     "status": "team_reported_security_task_observations",
     "record_count": 20,
     "source_sha256": "09d4ed2f042b5b61355cba077902d0bf296e07a55a3aa8de31ada9b4f2ff8f02",
@@ -328,13 +328,13 @@
   "collection_independently_verified": false,
   "metadata_followup": {
     "file": "session-metadata.json",
-    "sha256": "56355336716849464eb30d512def62bc5fc9028727e07a5b535dbe2d67ccf5e4",
+    "sha256": "eb46c81759c2cb63396348e0a8b586d4808971a2dcf128a8067be2d490ce0a53",
     "initial_analysis_sha256": "0daef55a6103df71a4e01a82d8c2cd66735698f516a26ddacead7fb875a75d23",
     "scope": "Later team-reported metadata and corrected English; source CSV bytes and calculated observations are unchanged."
   },
   "artifact_verification": {
     "manifest": "verification/manifest.json",
-    "manifest_sha256": "c15d16d7a3db51d0b315e1ab1a45e6e10ca9a7060be14f92e5b7a220063fd50a",
+    "manifest_sha256": "37a78df2dea83388996c1f3ca05e2b01b7b214f268ac59a218e29422d0373760",
     "source_exports": "Archived CSV bytes and 40 rows linked to the intake receipt and aggregate hashes.",
     "overlap": "The 10 team-reported ID pairs exist in both supplied files; this does not independently verify identity.",
     "current_system_info": "verification/system-info.json",
@@ -354,7 +354,7 @@
   },
   "reported_build": {
     "file": "reported-build.json",
-    "sha256": "833231d7d9266dfe9dbb8b7c0069ec318645bf971dd19f5d44fad82a8671a9ab"
+    "sha256": "671f08105c1711b11adbfc1bf38ef77d925afc5d36540ed3ef084366f03b9f6c"
   },
   "covers_v14_ui_upgrade": false,
   "reported_survey_browser": {

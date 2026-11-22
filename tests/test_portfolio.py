@@ -1,4 +1,4 @@
-"""Portfolio radar: synthetic-only lender early warning (tideway/portfolio.py)."""
+"""Portfolio radar: synthetic-only lender early warning (moneyguard/portfolio.py)."""
 import ast
 import json
 import subprocess
@@ -7,9 +7,9 @@ import time
 import unittest
 from pathlib import Path
 
-from tideway import analytics, portfolio
-from tideway.domain import ValidationError
-from tideway.fixtures import fixtures
+from moneyguard import analytics, portfolio
+from moneyguard.domain import ValidationError
+from moneyguard.fixtures import fixtures
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -67,7 +67,7 @@ class PortfolioRadarTest(unittest.TestCase):
         self.assertEqual((stressed["shock"]["customer_delay_days"], stressed["shock"]["sector"]), (15, "retail"))
 
     def test_module_never_touches_the_store(self):
-        tree = ast.parse((ROOT / "tideway" / "portfolio.py").read_text(encoding="utf-8"))
+        tree = ast.parse((ROOT / "moneyguard" / "portfolio.py").read_text(encoding="utf-8"))
         imported = set()
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
@@ -75,8 +75,8 @@ class PortfolioRadarTest(unittest.TestCase):
             elif isinstance(node, ast.Import):
                 imported.update(alias.name.split(".")[-1] for alias in node.names)
         self.assertFalse(imported & {"store", "service", "server", "sqlite3", "event_store", "agent", "copilot"}, imported)
-        code = ("import sys; from tideway import portfolio; portfolio.radar(n=10, runs=50); "
-                "print([m for m in ('tideway.store','tideway.service','tideway.server','sqlite3') if m in sys.modules])")
+        code = ("import sys; from moneyguard import portfolio; portfolio.radar(n=10, runs=50); "
+                "print([m for m in ('moneyguard.store','moneyguard.service','moneyguard.server','sqlite3') if m in sys.modules])")
         output = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True, timeout=120)
         self.assertEqual(output.returncode, 0, output.stderr)
         self.assertEqual(output.stdout.strip(), "[]")

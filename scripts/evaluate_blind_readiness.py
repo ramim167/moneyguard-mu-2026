@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 FIXTURE = ROOT / "tests/fixtures/readiness_blind_v4.json"
 DEFAULT_OUT = ROOT / "evidence/readiness-v3/blind"
-SCANNER_PATHS = ["tideway/domain.py", "tideway/analytics.py"]
+SCANNER_PATHS = ["moneyguard/domain.py", "moneyguard/analytics.py"]
 
 
 def sha256(path):
@@ -57,13 +57,13 @@ def fixture():
 
 
 def source_paths(phase):
-    paths = [ROOT / item for item in SCANNER_PATHS] if phase == "screening" else sorted((ROOT / "tideway").rglob("*.py"))
+    paths = [ROOT / item for item in SCANNER_PATHS] if phase == "screening" else sorted((ROOT / "moneyguard").rglob("*.py"))
     return [*paths, Path(__file__).resolve()]
 
 
 def seal(phase, directory):
     spec = fixture()
-    record = {"schema_version": "tideway-blind-v4-seal", "phase": phase,
+    record = {"schema_version": "moneyguard-blind-v4-seal", "phase": phase,
               "sealed_at_utc": utc_now(), "fixture": str(FIXTURE.relative_to(ROOT)),
               "fixture_sha256": sha256(FIXTURE), "methodology": spec["methodology"],
               "model_scoring": spec["model_scoring"], "label_policy": spec["label_policy"],
@@ -111,8 +111,8 @@ def confusion(rows, label="malicious"):
 
 
 def screening_report(spec):
-    from tideway.analytics import payee_checks
-    from tideway.domain import PAYMENT_REVIEW_FLAGS, clean_text, scan_text
+    from moneyguard.analytics import payee_checks
+    from moneyguard.domain import PAYMENT_REVIEW_FLAGS, clean_text, scan_text
     messages, payees = [], []
     for case in spec["messages"]:
         cleaned, removed = clean_text(case["text"])
@@ -191,12 +191,12 @@ def model_report(spec, progress):
     # This route uses the application runtime, not a shortcut classifier.
     os.environ["HF_HUB_OFFLINE"] = "1"
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
-    from tideway.service import Tideway
-    from tideway.tidelm import TideLM
-    lm = TideLM()
+    from moneyguard.service import MoneyGuard
+    from moneyguard.guardlm import GuardLM
+    lm = GuardLM()
     status = lm.status()
     report = {"model_status": status, "real_model_inference": False, "rows": [], "generations": [],
-              "model_environment": {key: os.getenv(key) for key in ("TIDEWAY_LOCAL_MODEL_URL", "TIDEWAY_LOCAL_TEXT_MODEL", "TIDEWAY_LOCAL_STRUCTURED_PLANS")},
+              "model_environment": {key: os.getenv(key) for key in ("MONEYGUARD_LOCAL_MODEL_URL", "MONEYGUARD_LOCAL_TEXT_MODEL", "MONEYGUARD_LOCAL_STRUCTURED_PLANS")},
               "platform": platform.platform(), "machine": platform.machine(), "python": platform.python_version(),
               "downloads_during_evaluation": False, "sampling": "temperature zero; server/backend controls may still affect reproducibility"}
     if not status.get("available"):
@@ -224,7 +224,7 @@ def model_report(spec, progress):
     lm._generate = recorded_generate
     for case in spec["model_cases"]:
         current_case = case
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         started = time.monotonic()
         reply, error = {}, None
         configure_case(app, case)
@@ -265,7 +265,7 @@ def model_report(spec, progress):
                   containment=rate_interval(sum(row["containment_passed"] for row in rows), len(rows)),
                   median_seconds=statistics.median(row["seconds"] for row in rows), max_seconds=max(row["seconds"] for row in rows),
                   limitations=["Small independent authored synthetic challenge set, not natural user traffic or external validation.",
-                               "Compatible Qwen inference does not verify the released TideLM MLX adapter or receipt model.",
+                               "Compatible Qwen inference does not verify the released GuardLM MLX adapter or receipt model.",
                                "Safe stopping establishes runtime containment for that request; it does not establish model understanding.",
                                "Tool relevance includes registered exact argument subsets and decision outcomes, not just a tool-name hit.",
                                "No retuning or selective retry was performed after first observation; every mismatch remains in rows and raw generations."])
@@ -287,7 +287,7 @@ def main():
     result_path = directory / f"{phase}-first-observation.json"
     if result_path.exists() or (directory / f"{phase}-started.json").exists():
         raise ValueError("First observation already started or exists; refusing overwrite/retry. Preserve interrupted evidence.")
-    start = {"schema_version": "tideway-blind-v4-first-observation", "phase": phase,
+    start = {"schema_version": "moneyguard-blind-v4-first-observation", "phase": phase,
              "started_at_utc": utc_now(), "seal": verified, "methodology": spec["methodology"],
              "uncertainty_note": "Wilson 95% descriptive intervals on purposively authored cases; not population confidence or prevalence estimates."}
     write_new(directory / f"{phase}-started.json", start)

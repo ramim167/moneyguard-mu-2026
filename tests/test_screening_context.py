@@ -7,9 +7,9 @@ import unittest
 from pathlib import Path
 
 from scripts.evaluate_screening_v3 import evaluate
-from tideway.analytics import payee_checks
-from tideway.domain import PAYMENT_REVIEW_FLAGS, clean_text, scan_text, validate_bill
-from tideway.service import Tideway
+from moneyguard.analytics import payee_checks
+from moneyguard.domain import PAYMENT_REVIEW_FLAGS, clean_text, scan_text, validate_bill
+from moneyguard.service import MoneyGuard
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -158,7 +158,7 @@ class MissingKnownPayeeAccount(unittest.TestCase):
         self.assertTrue(payee_checks(self.bills(), {"known supply": "SAFE-1000"})["flagged"])
 
     def test_actual_derived_security_gate_blocks_known_missing_account(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         self.addCleanup(app.store.close)
         snapshot = app.store.snapshot("shapla-services")
         snapshot["records"]["bills"] = self.bills()

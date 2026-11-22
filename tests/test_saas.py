@@ -7,8 +7,8 @@ from datetime import datetime
 from http.server import ThreadingHTTPServer
 from unittest.mock import patch
 
-from tideway.security import RateLimiter
-from tideway.server import Application, make_handler
+from moneyguard.security import RateLimiter
+from moneyguard.server import Application, make_handler
 
 SIGNUP = {"business_name": "Kestrel Coffee Roasters", "currency": "EUR", "country": "DE", "sector": "Food & drink",
           "opening_cash": "42000", "reserve_floor": "10000", "owner_name": "Lena Vogel", "username": "lena.v",
@@ -33,7 +33,7 @@ class SaaS(unittest.TestCase):
         conn = http.client.HTTPConnection("127.0.0.1", self.port, timeout=20)
         headers = {"Host": f"127.0.0.1:{self.port}"}
         if body is not None:
-            headers.update({"Content-Type": "application/json", "X-Tideway-Token": self.app.csrf,
+            headers.update({"Content-Type": "application/json", "X-MoneyGuard-Token": self.app.csrf,
                             "Origin": f"http://127.0.0.1:{self.port}"})
         if cookie:
             headers["Cookie"] = cookie
@@ -62,7 +62,7 @@ class SaaS(unittest.TestCase):
 
     def test_signup_uses_dhaka_date_at_utc_day_boundary(self):
         instant = datetime.fromisoformat("2026-11-20T18:05:00+00:00")
-        with patch("tideway.domain.datetime") as clock:
+        with patch("moneyguard.domain.datetime") as clock:
             clock.now.side_effect = instant.astimezone
             business, _ = self.signup(username="dhaka.clock", currency="BDT", country="BD")
         snapshot = self.app.store.snapshot(business)
@@ -102,10 +102,10 @@ if __name__ == "__main__":
 
 class DemoIdentity(unittest.TestCase):
     def test_public_demo_account_cannot_redeem_private_invite(self):
-        from tideway.domain import ValidationError
-        from tideway.service import Tideway
+        from moneyguard.domain import ValidationError
+        from moneyguard.service import MoneyGuard
 
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         self.addCleanup(app.store.close)
         private = app.signup(SIGNUP)[0]["business_id"]
         owner = app.store.verify_pin(SIGNUP["username"], SIGNUP["pin"])
@@ -120,18 +120,18 @@ class DemoIdentity(unittest.TestCase):
         from pathlib import Path
         from tempfile import TemporaryDirectory
 
-        from tideway.domain import ValidationError, validate_username
-        from tideway.service import Tideway
+        from moneyguard.domain import ValidationError, validate_username
+        from moneyguard.service import MoneyGuard
 
         with TemporaryDirectory() as folder:
             database = Path(folder) / "test.db"
-            app = Tideway(database, seed=False)
+            app = MoneyGuard(database, seed=False)
             with self.assertRaisesRegex(ValidationError, "reserved"):
                 app.signup({**SIGNUP, "username": "nadia"})
             with patch.object(app.store, "_validate_personal_username", validate_username):
                 private = app.signup({**SIGNUP, "username": "nadia"})[0]["business_id"]
             app.store.close()
-            app = Tideway(database)
+            app = MoneyGuard(database)
             try:
                 fixture = next(account for account in app.config()["demo_accounts"] if account["role"] == "owner")
                 self.assertNotEqual(fixture["id"], "nadia")
@@ -144,11 +144,11 @@ class DemoIdentity(unittest.TestCase):
 
 class Feedback(unittest.TestCase):
     def test_feedback_keeps_only_a_hash_of_the_question(self):
-        from tideway.service import Tideway
-        app = Tideway(":memory:")
+        from moneyguard.service import MoneyGuard
+        app = MoneyGuard(":memory:")
         operator = {"id": "nadia", "name": "Nadia", "role": "owner"}
-        summary = app.store.add_feedback("shapla-services", operator, "tidelm", True, "Can I pay payroll? secret-text")
-        self.assertEqual(summary["by_mode"]["tidelm"], {"helpful": 1, "total": 1})
+        summary = app.store.add_feedback("shapla-services", operator, "guardlm", True, "Can I pay payroll? secret-text")
+        self.assertEqual(summary["by_mode"]["guardlm"], {"helpful": 1, "total": 1})
         with app.store.connect() as db:
             stored = " ".join(str(value) for row in db.execute("SELECT * FROM feedback") for value in tuple(row))
         self.assertNotIn("secret-text", stored)

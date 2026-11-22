@@ -25,11 +25,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tideway import analytics, planner  # noqa: E402
-from tideway.agent import Agent  # noqa: E402
-from tideway.domain import ValidationError, clean_text, scan_text  # noqa: E402
-from tideway.service import Tideway  # noqa: E402
-from tideway.tidelm import TideLM, TideLMUnavailable  # noqa: E402
+from moneyguard import analytics, planner  # noqa: E402
+from moneyguard.agent import Agent  # noqa: E402
+from moneyguard.domain import ValidationError, clean_text, scan_text  # noqa: E402
+from moneyguard.service import MoneyGuard  # noqa: E402
+from moneyguard.guardlm import GuardLM, GuardLMUnavailable  # noqa: E402
 
 FIXTURE = ROOT / "tests/fixtures/upgrade_scenarios_v2.json"
 SCREENING = ROOT / "tests/fixtures/upgrade_screening_v2.json"
@@ -111,7 +111,7 @@ def _approve(app, business_id, plan):
 
 
 def run_case(case, defaults):
-    app = Tideway(":memory:", seed=False)
+    app = MoneyGuard(":memory:", seed=False)
     business_id = "scenario-" + case["id"].lower()
     seed = analytics.stable_seed(SEED, case["id"], "scenario-v2")
     row = {"id": case["id"], "split": case["split"], "condition": case["condition"], "features": case["features"],
@@ -257,14 +257,14 @@ def failure_report():
         ("F07", "viewer_proposal", {"calls": [{"tool": "propose_plan", "args": {}}]}, "viewer"),
         ("F08", "nonfinite_amount", {"calls": [{"tool": "credit_check", "args": {"customer": "Nila Retail", "amount": float("inf"), "terms_days": 30}}]}, "owner"),
         ("F09", "timeout", TimeoutError("injected timeout"), "owner"),
-        ("F10", "unavailable_model", TideLMUnavailable("injected missing weights"), "owner"),
+        ("F10", "unavailable_model", GuardLMUnavailable("injected missing weights"), "owner"),
         ("F12", "ambiguous_incomplete_name", {"calls": [{"tool": "customer_report", "args": {"customer": "Traders"}}]}, "owner"),
         ("F13", "unrequested_currency_conversion", {"calls": [{"tool": "credit_check", "args": {"customer": "Nila Retail", "amount": 500, "terms_days": 30, "currency": "CNY"}}]}, "owner"),
         ("F14", "later_invalid_entity_blocks_whole_plan", {"calls": [{"tool": "propose_plan", "args": {}}, {"tool": "customer_report", "args": {"customer": "Invented Counterparty 999"}}]}, "owner"),
     ]
     rows = []
     for case_id, label, output, role in cases:
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         before = app.store.snapshot("shapla-services")["snapshot_hash"]
         with app.store.connect() as db:
             proposals_before = db.execute("SELECT count(*) FROM plans WHERE business_id=?", ("shapla-services",)).fetchone()[0]
@@ -273,12 +273,12 @@ def failure_report():
                 raise value
             return value if isinstance(value, str) else json.dumps(value)
         try:
-            lm = TideLM(generator=generator)
+            lm = GuardLM(generator=generator)
             reply = lm.ask(app, "shapla-services", None, "Analyse this financial request carefully", role)
             denied = not reply.get("results")
             outcome = "validation_or_role_refusal" if denied else "unexpected_tool_results"
             explanation = reply.get("text", "")
-        except TideLMUnavailable as exc:
+        except GuardLMUnavailable as exc:
             denied, outcome, explanation = True, "explicit_unavailable", str(exc)
         except Exception as exc:
             denied, outcome, explanation = False, "uncontained_exception", type(exc).__name__ + ": " + str(exc)
@@ -292,7 +292,7 @@ def failure_report():
         finally:
             app.store.close()
     # A separate deterministic fallback check uses no injected inference.
-    app = Tideway(":memory:")
+    app = MoneyGuard(":memory:")
     try:
         before = app.store.snapshot("shapla-services")["snapshot_hash"]
         reply = Agent(app).chat("shapla-services", None, "show cash forecast")
@@ -314,7 +314,7 @@ def timing_report(spec, repetitions=7, warmup=1):
     """Planner only: preparation, storage, PINs and UI excluded; MC included."""
     rows = []
     for case in spec["scenarios"]:
-        app = Tideway(":memory:", seed=False)
+        app = MoneyGuard(":memory:", seed=False)
         try:
             try:
                 business_id = new_business(app, case, spec["defaults"])
@@ -377,7 +377,7 @@ def run(output=EVIDENCE, *, repetitions=7, warmup=1, skip_timing=False):
                               "shortfall": "max(0, reserve floor - minimum projected daily cash), including opening day through target plus look-ahead; measured from live post-workflow state, not the draft.",
                               "payroll_funded": "No projected end-of-day cash is negative on a payroll bill/transaction day; ordinary reserve breach is separate.",
                               "economic_cost": "Discount face minus collected cash, plus supplier deferral amount * days * 12% / 365, rounded down to minor units. Executed cost is zero for an unexecuted proposal; no real fees charged.",
-                              "risk": "Seeded TidePay-driven fraction of 400 synthetic payment futures breaching reserve; not calibrated real-business event accuracy.",
+                              "risk": "Seeded GuardPay-driven fraction of 400 synthetic payment futures breaching reserve; not calibrated real-business event accuracy.",
                               "unauthorised_state_changes": "Financial sandbox-state hash changes after no-mandate execution probes, proposal creation, or any workflow with no authorized execution; audit and proposal rows are excluded."},
               "summary": {"cases": len(rows), "workflow_successes": sum(row["workflow_success"] for row in rows),
                           "expectation_matches": sum(row["expectation_met"] for row in rows),

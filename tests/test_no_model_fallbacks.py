@@ -1,9 +1,9 @@
-"""The default install (no TideLM): multilingual chat and Inbox extraction still work, deterministically.
+"""The default install (no GuardLM): multilingual chat and Inbox extraction still work, deterministically.
 
 Judges usually run `python run.py` without the optional model.  These tests pin the two fallbacks:
 the local agent answers Chinese, Spanish, French, Portuguese, Indonesian, Hinglish and Banglish
 questions with the same tools (so the same figures) as English, and the Inbox reads the documented
-alert formats with plain rules, producing the same drafts TideLM produces, still draft-only.
+alert formats with plain rules, producing the same drafts GuardLM produces, still draft-only.
 """
 import random
 import re
@@ -11,25 +11,25 @@ import unittest
 from datetime import date, timedelta
 from unittest.mock import patch
 
-from tideway import conversation, inbox_rules
-from tideway.agent import Agent
-from tideway.domain import ValidationError
-from tideway.ml.tidelm_data import CHINESE_STYLES, STYLES, T, _channel, amount, name
-from tideway.service import Tideway
-from tideway.tidelm import RULES_NOTE, TideLM, TideLMUnavailable, confirm, iso_date
+from moneyguard import conversation, inbox_rules
+from moneyguard.agent import Agent
+from moneyguard.domain import ValidationError
+from moneyguard.ml.guardlm_data import CHINESE_STYLES, STYLES, T, _channel, amount, name
+from moneyguard.service import MoneyGuard
+from moneyguard.guardlm import RULES_NOTE, GuardLM, GuardLMUnavailable, confirm, iso_date
 
 SHAPLA = "shapla-services"
 FIGURES = re.compile(r"-?[A-Z]{3} [\d,]+(?:\.\d+)?")
 
 
 def no_model(_system, _user):
-    raise TideLMUnavailable("TideLM is not available: test install without the model")
+    raise GuardLMUnavailable("GuardLM is not available: test install without the model")
 
 
 class MultilingualLocalAgent(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = Tideway(":memory:")
+        cls.app = MoneyGuard(":memory:")
         cls.agent = Agent(cls.app)
 
     def ask(self, message, role="owner"):
@@ -155,7 +155,7 @@ class MultilingualLocalAgent(unittest.TestCase):
         self.assertIn("solo el dueño o el contador", viewer["text"])
 
     def test_plan_in_spanish_is_a_proposal_for_human_approval(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         reply = Agent(app).chat(SHAPLA, None, "Hazme un plan de rescate", actor="agent:local", role="owner")
         self.assertEqual([item["tool"] for item in reply["trace"]], ["compare_plans"])
         self.assertIn("aprobación humana", reply["text"])
@@ -255,8 +255,8 @@ class InboxWithoutModel(unittest.TestCase):
     CLEAN = "Invoice INV-2291 sent to Nila Traders for BDT 42,500. Issued 2026-10-10, payment due 2026-11-05. Thank you!"
 
     def setUp(self):
-        self.app = Tideway(":memory:")
-        self.lm = TideLM(generator=no_model)
+        self.app = MoneyGuard(":memory:")
+        self.lm = GuardLM(generator=no_model)
 
     def test_fallback_is_labelled_and_draft_only(self):
         before = self.app.store.snapshot(SHAPLA)["snapshot_hash"]
@@ -273,18 +273,18 @@ class InboxWithoutModel(unittest.TestCase):
         self.assertEqual(self.app.store.snapshot(SHAPLA)["snapshot_hash"], before)  # nothing saved
 
     def test_default_install_without_mlx_uses_rules_instead_of_503(self):
-        lm = TideLM()
+        lm = GuardLM()
         if lm.status().get("available"):
             self.skipTest("a local model is installed on this computer")
         self.assertEqual(lm.extract(self.app, SHAPLA, self.CLEAN)["extractor"], "rules")
 
     def test_relative_sms_date_uses_dhaka_for_user_workspaces_and_scenario_date_for_demo(self):
-        with patch("tideway.service.dhaka_today", return_value="2026-11-20"):
+        with patch("moneyguard.service.dhaka_today", return_value="2026-11-20"):
             business, _ = self.app.signup({"business_name": "Dhaka Shop", "currency": "BDT", "country": "BD",
                                            "opening_cash": "2000", "reserve_floor": "500", "owner_name": "Owner",
                                            "username": "dhaka.inbox", "pin": "572914"})
         text = "Received Tk 500 today"
-        with patch("tideway.tidelm.dhaka_today", return_value="2026-11-21"):
+        with patch("moneyguard.guardlm.dhaka_today", return_value="2026-11-21"):
             actual = self.lm.extract(self.app, business["business_id"], text)
             demo = self.lm.extract(self.app, SHAPLA, text)
         self.assertEqual(actual["drafts"][0]["record"]["date"], "2026-11-21")
@@ -325,8 +325,8 @@ class InboxWithoutModel(unittest.TestCase):
         output = {"records": [{"record_type": "invoice", "counterparty": "Nila Traders", "amount": 100, "currency": "BDT",
                                "date": "2026-10-10", "due_date": "2026-11-05", "direction": "in", "reference": "INV-1"}],
                   "suspicious": False}
-        result = TideLM(generator=lambda _s, _u: json.dumps(output)).extract(self.app, SHAPLA, "Invoice INV-1 to Nila Traders BDT 100")
-        self.assertEqual(result["extractor"], "tidelm")
+        result = GuardLM(generator=lambda _s, _u: json.dumps(output)).extract(self.app, SHAPLA, "Invoice INV-1 to Nila Traders BDT 100")
+        self.assertEqual(result["extractor"], "guardlm")
         self.assertNotIn(RULES_NOTE, result["note"])
         self.assertEqual(result["drafts"][0]["record"]["amount"], 100)
 

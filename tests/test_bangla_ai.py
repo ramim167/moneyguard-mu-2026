@@ -1,8 +1,8 @@
 """Bangla in the assistant: Banglish gets Bangla in Bangla mode, and AI answers are cleaned and number-checked."""
 import unittest
 
-from tideway.agent import Agent, Pseudonyms, answer_issues, chat_to_responses, clean_answer, grounding_check, responses_to_chat
-from tideway.service import Tideway
+from moneyguard.agent import Agent, Pseudonyms, answer_issues, chat_to_responses, clean_answer, grounding_check, responses_to_chat
+from moneyguard.service import MoneyGuard
 
 SHAPLA = "shapla-services"
 
@@ -10,7 +10,7 @@ SHAPLA = "shapla-services"
 class BanglaMode(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.agent = Agent(Tideway(":memory:"))
+        cls.agent = Agent(MoneyGuard(":memory:"))
 
     def ask(self, message, ui_lang):
         return self.agent.chat(SHAPLA, None, message, [], False, "agent:local", "owner", "Nadia Rahman", ui_lang)["text"]
@@ -47,7 +47,7 @@ class AiAnswerSafety(unittest.TestCase):
             sent.append(responses_to_chat(payload))
             return chat_to_responses(next(replies))
 
-        bot = Agent(Tideway(":memory:"), "k", "m:free", transport=transport)
+        bot = Agent(MoneyGuard(":memory:"), "k", "m:free", transport=transport)
         reply = bot.chat(SHAPLA, None, "beton dite parbo?", [], True, "agent:llm", "owner", "Nadia", "bn")
         self.assertIn("Always reply in standard Bangla", sent[0]["messages"][0]["content"])
         self.assertEqual(reply["text"], "হিসাব দেখতে পূর্বাভাস খুলুন।")
@@ -63,7 +63,7 @@ def scripted_bot(texts, sent=None):
         if sent is not None:
             sent.append(responses_to_chat(payload))
         return chat_to_responses({"choices": [{"message": {"content": next(replies)}}]})
-    return Agent(Tideway(":memory:"), "k", "m:free", transport=transport)
+    return Agent(MoneyGuard(":memory:"), "k", "m:free", transport=transport)
 
 
 class GarbledAnswers(unittest.TestCase):
@@ -108,7 +108,7 @@ class GarbledAnswers(unittest.TestCase):
 
 class EverydayChat(unittest.TestCase):
     def test_banglish_and_bangla_get_bangla_even_in_english_mode(self):
-        from tideway.conversation import reply_language
+        from moneyguard.conversation import reply_language
         for message in ("kemon acho", "ki koro", "beton dite parbo ei mashe?", "এই মাসে কি বেতন দিতে পারব?"):
             self.assertEqual(reply_language(message, "en"), "bn", message)
         for message in ("Can I pay payroll on time?", "What if Nila Traders pays 10 days late?", "hi"):
@@ -120,7 +120,7 @@ class EverydayChat(unittest.TestCase):
         def transport(payload, key):
             calls.append(payload)
             raise AssertionError("small talk must not call the model")
-        bot = Agent(Tideway(":memory:"), "k", "m:free", transport=transport)
+        bot = Agent(MoneyGuard(":memory:"), "k", "m:free", transport=transport)
         for message in ("kemon acho", "ki koro", "কেমন আছেন", "hi"):
             reply = bot.chat(SHAPLA, None, message, [], True, "agent:llm", "owner", "Nadia", "en")
             self.assertEqual(reply["mode"], "local", message)
@@ -137,7 +137,7 @@ class EverydayChat(unittest.TestCase):
         self.assertTrue(grounding_check("বেতন দিতে এক লক্ষ টাকা লাগবে।", outputs, "BDT", "bn"))  # amount in words
 
     def test_only_sentences_with_unchecked_figures_are_dropped(self):
-        from tideway.agent import keep_checked
+        from moneyguard.agent import keep_checked
         outputs = [{"currency": "BDT", "payroll_outflow_minor": 8000000}]
         reply = "Payroll outflow: BDT 80,000\nPayroll is at risk with 100 percent odds. Ask for a rescue plan."
         self.assertEqual(keep_checked(reply, outputs, "BDT", "en"), "Payroll outflow: BDT 80,000\nAsk for a rescue plan.")

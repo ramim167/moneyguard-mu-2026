@@ -15,12 +15,12 @@ Step 3/8 : WORKDIR /app
  ---> 5aaa1c80ba55
 Step 4/8 : COPY . .
  ---> ba1ad69fa38e
-Step 5/8 : RUN python -S -m compileall -q run.py tideway scripts tests     && python -S scripts/verify_submission.py     && useradd --create-home --uid 10001 tideway     && mkdir -p /app/data     && chown -R tideway:tideway /app
+Step 5/8 : RUN python -S -m compileall -q run.py moneyguard scripts tests     && python -S scripts/verify_submission.py     && useradd --create-home --uid 10001 moneyguard     && mkdir -p /app/data     && chown -R moneyguard:moneyguard /app
  ---> Running in e1670f211230
 426 tests: 0 failures, 0 errors, 5 skipped.
  ---> Removed intermediate container e1670f211230
  ---> c1639f1aa43e
-Step 6/8 : USER tideway
+Step 6/8 : USER moneyguard
  ---> Running in 73f0f1035d59
  ---> Removed intermediate container 73f0f1035d59
  ---> a4000e1a06eb
@@ -28,9 +28,9 @@ Step 7/8 : EXPOSE 8787
  ---> Running in 3ae5fee78522
  ---> Removed intermediate container 3ae5fee78522
  ---> ae4d4d985594
-Step 8/8 : CMD ["python", "run.py", "--host", "0.0.0.0", "--port", "8787", "--db", "/app/data/tideway.sqlite3"]
+Step 8/8 : CMD ["python", "run.py", "--host", "0.0.0.0", "--port", "8787", "--db", "/app/data/moneyguard.sqlite3"]
  ---> Running in fec02ffae7d3
  ---> Removed intermediate container fec02ffae7d3
  ---> b739a7df446d
 Successfully built b739a7df446d
-Successfully tagged tideway-verification:b66ba4308b67
+Successfully tagged moneyguard-verification:b66ba4308b67

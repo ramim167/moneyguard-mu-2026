@@ -61,7 +61,7 @@ def score_records(rows):
 def baseline_module():
     def load(name, filename):
         path = ROOT / "evidence/remediation-v7/baseline-runtime" / filename
-        spec = importlib.util.spec_from_file_location("tideway." + name, path)
+        spec = importlib.util.spec_from_file_location("moneyguard." + name, path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         return module
@@ -77,10 +77,10 @@ def main():
                                             "improved-base-development-r3", "fresh"), required=True)
     args = parser.parse_args()
     # Must be set before importing inference libraries. Never download weights.
-    os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", TIDEWAY_LOCAL_TEXT_MODEL="",
-                      TIDEWAY_LOCAL_MODEL_URL="", TIDEWAY_LOCAL_VISION_MODEL="")
-    from tideway.tidelm import TideLM, BASE_MODEL
-    from tideway import semantic_screening
+    os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", MONEYGUARD_LOCAL_TEXT_MODEL="",
+                      MONEYGUARD_LOCAL_MODEL_URL="", MONEYGUARD_LOCAL_VISION_MODEL="")
+    from moneyguard.guardlm import GuardLM, BASE_MODEL
+    from moneyguard import semantic_screening
     from huggingface_hub import try_to_load_from_cache
     fixture = ROOT / ("tests/fixtures/screening_holdout_v7.json" if args.phase == "fresh" else
                       "tests/fixtures/screening_holdout_v6.json")
@@ -89,7 +89,7 @@ def main():
     digest, _ = source_digest()
     baseline = args.phase.startswith("baseline")
     classifier = baseline_module() if baseline else semantic_screening
-    files = [ROOT / "tideway" / name for name in ("screening.py", "semantic_screening.py", "tidelm.py")]
+    files = [ROOT / "moneyguard" / name for name in ("screening.py", "semantic_screening.py", "guardlm.py")]
     if baseline:
         files = list((ROOT / "evidence/remediation-v7/baseline-runtime").glob("*.py"))
     before = {str(p.relative_to(ROOT)): sha256(p) for p in files}
@@ -98,7 +98,7 @@ def main():
                 "author_seal": author, "targets": TARGETS, "model_downloads_allowed": False,
                 "external_evaluation": False, "holdout_observed_during_tuning": False if author else None}
     start_run(out, metadata)
-    lm = TideLM(adapter=None) if "base" in args.phase or args.phase == "fresh" else TideLM()
+    lm = GuardLM(adapter=None) if "base" in args.phase or args.phase == "fresh" else GuardLM()
     identity = lm.status()
     cached = try_to_load_from_cache(BASE_MODEL, "model.safetensors")
     if isinstance(cached, str):

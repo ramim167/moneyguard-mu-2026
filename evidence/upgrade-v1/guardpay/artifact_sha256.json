@@ -1,0 +1,12 @@
+{
+  "config.json": "c4dbaf9665737a3d8a8ef58752a54deda28204c16e7e3595147c1500a4a9026c",
+  "federated_model.json": "2d4d72ae66044eb7067bb2a969ff20d4fa26cb7ccd0eb5d754ae86927819d13b",
+  "per_business.csv": "06b528280a3b66c799b39edbe21896b736311333f5cc774c9a421990ccdc562c",
+  "predictions.csv": "de6a258452dc77ce7797da325b65e5021a2195414e71e8f99bfb68cf01178b47",
+  "reliability.csv": "2ba02335b3934dcbab75df1e8c9ea630c7408e1753e394847b0eb077db7179bb",
+  "reliability.svg": "d20d2e5a726ec073ee0bc0b15b449309ea18265f0a59aee56a420462822b0ee4",
+  "report.json": "b865a2a85ba11f292bd4324d732c75ff70bc488c53c36502b4ba0c4ea509170c",
+  "report.md": "a61a5eed34aee386667707c68ee1e349cf51da190f430ff24734285695e92712",
+  "split_manifest.csv": "4befddfc888538ccf3ca4056dbb004f1babbdc92f0b78a620858acb1d4b8c88a",
+  "verification.json": "97b95eae32c85552c635180bc6cff8be3e3c0d014a5e3fa097587c4d958337db"
+}

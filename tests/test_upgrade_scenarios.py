@@ -5,8 +5,8 @@ from collections import Counter
 
 from scripts.evaluate_upgrade_scenarios import (EVIDENCE, SCREENING, confusion, failure_report,
                                                load_spec, nearest_rank, run_case, screening_report, sha)
-from tideway.analytics import payee_checks
-from tideway.service import Tideway
+from moneyguard.analytics import payee_checks
+from moneyguard.service import MoneyGuard
 
 
 class UpgradeScenarioWorkflows(unittest.TestCase):
@@ -105,7 +105,7 @@ class PayeeIdentityRegression(unittest.TestCase):
         self.assertFalse(result["lookalikes"])
 
     def test_case_change_is_present_in_derived_security_report(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         self.addCleanup(app.store.close)
         # A changed account under a differently cased payee must be recognised
         # by the same derived security report used again when approving.

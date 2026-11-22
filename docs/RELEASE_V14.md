@@ -54,7 +54,7 @@ additional bounded rules and semantic examples.
 Cached Windows compatible `Qwen3-4B-Instruct-2507-Q4_K_M` was launched after
 verification of pinned model/runtime SHA-256 values. No model download occurred.
 [Runtime provenance](../evidence/upgrade-v14/runtime-provenance.json) identifies
-the artifacts. This is not the native MLX classifier, TideLM adapter or receipt
+the artifacts. This is not the native MLX classifier, GuardLM adapter or receipt
 model; the historical native 31.25% warning false-positive observation is retained.
 
 | Observation | Attacks detected | Legitimate changes reviewed | Unnecessary warnings / ordinary benign |

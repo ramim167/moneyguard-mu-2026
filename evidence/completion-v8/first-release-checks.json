@@ -20,7 +20,7 @@
     "docs/architecture.pdf": "6af50642b15ad9126ca70ed5b94729fbc02c25db342ca6199af424157bad6c26",
     "docs/security-assessment.pdf": "719c8cb3d69ca536ef18c8a1e5e22717a0fd98076dd4ac1d9b47a5141e987bdb",
     "docs/submission-notes.pdf": "5339c0254aa206ebc966321897b224d5388451ae3b2c7ac644f5f096897c0d30",
-    "docs/Tideway_FinTechathon_2026_Roadmap.pdf": "c2a08875f0a5da18cd8c50374f310e73d1ab9f2ba30ff8915218c075ef646dc9"
+    "docs/MoneyGuard_FinTechathon_2026_Roadmap.pdf": "c2a08875f0a5da18cd8c50374f310e73d1ab9f2ba30ff8915218c075ef646dc9"
   },
   "scope": "Local synthetic checks; no hosted CI, model-quality rerun, SME participation or submission implied.",
   "pdf_review_followup": "Pitch regenerated with temporary optional Pillow to crop full-page screenshots into readable slide images; runtime source unchanged. Final package must be rebuilt and reverified."

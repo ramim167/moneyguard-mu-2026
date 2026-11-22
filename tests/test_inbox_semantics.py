@@ -1,9 +1,9 @@
 """Money, document references and relative dates must retain their financial meaning."""
 import unittest
 
-from tideway.inbox_rules import extract
-from tideway.service import Tideway
-from tideway.tidelm import TideLM, TideLMUnavailable
+from moneyguard.inbox_rules import extract
+from moneyguard.service import MoneyGuard
+from moneyguard.guardlm import GuardLM, GuardLMUnavailable
 
 
 BUSINESS = {"name": "Shop", "currency": "BDT"}
@@ -93,11 +93,11 @@ class InboxSemantics(unittest.TestCase):
 
     def test_fallback_drafts_a_received_invoice_payment_as_income(self):
         def unavailable(_system, _user):
-            raise TideLMUnavailable("No model in this regression test")
-        app = Tideway(":memory:")
+            raise GuardLMUnavailable("No model in this regression test")
+        app = MoneyGuard(":memory:")
         try:
             before = app.store.snapshot("shapla-services")["snapshot_hash"]
-            result = TideLM(generator=unavailable).extract(app, "shapla-services",
+            result = GuardLM(generator=unavailable).extract(app, "shapla-services",
                 "You received Tk 1,00,000 from Bay Logistics for invoice INV-123 on 2026-10-02.")
             row = result["drafts"][0]
             self.assertTrue(row["ready"])

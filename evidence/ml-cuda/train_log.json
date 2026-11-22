@@ -1,13 +1,13 @@
 {
- "what": "TideLM LoRA trained with PyTorch/PEFT on CUDA",
+ "what": "GuardLM LoRA trained with PyTorch/PEFT on CUDA",
  "base_model": "C:\\Users\\Administrator\\hf-cache\\Qwen3-1.7B",
  "base_model_hf_id": "Qwen/Qwen3-1.7B",
  "base_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
  "config": {
   "model": "C:\\Users\\Administrator\\hf-cache\\Qwen3-1.7B",
   "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
-  "data": "C:\\Users\\Administrator\\Desktop\\tideway\\data\\tidelm",
-  "out": "C:\\Users\\Administrator\\tideway-models\\tidelm-cuda-adapter",
+  "data": "C:\\Users\\Administrator\\Desktop\\moneyguard\\data\\guardlm",
+  "out": "C:\\Users\\Administrator\\moneyguard-models\\guardlm-cuda-adapter",
   "iters": 450,
   "batch_size": 4,
   "lr": 0.0001,
@@ -281,7 +281,7 @@
  "train_minutes": 7.32,
  "total_wall_seconds": 462.9,
  "peak_vram_gb": 5.2,
- "adapter_dir": "C:\\Users\\Administrator\\tideway-models\\tidelm-cuda-adapter",
+ "adapter_dir": "C:\\Users\\Administrator\\moneyguard-models\\guardlm-cuda-adapter",
  "adapter_sha256": {
   "adapter_config.json": "404fb5dd2a2ef3ea8a660eb83117639b05168d8fd8f6f225056ddc40ec8b2fc3",
   "adapter_model.safetensors": "c6b097d7f2ceb9fcd03b2c953f59fafb7c4ca29c110889293eb7a0abeb0dfb43",

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from scripts.evaluate_screening_v7 import score_records, start_run, verify_author_seal
 from scripts.evaluate_screening_v6 import case_record
-from tideway.semantic_screening import semantic_classify
+from moneyguard.semantic_screening import semantic_classify
 
 
 class ScreeningEvidence(unittest.TestCase):

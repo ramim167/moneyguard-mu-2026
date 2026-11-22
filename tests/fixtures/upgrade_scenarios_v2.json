@@ -1,5 +1,5 @@
 {
-  "version": "tideway-independent-scenarios-v2",
+  "version": "moneyguard-independent-scenarios-v2",
   "authorship": "Expectations and all ledgers were authored before the first evaluation. Held-out means no outcome-driven edits after sealing; it does not imply independent human authors or real SMEs.",
   "defaults": {"opening_date": "2026-10-01", "target_date": "2026-10-20", "lookahead_days": 14, "action_limit": "50000", "daily_cap": "100000", "dual_approval_threshold": "7000", "max_deferral_days": 14, "max_discount_bps": 300},
   "scenarios": [

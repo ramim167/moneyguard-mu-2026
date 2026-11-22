@@ -1,6 +1,6 @@
 {
   "fixture": "tests\\fixtures\\screening_development_v3.json",
-  "fixture_sha256": "fd6b133a80c6dfc0f5410321a60161bab4d47898b5a17d4b9ddf38e0eec7d2a2",
+  "fixture_sha256": "f6501f6390282d992682e626a512c2f71b9990fd0221baad8ecaa2c7856a4d6f",
   "methodology": "Author-labelled synthetic development cases fixed before implementation. Not independent validation or prevalence estimates. Payment-detail changes and missing historical accounts require verification even when legitimate; review is distinct from an instruction attack.",
   "definition": "Instruction positives exclude payment_detail_change, which remains a separate conservative review signal. All record text is untrusted regardless of flags. Payee review is not a fraud verdict.",
   "injection": {

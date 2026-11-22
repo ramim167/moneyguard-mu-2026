@@ -2515,7 +2515,7 @@
   ],
   "completed_case_count": 96,
   "evaluation_kind": "independently_authored_synthetic_first_pass",
-  "execution_source_seal_sha256": "d6c5caac47dca6df2e861a5f7b936c5df40b1f05bcd2b29fc624e406c7e7943f",
+  "execution_source_seal_sha256": "a945784a3b0f181c383dca3c579d937a26f5f5dae28f350981d7f095676d6086",
   "external_evaluation": false,
   "finished_utc": "2026-10-17T06:18:14.557028Z",
   "fixture_sha256": "af2afbc83864457262b49787c23900d0de35652b171d74c26a990a979b8d1879",

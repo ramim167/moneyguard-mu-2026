@@ -29,7 +29,7 @@ synthetic data and local disposable test databases.
   That checks integration, not model accuracy or real model inference.
 - The standalone linked payment-delay rehearsal passed.
 - All 24 scenario outcomes and the screening confusion counts reproduced.
-- TidePay's five model results reproduced on all 2,376 test invoices. The
+- GuardPay's five model results reproduced on all 2,376 test invoices. The
   largest numeric difference from the saved Mac report was approximately
   1.8e-15. Federated MAE: 6.9568 days; heuristic MAE: 7.4107 days. These remain
   synthetic benchmark results; shipped model weights were not replaced.
@@ -40,7 +40,7 @@ synthetic data and local disposable test databases.
 
 ## Remaining limitations
 
-- No post-change real TideLM/receipt-model inference has been demonstrated.
+- No post-change real GuardLM/receipt-model inference has been demonstrated.
   The saved Mac smoke attempted zero real requests. Install/cache the exact
   models on the chosen device, then follow `docs/MODEL_REASONING_V2.md`.
 - Injection screening misses 2/14 labelled attacks and flags 7/14 benign

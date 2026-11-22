@@ -10,9 +10,9 @@ from unittest.mock import patch
 import unittest
 
 from scripts import verify_passport as offline
-from tideway import ed25519, security, treasury
-from tideway.service import Tideway
-from tideway.treasury import Treasury
+from moneyguard import ed25519, security, treasury
+from moneyguard.service import MoneyGuard
+from moneyguard.treasury import Treasury
 
 OWNER = {"id": "nadia", "name": "Nadia Rahman", "role": "owner"}
 
@@ -45,14 +45,14 @@ class Ed25519Vectors(unittest.TestCase):
 class PassportPublicKey(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.tideway = Tideway(":memory:")
-        cls.treasury = Treasury(cls.tideway)
+        cls.moneyguard = MoneyGuard(":memory:")
+        cls.treasury = Treasury(cls.moneyguard)
         cls.document = cls.treasury.issue_passport("shapla-services", OWNER, "operator:nadia")["passport"]
-        cls.public_key = treasury.passport_public_key(cls.tideway.store.key)["public_key"]
+        cls.public_key = treasury.passport_public_key(cls.moneyguard.store.key)["public_key"]
 
     @classmethod
     def tearDownClass(cls):
-        cls.tideway.store.close()
+        cls.moneyguard.store.close()
 
     def test_issued_passport_verifies_offline_with_public_key_only(self):
         ok, message = offline.check(self.document, self.public_key)
@@ -92,7 +92,7 @@ class PassportPublicKey(unittest.TestCase):
 
     def test_shared_schema_dates_and_clock_skew(self):
         now = datetime.now(timezone.utc)
-        store_key = self.tideway.store.key
+        store_key = self.moneyguard.store.key
         cases = [
             ({"expires_at": now.replace(tzinfo=None).isoformat()}, "malformed"),
             ({"issued_at": "broken"}, "malformed"),
@@ -130,8 +130,8 @@ class PassportPublicKey(unittest.TestCase):
                     self.assertIn("INVALID: Cannot read passport JSON", output.getvalue())
 
     def test_signing_key_is_purpose_bound(self):
-        self.assertNotEqual(treasury.passport_signing_secret(self.tideway.store.key), treasury.passport_key(self.tideway.store.key))
-        self.assertNotEqual(treasury.passport_signing_secret(self.tideway.store.key), self.tideway.store.key)
+        self.assertNotEqual(treasury.passport_signing_secret(self.moneyguard.store.key), treasury.passport_key(self.moneyguard.store.key))
+        self.assertNotEqual(treasury.passport_signing_secret(self.moneyguard.store.key), self.moneyguard.store.key)
 
 
 if __name__ == "__main__":

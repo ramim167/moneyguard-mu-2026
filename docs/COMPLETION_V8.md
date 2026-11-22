@@ -22,7 +22,7 @@ All operations are local synthetic verification. No schema change is required.
   parent plan hash without checking it against the signed original mandate, and
   did not revalidate that mandate's signature. Three new failing regressions
   reproduced wider owner terms, changed preference and an invalid signature.
-  `tideway/store.py` now uses the existing mandate validator and binds the parent
+  `moneyguard/store.py` now uses the existing mandate validator and binds the parent
   hash, tenant and snapshot inside the replacement transaction, before any
   cancellation. Rejections leave row counts and the live authorization unchanged.
 - `tests/test_owner_constraints.py` adds those three regressions and a real
@@ -33,7 +33,7 @@ All operations are local synthetic verification. No schema change is required.
   consuming its body could reset the connection before the client received the
   403. The initial 352-test full suite passed, but the extracted suite reproduced
   the connection-abort. A new regression with repeated hostile bodies also
-  failed before the fix. `tideway/server.py` now sends the denial first and
+  failed before the fix. `moneyguard/server.py` now sends the denial first and
   discards only a bounded, valid-length body with a hard one-second deadline,
   without parsing it. The 25-test regression suite passed after the fix. CSRF,
   Origin and Host enforcement remain intact. Both failed runs are retained;
@@ -182,8 +182,8 @@ archive, rather than relying on the intermediate archive hash in a release log.
 
 | Changed area | Reason |
 |---|---|
-| `tideway/store.py` | Revalidate signed parent authority and bind hash/snapshot/scope before atomic successor creation |
-| `tideway/server.py` | Preserve early HTTP denial delivery on Windows with bounded unparsed-body disposal |
+| `moneyguard/store.py` | Revalidate signed parent authority and bind hash/snapshot/scope before atomic successor creation |
+| `moneyguard/server.py` | Preserve early HTTP denial delivery on Windows with bounded unparsed-body disposal |
 | `tests/test_owner_constraints.py`, `tests/test_regressions.py` | Four signed-parent/chain regressions plus the reproduced rejected-POST transport failure |
 | `README.md`, technical/security/submission docs, readiness and this report | Accurate current commands, fixes, provenance, risk and unavailable checks |
 | `docs/REMEDIATION_V7.md` | Replace the unfinished final-status placeholder with scoped historical completion and a link here |

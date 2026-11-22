@@ -4,8 +4,8 @@
 // owner's OWN numbers from the dashboard the server already computed, and each ending with a one-question check.
 // Financial literacy for owners who never had a finance class. Read-only: it changes no record and moves no money.
 // Progress is kept in this browser only (localStorage).
-window.TidewayLearn = (() => {
-  const key = () => `tideway:lessons:${state.operator?.id || "guest"}`;
+window.MoneyGuardLearn = (() => {
+  const key = () => `moneyguard:lessons:${state.operator?.id || "guest"}`;
   const BN_MONTHS = "জানু ফেব্রু মার্চ এপ্রি মে জুন জুলাই আগ সেপ্টে অক্টো নভে ডিসে".split(" ");
   let openId = "safety";
   const answers = {};

@@ -9,8 +9,8 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from scripts.verify_submission import source_digest
-from tideway.owner_view import brief_html
-from tideway.server import Application
+from moneyguard.owner_view import brief_html
+from moneyguard.server import Application
 
 
 def main():

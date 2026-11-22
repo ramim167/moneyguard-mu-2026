@@ -10,8 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from tideway.credit_document import PASSPORT_MAX_BYTES, key_fingerprint, schema_error, validity_error, verify_public_signature
-from tideway.domain import parse_strict_json
+from moneyguard.credit_document import PASSPORT_MAX_BYTES, key_fingerprint, schema_error, validity_error, verify_public_signature
+from moneyguard.domain import parse_strict_json
 
 
 def check(document, expected_public_key=None, now=None):

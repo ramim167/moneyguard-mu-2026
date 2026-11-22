@@ -25,7 +25,7 @@ def source_paths(source_root=None):
         config = root / name
         if config.is_file():
             paths.append(config)
-    for folder in ("tideway", "tests", "web", "scripts"):
+    for folder in ("moneyguard", "tests", "web", "scripts"):
         paths.extend(p for p in (root / folder).rglob("*") if p.is_file()
                      and (p.suffix in (".py", ".js", ".mjs", ".css", ".html", ".json", ".svg")
                           or (folder == "web" and p.suffix.lower() in WEB_BINARY_SUFFIXES))

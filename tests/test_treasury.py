@@ -3,11 +3,11 @@ import json
 import unittest
 from datetime import datetime, timedelta, timezone
 
-from tideway.domain import canonical_json
-from tideway.projection import project
-from tideway.service import Tideway
-from tideway import treasury
-from tideway.treasury import Treasury
+from moneyguard.domain import canonical_json
+from moneyguard.projection import project
+from moneyguard.service import MoneyGuard
+from moneyguard import treasury
+from moneyguard.treasury import Treasury
 
 BUSINESSES = ("shapla-services", "lotus-print", "harbourline-traders")
 OWNER = {"id": "nadia", "name": "Nadia Rahman", "role": "owner"}
@@ -16,9 +16,9 @@ OWNER = {"id": "nadia", "name": "Nadia Rahman", "role": "owner"}
 class TreasuryCore(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.tideway = Tideway(":memory:")
-        cls.store = cls.tideway.store
-        cls.treasury = Treasury(cls.tideway)
+        cls.moneyguard = MoneyGuard(":memory:")
+        cls.store = cls.moneyguard.store
+        cls.treasury = Treasury(cls.moneyguard)
 
     @classmethod
     def tearDownClass(cls):
@@ -68,7 +68,7 @@ class TreasuryCore(unittest.TestCase):
         for business_id in BUSINESSES:
             snapshot, derived = self.context(business_id)
             plan = treasury.twcf(snapshot, derived)
-            analysis = self.tideway.analysis(business_id)
+            analysis = self.moneyguard.analysis(business_id)
             for name, key in (("scheduled", "base"), ("likely", "likely"), ("stress", "stress")):
                 dashboard = {day["date"]: day["closing_cash_minor"] for day in analysis["projections"][key]["days"]}
                 shared = [day for day in plan["scenarios"][name]["daily"] if day["date"] in dashboard]
@@ -209,7 +209,7 @@ class TreasuryCore(unittest.TestCase):
     def test_passport_key_is_separate_from_the_mandate_key(self):
         document = self.treasury.issue_passport("harbourline-traders", OWNER, "operator:nadia")["passport"]
         self.assertFalse(self.store.verify_mandate_document(document)["signature_valid"])
-        other = Tideway(":memory:")
+        other = MoneyGuard(":memory:")
         try:
             self.assertEqual(Treasury(other).verify_passport("harbourline-traders", document)["reason"], "signature_mismatch")
         finally:

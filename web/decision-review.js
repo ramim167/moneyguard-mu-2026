@@ -1,7 +1,7 @@
 "use strict";
 
 // Explain server evidence and exact proposal terms; no new forecast or authority.
-window.TidewayReview = (() => {
+window.MoneyGuardReview = (() => {
   const words = {
     en: {title:"Will customer payments arrive before payroll?", intro:"Compare the expected receipt date with payroll, then check actual payment history.",
       history:"settled invoices were paid late", none:"No settled payment history yet.", thin:"Limited history: the date estimate also uses wider business history.",

@@ -27,9 +27,9 @@ The review archive includes the current MU proposal, contest checklist, architec
 Run from the repository root using Python 3.11 or later:
 
 ```text
-python -S -m compileall -q run.py tideway scripts tests
+python -S -m compileall -q run.py moneyguard scripts tests
 python -S scripts/verify_submission.py
-python -S -m tideway.selftest
+python -S -m moneyguard.selftest
 node scripts/check_javascript.mjs
 node scripts/capture_screens.mjs --test-local-backend --out tmp/ci-local-backend
 node scripts/capture_screens.mjs --test-payment-delay

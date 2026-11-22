@@ -3,7 +3,7 @@
 // Portfolio radar: lender-side early warning over a SYNTHETIC SME portfolio.
 // The server generates the fictional portfolio from a seed and never reads tenant
 // workspaces. Every value is escaped; interventions are advisory text, never actions.
-window.TidewayPortfolio = (() => {
+window.MoneyGuardPortfolio = (() => {
   let epoch = 0, data = null, pending = false, queued = false, error = "", showAll = false, tierFilter = "all";
   let sort = {key: "rank", dir: 1};
   let draft = {shockDays: "0", sector: "all"};
@@ -130,14 +130,14 @@ window.TidewayPortfolio = (() => {
         <tr><td>Red-tier precision <span class="small muted">(flagged SMEs that breached)</span></td><td class="num">${ratio(r)}</td><td class="num">${ratio(s)}</td><td class="num">—</td></tr>
         <tr><td>Red-tier recall <span class="small muted">(breaches flagged red)</span></td><td class="num${better(r.red_recall, s.red_recall)}">${esc(share(r.red_recall))}</td><td class="num">${esc(share(s.red_recall))}</td><td class="num">—</td></tr>
       </tbody></table></div>
-      <p class="small muted section-gap">Scheduled projection = every invoice paid on its due date (red = scheduled breach). Synthetic and in-distribution for TidePay, so this is a consistency check, not real-world validation. In the pooled evaluation mid-range probabilities run below observed breach rates: read them as a ranking. Outcome seed ${esc(b.outcome_seed)}. The multi-portfolio evaluation with confidence intervals is in evidence/portfolio/portfolio-report.json.</p></section>`;
+      <p class="small muted section-gap">Scheduled projection = every invoice paid on its due date (red = scheduled breach). Synthetic and in-distribution for GuardPay, so this is a consistency check, not real-world validation. In the pooled evaluation mid-range probabilities run below observed breach rates: read them as a ranking. Outcome seed ${esc(b.outcome_seed)}. The multi-portfolio evaluation with confidence intervals is in evidence/portfolio/portfolio-report.json.</p></section>`;
   }
 
   function render() {
     if (!data && !pending && !error && !queued) { queued = true; setTimeout(() => { queued = false; if (!data && !pending) load().catch(() => {}); }, 0); }
     const intro = `<div class="card-head"><div><h2>Portfolio radar</h2><p>Early warning for banks, lenders and large buyers: which SMEs are likely to breach their cash reserve in the next 60 days, why, and what to do first.</p></div><div class="row"><span class="pill mock">SYNTHETIC portfolio</span><span class="pill">Never reads tenant workspaces</span><span class="pill info">Advisory only</span></div></div>`;
     if (!data) {
-      return `<div class="pf" data-currency-original="native"><section class="card">${intro}${error ? `<div class="alert critical"><div><strong>Radar unavailable</strong><span>${esc(error)}</span></div></div><div class="row section-gap"><button type="button" class="button primary" data-action="portfolio-load">Try again</button></div>` : '<p role="status" class="muted">Simulating 60 synthetic SMEs with TidePay…</p>'}</section></div>`;
+      return `<div class="pf" data-currency-original="native"><section class="card">${intro}${error ? `<div class="alert critical"><div><strong>Radar unavailable</strong><span>${esc(error)}</span></div></div><div class="row section-gap"><button type="button" class="button primary" data-action="portfolio-load">Try again</button></div>` : '<p role="status" class="muted">Simulating 60 synthetic SMEs with GuardPay…</p>'}</section></div>`;
     }
     return `<div class="pf" data-currency-original="native"><fieldset class="lab-controls-group" ${pending ? "disabled" : ""}>
       <section class="card">${intro}

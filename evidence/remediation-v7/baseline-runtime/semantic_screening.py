@@ -115,7 +115,7 @@ def _parse(raw):
 
 def _identity(value, has_generator):
     fallback = {"backend": "injected" if has_generator else "unavailable", "model": "unspecified",
-                "evaluated_tidelm_adapter": False}
+                "evaluated_guardlm_adapter": False}
     if value is None:
         return fallback
     try:

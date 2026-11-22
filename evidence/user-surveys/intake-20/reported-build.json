@@ -1,5 +1,5 @@
 {
-  "schema_version": "tideway-team-reported-survey-build-v1",
+  "schema_version": "moneyguard-team-reported-survey-build-v1",
   "reported_commit": "9dbe4955514909fc8125fef1665b10be585c3ac3",
   "title": "fix: harden agent privacy and grounding",
   "commit_author_date": "2026-10-19T00:35:39+06:00",

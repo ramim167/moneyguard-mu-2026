@@ -42,7 +42,7 @@ these UI changes do not turn them into new native-model or container results.
 The previously reviewed PDFs are retained; [the feature guide](OWNER_VIEW.md)
 describes this interface addition.
 
-Real SME participants remain zero. Native MLX/TideLM adapter and receipt-model
+Real SME participants remain zero. Native MLX/GuardLM adapter and receipt-model
 checks remain deferred without a Mac. External review, unseen screening and
 real-data calibration remain open. H11's original unfunded risk remains 11.78%
 against a 10% target; conditional funding is unconfirmed. Team administration and

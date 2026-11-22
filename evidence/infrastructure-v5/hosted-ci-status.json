@@ -1,10 +1,10 @@
 {
   "checked_at_utc": "2026-10-17T07:30:38+00:00",
-  "remote_repository": "https://github.com/SadManQT/tideway",
+  "remote_repository": "https://github.com/SadManQT/moneyguard",
   "remote_commit": "f60a6752e26723ae6b696a40e52335d15f1e3339",
   "run_number": 8,
   "run_id": 39013601970,
-  "run_url": "https://github.com/SadManQT/tideway/actions/runs/39013601970",
+  "run_url": "https://github.com/SadManQT/moneyguard/actions/runs/39013601970",
   "conclusion": "success",
   "jobs": [
     {"name": "Isolated Docker build and persisted HTTP workflow", "conclusion": "success", "failed_steps": []},

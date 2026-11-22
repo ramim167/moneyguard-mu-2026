@@ -8,11 +8,11 @@
     "payment_review_recall_min": 1.0
   },
   "method": "Rescore preserved generations without new inference. Keep mixed payment_review metric and separately score legitimate payment updates over benign messages. Original reports are unchanged.",
-  "evaluator_sha256": "f1cc2f89154be99b69317e4ff9cbdcf1c2e9dd6c06f8bd4860c06fd7b8f21a1a",
+  "evaluator_sha256": "df94e7d29c2d6b08c3be7cae7715bd88a9a6a7df083117690309b479f468e62a",
   "phases": {
     "baseline-base-development": {
-      "original_report_sha256": "94278e6d6791309908c672d8e36119574dab90951a1bc92c784b021c75d95028",
-      "case_results_sha256": "277f7f8d73aec723f44a9538e9b1e114d69d39e7c7db1758ec930dbc07f54290",
+      "original_report_sha256": "c260a1534d74e30cde7446c43f67392c8ea9eacd88516f4cb8424f938b830792",
+      "case_results_sha256": "6e7ada8b76ae1688973dfa6551860416e75c1446527c4e3323245b083b0456b9",
       "metrics": {
         "pure_rules_attack": {
           "tp": 7,
@@ -1932,7 +1932,7 @@
         "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
         "adapter": null,
         "backend": "mlx-base",
-        "evaluated_tidelm_adapter": false,
+        "evaluated_guardlm_adapter": false,
         "label": "Qwen3 base classifier (cached, unbenchmarked)",
         "reason": null,
         "base_weights_sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f"
@@ -1940,8 +1940,8 @@
       "original_source_tree_sha256": "ffb0ff943cea2a80d499dc3d6287a8f4ae8831e0c019c4026d2640fca61b7a77"
     },
     "baseline-development": {
-      "original_report_sha256": "ff8800785ea61aa901de861d8d39f36b63e18845d5f4cdaecab2bff37c737f0e",
-      "case_results_sha256": "32340f8e77ec7ff06a006171906f7f9e45f9ab5a38fe874fc90e5dd92c9133dc",
+      "original_report_sha256": "6ac094b81ed7f80a7d49c8c166ea050eb2dd6280ac6a4532bbcf99612993b679",
+      "case_results_sha256": "4a3a06889d6f688fadb00f3beeafa8670cc59eac5c5d902626c9ed21df4db6ae",
       "metrics": {
         "pure_rules_attack": {
           "tp": 7,
@@ -3821,22 +3821,22 @@
         "available": true,
         "loaded": false,
         "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
-        "adapter": "models/tidelm-adapter",
+        "adapter": "models/guardlm-adapter",
         "adapter_sha256": {
           "adapters.safetensors": "9980aa8e251dd3dff9dd83cbb36fb38ad18fac6e4b9f34023e4514d1cd65aefd",
           "adapter_config.json": "a1cd14355f2302011eb720f7a96bc228a4f8c6dd64ae01c8fcc962c1782e6c9e"
         },
         "released_v2_adapter": false,
         "backend": "mlx",
-        "label": "TideLM \u00b7 adapter missing or unverified",
+        "label": "GuardLM \u00b7 adapter missing or unverified",
         "reason": null,
         "base_weights_sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f"
       },
       "original_source_tree_sha256": "fed5a1ee203570c0df6eab5a8f286b8d890ec61b819016db062a6b75ddd88f1b"
     },
     "fresh": {
-      "original_report_sha256": "46def912df0b31d74e374a77a27ba7bd5214fba0cb0710812aaa34d7dcee495b",
-      "case_results_sha256": "f7b8c0645a0d74137021d6325bd79d3f130e115fb600fb82bc587f9a55061170",
+      "original_report_sha256": "2191f47ea93a968915b9cc133c2cbb1c97c9f1292e4a6b31dfeb0e13afbb05c0",
+      "case_results_sha256": "1898b3c45341301ef87e38bd35df0f699335b31d26169059e9ea62c3d3a5aa40",
       "metrics": {
         "pure_rules_attack": {
           "tp": 3,
@@ -5651,7 +5651,7 @@
         "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
         "adapter": null,
         "backend": "mlx-base",
-        "evaluated_tidelm_adapter": false,
+        "evaluated_guardlm_adapter": false,
         "label": "Qwen3 base classifier (cached, unbenchmarked)",
         "reason": null,
         "base_weights_sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f"
@@ -5659,8 +5659,8 @@
       "original_source_tree_sha256": "0d7470a4c4dbc0873beb8f86a744971bb89dedc1a8fd462f1b8bcb11e7f09b39"
     },
     "improved-base-development": {
-      "original_report_sha256": "db77feb65fa3305a4375c59ab494752a4dafb7f763ea40686a3ae1cdcc71d16e",
-      "case_results_sha256": "06d424221f8f76714c5bad36e7d7ec8734f06d403764105459853f4826833d8e",
+      "original_report_sha256": "e35774676371a1f8b88708327c41128d5d7e83073b11978e65b0de270b194f93",
+      "case_results_sha256": "40f966ed2acc9e62ad1fd12dd9c3b195e6eebbc44dacc977e4acf6a7266a92c5",
       "metrics": {
         "pure_rules_attack": {
           "tp": 7,
@@ -7562,7 +7562,7 @@
         "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
         "adapter": null,
         "backend": "mlx-base",
-        "evaluated_tidelm_adapter": false,
+        "evaluated_guardlm_adapter": false,
         "label": "Qwen3 base classifier (cached, unbenchmarked)",
         "reason": null,
         "base_weights_sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f"
@@ -7570,8 +7570,8 @@
       "original_source_tree_sha256": "ca6f9d13360a9bd1f81a72c340e727d46c9a94a36eaf4d4660ba4647fd7cd2d5"
     },
     "improved-base-development-r2": {
-      "original_report_sha256": "dc81410cf62be4d0bb694aece285f55a1078246e0973a5d12b2ac89c71c52367",
-      "case_results_sha256": "302f5b3105add99acf3e81b168dd985a0a443e83d4db03ee3d898f45568c8025",
+      "original_report_sha256": "0fde9bab0ef6d3a0fe0d4fcc06c18fd0d941a7da8c65f596182a85f09d92ab14",
+      "case_results_sha256": "445e0def636b8f60935d7c5e1cc1d676f393d72444a864e35b400a2128f22e9f",
       "metrics": {
         "pure_rules_attack": {
           "tp": 7,
@@ -9464,7 +9464,7 @@
         "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
         "adapter": null,
         "backend": "mlx-base",
-        "evaluated_tidelm_adapter": false,
+        "evaluated_guardlm_adapter": false,
         "label": "Qwen3 base classifier (cached, unbenchmarked)",
         "reason": null,
         "base_weights_sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f"
@@ -9472,8 +9472,8 @@
       "original_source_tree_sha256": "1721894d6b06f7a71df0a2537a8b71e5b21777958614c1ae2fd98246542466ef"
     },
     "improved-base-development-r3": {
-      "original_report_sha256": "d86df646da6dd229b75a969ebbaec93453976f8b94700542582481f314b4ceb0",
-      "case_results_sha256": "911ffb76452abd5c3bb7e9bc1a3fe6dd1fa0807404f057825d63b893b6e91f20",
+      "original_report_sha256": "c99ba4f93ccb0a51c59eb6174a79d0faf370f6c0f4b72bb204cc472bb679a5bf",
+      "case_results_sha256": "44f10c7bdbcb7aa3f32e61e92e12e063311d395010ed966fa21d29c4cf6c84b4",
       "metrics": {
         "pure_rules_attack": {
           "tp": 7,
@@ -11372,7 +11372,7 @@
         "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
         "adapter": null,
         "backend": "mlx-base",
-        "evaluated_tidelm_adapter": false,
+        "evaluated_guardlm_adapter": false,
         "label": "Qwen3 base classifier (cached, unbenchmarked)",
         "reason": null,
         "base_weights_sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f"
@@ -11380,8 +11380,8 @@
       "original_source_tree_sha256": "0d7470a4c4dbc0873beb8f86a744971bb89dedc1a8fd462f1b8bcb11e7f09b39"
     },
     "improved-development": {
-      "original_report_sha256": "e8a929e3e970ec2dd34344e7550ac433179a1a5dc36bbccddea1da3f9a4e22b0",
-      "case_results_sha256": "74fc114780e67d1a418354de989ea495d66715ad6273b37907e51964f5c7b664",
+      "original_report_sha256": "830fca42e4dfb00ac5a23a22a4656dc51e47b520a3aafdc1b68652976c3a3283",
+      "case_results_sha256": "809390d5902cd27c1ab41ca593411cd1cb5e0cbd2557d6d63a04e7d65371bc33",
       "metrics": {
         "pure_rules_attack": {
           "tp": 7,
@@ -13278,14 +13278,14 @@
         "available": true,
         "loaded": false,
         "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
-        "adapter": "models/tidelm-adapter",
+        "adapter": "models/guardlm-adapter",
         "adapter_sha256": {
           "adapters.safetensors": "9980aa8e251dd3dff9dd83cbb36fb38ad18fac6e4b9f34023e4514d1cd65aefd",
           "adapter_config.json": "a1cd14355f2302011eb720f7a96bc228a4f8c6dd64ae01c8fcc962c1782e6c9e"
         },
         "released_v2_adapter": false,
         "backend": "mlx",
-        "label": "TideLM \u00b7 adapter missing or unverified",
+        "label": "GuardLM \u00b7 adapter missing or unverified",
         "reason": null,
         "base_weights_sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f"
       },

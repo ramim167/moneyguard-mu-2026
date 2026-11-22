@@ -10,7 +10,7 @@ const context={state:{lang:'en',displayCurrency:'USD',dashboard:{business:{curre
   isNum:Number.isFinite,esc,icon:()=>''};
 vm.createContext(context);
 vm.runInContext(money,context);
-context.TidewayMoney.configure({USD:1,BDT:122,CNY:7.1});
+context.MoneyGuardMoney.configure({USD:1,BDT:122,CNY:7.1});
 vm.runInContext('const currency=()=>state.dashboard.business.currency;'
   +app.slice(app.indexOf('function money(minor'),app.indexOf('function localizeMoneyText'))
   +app.slice(app.indexOf('const BN_DIGITS ='),app.indexOf('function actionCard'))

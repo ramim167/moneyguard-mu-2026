@@ -147,7 +147,7 @@ def summarise(path):
                            any(item["status"] != "not_attempted" for item in row["tasks"].values()) for row in consented)
     status = ("pending_no_consented_participants" if not consented else
               "collected_exploratory_observations" if has_observations else "consented_sessions_no_observations")
-    return {"schema_version": "tideway-user-study-v1", "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+    return {"schema_version": "moneyguard-user-study-v1", "generated_at_utc": datetime.now(timezone.utc).isoformat(),
             "status": status,
             "consented_participants": len(consented), "excluded_rows_without_consent": len(rows) - len(consented),
             "roles": {role: sum(row["role"] == role for row in consented) for role in sorted(ROLES)},

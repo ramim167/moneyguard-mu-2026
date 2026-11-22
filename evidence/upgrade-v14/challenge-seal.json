@@ -1,9 +1,9 @@
 {
   "fixture_sha256": "4d486a1f64ad1505b9ae63029bb9fe1583d485e4a23d6914687e475bf8f7c109",
   "classifier_files": {
-    "tideway/screening.py": "f9f286c2c6299d48894268ba1fb0444ef12b3262d0ddc1a177e41f757e15360c",
-    "tideway/semantic_screening.py": "596815e41dfdb0778f3814080594b8f9e10e8154a9f69ec422c4b7d921977f70",
-    "tideway/tidelm.py": "84a50f429508c4570de5c430a196d6d74f661b8b192966ce765758b818a744b6"
+    "moneyguard/screening.py": "f9f286c2c6299d48894268ba1fb0444ef12b3262d0ddc1a177e41f757e15360c",
+    "moneyguard/semantic_screening.py": "596815e41dfdb0778f3814080594b8f9e10e8154a9f69ec422c4b7d921977f70",
+    "moneyguard/guardlm.py": "673b49640bb282096867179f0561f2390576867ec688cadf40b96b741b4538a3"
   },
   "recorded_at_utc": "2026-10-19T07:29:02.686951+00:00",
   "cases": 48,

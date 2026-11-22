@@ -1,7 +1,7 @@
 """Render the MoneyGuard submission PDFs with headless Chrome (no Python packages needed).
 
 Produces slides/pitch.pdf, docs/architecture.pdf, docs/security-assessment.pdf and
-docs/Tideway_FinTechathon_2026_Roadmap.pdf (from docs/roadmap/*.html).
+docs/MoneyGuard_FinTechathon_2026_Roadmap.pdf (from docs/roadmap/*.html).
 Requires Google Chrome; override the path with the CHROME environment variable.
 """
 from __future__ import annotations
@@ -108,7 +108,7 @@ def print_pdf(page: Path, destination: Path):
     if not executable:
         raise SystemExit("Chrome/Chromium was not found. Install it or set CHROME to its executable path.")
     destination.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="tideway-pdf-", ignore_cleanup_errors=True) as folder:
+    with tempfile.TemporaryDirectory(prefix="moneyguard-pdf-", ignore_cleanup_errors=True) as folder:
         rendered = Path(folder) / "rendered.pdf"
         subprocess.run([executable, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
                         f"--user-data-dir={Path(folder) / 'profile'}", f"--print-to-pdf={rendered}",
@@ -134,9 +134,9 @@ def _json(path):
         return None
 
 
-def _tidelm():
-    """Best available TideLM evaluation pair (adapter vs base on the same test set), or None."""
-    for tuned, base in (("evidence/ml/tidelm_ft_eval.json", "evidence/ml/tidelm_base_eval.json"),):  # the deployed adapter
+def _guardlm():
+    """Best available GuardLM evaluation pair (adapter vs base on the same test set), or None."""
+    for tuned, base in (("evidence/ml/guardlm_ft_eval.json", "evidence/ml/guardlm_base_eval.json"),):  # the deployed adapter
         a, b = _json(tuned), _json(base)
         if a and b and a.get("test_set") == b.get("test_set"):
             return a, b
@@ -162,7 +162,7 @@ def _v15_slides(pct):
                                 ("Cash ÷ payroll", f"{ratio['auc']:.3f}", "—", "—")],
                       "bullets": [f"{summary['smes']} seeded synthetic SMEs: {summary['tiers']['red']} red, {summary['tiers']['amber']} amber, "
                                   f"{summary['tiers']['green']} green; shock stress shows tier migration",
-                                  f"Backtest on {pooled['n']} SMEs with independent realised futures; same generator as TidePay, so results are flattered",
+                                  f"Backtest on {pooled['n']} SMEs with independent realised futures; same generator as GuardPay, so results are flattered",
                                   "Never reads tenant workspaces; advisory text only, never a credit decision"],
                       "image": "31-portfolio-radar.png"})
     treasury = _json("evidence/treasury/treasury-report.json") or {}
@@ -175,11 +175,11 @@ def _v15_slides(pct):
                                   "Payment-integrity scan: duplicates, split-under-threshold, outliers, changed payees; advisory only",
                                   f"Signed, expiring credit passport; tamper, expiry and wrong-business checks {'pass' if s['passport_checks_passed'] else 'FAIL'}"],
                       "image": "30-treasury.png"})
-    cuda = _json("evidence/ml-cuda/tidelm_cuda_eval.json") or {}
+    cuda = _json("evidence/ml-cuda/guardlm_cuda_eval.json") or {}
     if cuda:
-        added.append({"title": "TideLM, retrained on a gaming GPU", "subtitle": "Windows + NVIDIA RTX 3060 Ti, held-out synthetic test",
+        added.append({"title": "GuardLM, retrained on a gaming GPU", "subtitle": "Windows + NVIDIA RTX 3060 Ti, held-out synthetic test",
                       "bullets": ["LoRA fine-tune of a smaller Qwen3 base with PyTorch/PEFT; adapter stays on the device",
-                                  "Base vs fine-tuned measured on the same unseen-name test subset (see docs/TIDELM_CUDA.md)",
+                                  "Base vs fine-tuned measured on the same unseen-name test subset (see docs/GUARDLM_CUDA.md)",
                                   "Served through the existing loopback-only local-model path; validators unchanged"]})
     added.append({"title": "Anyone in the company can use it", "subtitle": "Every page explains itself in plain words",
                   "bullets": ["\"What is this page?\" card: purpose, three steps, who it is for, what is safe",
@@ -191,13 +191,13 @@ def _v15_slides(pct):
 
 def slides():
     """The deck, with every number read from the evidence files at build time (never typed by hand)."""
-    tidepay = (_json("evidence/upgrade-v1/tidepay/report.json") or {}).get("results", {})
+    guardpay = (_json("evidence/upgrade-v1/guardpay/report.json") or {}).get("results", {})
     verify = _json("evidence/verification-summary.json") or {}
-    lm = _tidelm()
+    lm = _guardlm()
     local_smoke = _json("evidence/readiness-v3/blind/model-first-observation.json") or {}
     local_proof = (f"Mac Qwen3 first challenge: {local_smoke.get('matched', {}).get('numerator', '—')}/{local_smoke.get('requests')} handled; four retained misses"
                    if local_smoke.get("real_model_inference") else "Current compatible-model verification is recorded separately")
-    deployed = (_json("evidence/readiness-v3/tidepay/report.json") or {}).get("results", {})
+    deployed = (_json("evidence/readiness-v3/guardpay/report.json") or {}).get("results", {})
     regression = _json("evidence/readiness-v3/blind/model-post-fix-regression.json") or {}
     pct = lambda v: f"{v * 100:.1f}%".replace(".0%", "%")  # noqa: E731
     lm_rows = []
@@ -207,8 +207,8 @@ def slides():
                    ("Understands the request (intent)", pct(base["plan"]["intent_accuracy"]), pct(tuned["plan"]["intent_accuracy"])),
                    ("Reads records from messages (F1)", f"{base['extract']['record_f1']:.3f}", f"{tuned['extract']['record_f1']:.3f}"),
                    ("Flags hidden instructions", pct(base["extract"]["injection_flag_accuracy"]), pct(tuned["extract"]["injection_flag_accuracy"]))]
-    fed, rule, thin, alone = (tidepay.get("federated", {}), tidepay.get("heuristic_v1", {}),
-                              tidepay.get("federated_on_smaller_half_of_smes", {}), tidepay.get("local_only_on_smaller_half_of_smes", {}))
+    fed, rule, thin, alone = (guardpay.get("federated", {}), guardpay.get("heuristic_v1", {}),
+                              guardpay.get("federated_on_smaller_half_of_smes", {}), guardpay.get("local_only_on_smaller_half_of_smes", {}))
     deck = [
         {"title": "MoneyGuard", "subtitle": "Plan ahead for payroll.",
          "bullets": ["On-device AI that predicts which customers will pay late, plans a cash rescue before the gap hits, "
@@ -223,7 +223,7 @@ def slides():
                      "Scheduled, likely and stress views; \"N of 20 futures fall short\"",
                      "Shapla Services (synthetic): scheduled low −BDT 10,000 on 31 Oct; reserve gap BDT 30,000"],
          "image": "01-cash-weather-storm.png"},
-        {"title": "TidePay: exact shipped weights", "subtitle": "Frozen artifact; new SMEs, no fitting on test labels",
+        {"title": "GuardPay: exact shipped weights", "subtitle": "Frozen artifact; new SMEs, no fitting on test labels",
          "table": [("Model", "MAE days", "Log loss", "Brier sum")] + [
              (label, f"{deployed[key]['mae_days']:.3f}", f"{deployed[key]['log_loss']:.3f}", f"{deployed[key]['brier_sum']:.3f}")
              for key, label in (("historical_training_prior", "Training prior"), ("customer_history_heuristic", "History heuristic"),
@@ -231,8 +231,8 @@ def slides():
          "bullets": [f"{deployed.get('deployed', {}).get('n', '—'):,} unseen invoices; 80 new synthetic SMEs, four seeds" if deployed else "See the frozen-artifact report",
                      "No-history predictions remain weak; no real-world accuracy claim",
                      "One-process federation; no deployed privacy guarantee"]},
-        {"title": "TideLM: our own on-device language model", "subtitle": "Qwen3-4B + a LoRA adapter we trained on a laptop with MLX",
-         "table": ([("", "Base model", "TideLM")] + lm_rows) if lm_rows else None,
+        {"title": "GuardLM: our own on-device language model", "subtitle": "Qwen3-4B + a LoRA adapter we trained on a laptop with MLX",
+         "table": ([("", "Base model", "GuardLM")] + lm_rows) if lm_rows else None,
          "bullets": ["Eight languages: English, 中文, Español, Bahasa, Français, Português, Hinglish, Banglish",
                      "Synthetic test with unseen names and shared template families",
                      local_proof + "; historical adapter scores above are a different evaluation"] + ([] if lm_rows else ["Evaluation pending"])},
@@ -247,7 +247,7 @@ def slides():
                      "Simulated counterparties accept, counter or refuse; idempotent execution with read-back"],
          "image": "03-approve-exactly-this.png"},
         {"title": "Talk to it in your language", "subtitle": "Glass-box answers, zero-entry bookkeeping",
-         "bullets": ["Optional TideLM shows its typed plan; figures come from MoneyGuard's tools",
+         "bullets": ["Optional GuardLM shows its typed plan; figures come from MoneyGuard's tools",
                      "Answers in the language of the question, with the same figures",
                      "Optional local models draft messages and photos; human confirmation is required"],
          "image": "07-assistant.png"},
@@ -265,7 +265,7 @@ def slides():
         {"title": "Evidence, with denominators", "subtitle": "Reproducible in one command each",
          "bullets": [f"{verify.get('passed', '—')}/{verify.get('cases', '—')} self-test cases · {_test_count()} automated tests",
                      "Model reports, sandbox logs, browser evidence and reproducible setup",
-                     "python3 -m tideway.selftest · python3 -m unittest discover -s tests"]},
+                     "python3 -m moneyguard.selftest · python3 -m unittest discover -s tests"]},
         {"title": "Honest limits, clear next steps", "subtitle": "What we have not done yet",
          "bullets": ["Synthetic data and simulated counterparties; demo-grade PINs and keys",
                      "Team-reported usability study (20 SME + 20 security-task participants); collection not independently verified",
@@ -378,7 +378,7 @@ section.first h1 { font-size: 66pt; color: #fff; } section.first h2 { font-size:
 def pitch(work: Path):
     parts = []
     for number, slide in enumerate(slides(), 1):
-        text = (f"<div><div class=tag>TIDEWAY · TOPIC E</div><h1>{html.escape(slide['title'])}</h1>"
+        text = (f"<div><div class=tag>MONEYGUARD · TOPIC E</div><h1>{html.escape(slide['title'])}</h1>"
                 f"<h2>{html.escape(slide['subtitle'])}</h2>")
         if slide.get("table"):
             text += "<table>" + "".join("<tr>" + "".join(f"<td>{html.escape(cell)}</td>" for cell in row) + "</tr>"
@@ -402,9 +402,9 @@ def main():
         document(work, "architecture", ROOT / "docs" / "TECHNICAL_DOCUMENTATION.md", ROOT / "docs" / "architecture.pdf")
         document(work, "security-assessment", ROOT / "docs" / "SECURITY_SELF_ASSESSMENT.md", ROOT / "docs" / "security-assessment.pdf")
         document(work, "submission-notes", ROOT / "docs" / "SUBMISSION_NOTES.md", ROOT / "docs" / "submission-notes.pdf")
-        roadmap = ROOT / "docs" / "roadmap" / "Tideway_FinTechathon_2026_Roadmap.html"
+        roadmap = ROOT / "docs" / "roadmap" / "MoneyGuard_FinTechathon_2026_Roadmap.html"
         if roadmap.exists():
-            print_pdf(roadmap, ROOT / "docs" / "Tideway_FinTechathon_2026_Roadmap.pdf")
+            print_pdf(roadmap, ROOT / "docs" / "MoneyGuard_FinTechathon_2026_Roadmap.pdf")
 
 
 if __name__ == "__main__":

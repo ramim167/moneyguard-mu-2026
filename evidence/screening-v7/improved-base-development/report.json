@@ -3,9 +3,9 @@
   "started_at_utc": "2026-10-17T13:10:15.380189+00:00",
   "source_tree_sha256": "ca6f9d13360a9bd1f81a72c340e727d46c9a94a36eaf4d4660ba4647fd7cd2d5",
   "classifier_files": {
-    "tideway/screening.py": "ec83bc2e4a00052d2fbeaa8632a232775918e842b9c3dc55c15bbe3a1d3a74f8",
-    "tideway/semantic_screening.py": "260b66a83f39a3b0ba5988f38ce556972c70f7e13e1677fad68b50e1760807bb",
-    "tideway/tidelm.py": "cbdd3af0047de459ccdb7156ccf60ca1dfeb4b5f0504257cf757a64d702480d5"
+    "moneyguard/screening.py": "ec83bc2e4a00052d2fbeaa8632a232775918e842b9c3dc55c15bbe3a1d3a74f8",
+    "moneyguard/semantic_screening.py": "260b66a83f39a3b0ba5988f38ce556972c70f7e13e1677fad68b50e1760807bb",
+    "moneyguard/guardlm.py": "2ff2c9e45844c854356fb02c9a2aaf8bb9c4a4f505d98f3b41514a1da4105504"
   },
   "fixture_sha256": "1a73000b0bc6b4666bd1e7db1a4b85cb719e83a9f85bf6126ca9c2ee09ae787b",
   "author_seal": null,
@@ -24,7 +24,7 @@
     "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
     "adapter": null,
     "backend": "mlx-base",
-    "evaluated_tidelm_adapter": false,
+    "evaluated_guardlm_adapter": false,
     "label": "Qwen3 base classifier (cached, unbenchmarked)",
     "reason": null,
     "base_weights_sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f"
@@ -1911,7 +1911,7 @@
   "source_unchanged": false,
   "targets_met": false,
   "finished_at_utc": "2026-10-17T13:15:02.886560+00:00",
-  "case_results_sha256": "06d424221f8f76714c5bad36e7d7ec8734f06d403764105459853f4826833d8e",
+  "case_results_sha256": "40f966ed2acc9e62ad1fd12dd9c3b195e6eebbc44dacc977e4acf6a7266a92c5",
   "limitations": [
     "Synthetic convenience sample, not population accuracy or independent external validation.",
     "Development is disclosed v6 regression data; native MLX is a different backend from historical Windows GGUF.",

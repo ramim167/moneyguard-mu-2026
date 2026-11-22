@@ -8,12 +8,12 @@ import json
 import unittest
 from unittest.mock import Mock, patch
 
-from tideway.semantic_screening import (MAX_OUTPUT_BYTES, SYSTEM, classification_schema,
+from moneyguard.semantic_screening import (MAX_OUTPUT_BYTES, SYSTEM, classification_schema,
                                        semantic_classify)
-from tideway.service import Tideway
-from tideway.server import Application
-from tideway.tidelm import TideLM
-from tideway.vision import TideVision
+from moneyguard.service import MoneyGuard
+from moneyguard.server import Application
+from moneyguard.guardlm import GuardLM
+from moneyguard.vision import GuardVision
 
 SHAPLA = "shapla-services"
 
@@ -153,7 +153,7 @@ class SemanticClassificationGuards(unittest.TestCase):
     def test_nontext_output_and_over_time_response_fail_to_review(self):
         result = semantic_classify("Invoice due tomorrow.", lambda *_args: {"label": "benign"})
         self.assertEqual(result["errors"], ["output_not_text"])
-        with patch("tideway.semantic_screening.time.monotonic", side_effect=[1.0, 32.0, 32.0]):
+        with patch("moneyguard.semantic_screening.time.monotonic", side_effect=[1.0, 32.0, 32.0]):
             result = semantic_classify("Invoice due tomorrow.", lambda *_args: answer(), max_seconds=30)
         self.assertEqual(result["errors"], ["time_budget_exceeded"])
         self.assertEqual(result["label"], "uncertain")
@@ -169,23 +169,23 @@ class SemanticClassificationGuards(unittest.TestCase):
 
 class SemanticRuntimeIntegration(unittest.TestCase):
     def setUp(self):
-        self.app = Tideway(":memory:")
+        self.app = MoneyGuard(":memory:")
         self.addCleanup(self.app.store.close)
 
     def test_server_photo_screening_shares_the_existing_text_backend(self):
         application = Application(":memory:")
         self.addCleanup(application.store.close)
-        self.assertIs(application.vision._semantic_model, application.tidelm)
-        self.assertIsNone(application.tidelm._model)  # constructor does not load MLX/model weights
+        self.assertIs(application.vision._semantic_model, application.guardlm)
+        self.assertIsNone(application.guardlm._model)  # constructor does not load MLX/model weights
 
     def test_native_classification_uses_base_model_not_a_planning_lora(self):
-        lm = TideLM()
+        lm = GuardLM()
         lm._local = None
         native = Mock()
         native._local = None
         native.status.return_value = {"available": True, "backend": "mlx-base", "model": "cached-base"}
         native._generate.return_value = answer()
-        with patch("tideway.tidelm.TideLM", return_value=native) as constructor:
+        with patch("moneyguard.guardlm.GuardLM", return_value=native) as constructor:
             result = lm.screen("Service receipt total 210.", enabled=True)
         constructor.assert_called_once_with(adapter=None)
         native._generate.assert_called_once()
@@ -195,7 +195,7 @@ class SemanticRuntimeIntegration(unittest.TestCase):
 
     def test_disabled_adapter_never_calls_model_or_claims_semantic_pass(self):
         generate = Mock(side_effect=AssertionError("must not generate"))
-        lm = TideLM(generator=generate)
+        lm = GuardLM(generator=generate)
         result = lm.screen("Invoice due tomorrow.", enabled=False)
         generate.assert_not_called()
         self.assertFalse(result["enabled"])
@@ -204,7 +204,7 @@ class SemanticRuntimeIntegration(unittest.TestCase):
         self.assertTrue(result["human_review_required"])
 
     def test_local_adapter_uses_strict_schema_once_and_no_cloud_fallback(self):
-        lm = TideLM()
+        lm = GuardLM()
         local = Mock()
         local.status.return_value = {"available": True, "backend": "local-compatible", "model": "test-local"}
         local.generate.return_value = answer()
@@ -225,9 +225,9 @@ class SemanticRuntimeIntegration(unittest.TestCase):
                                    "currency": "BDT", "date": "2026-10-10", "due_date": "2026-10-25",
                                    "direction": "in", "reference": "INV-SEM"}], "suspicious": False}
         generate = Mock(side_effect=[json.dumps(extracted), answer("uncertain", reason="The message is ambiguous.")])
-        lm = TideLM(generator=generate)
+        lm = GuardLM(generator=generate)
         before = len(self.app.store.records(SHAPLA)["invoices"])
-        with patch.dict("os.environ", {"TIDEWAY_SEMANTIC_SCREENING": "1"}):
+        with patch.dict("os.environ", {"MONEYGUARD_SEMANTIC_SCREENING": "1"}):
             result = lm.extract(self.app, SHAPLA, "Orchid Kitchen invoice BDT 12500 due 25 Oct.")
         self.assertEqual(generate.call_count, 2)  # extraction + exactly one classification
         self.assertEqual(len(self.app.store.records(SHAPLA)["invoices"]), before)
@@ -241,11 +241,11 @@ class SemanticRuntimeIntegration(unittest.TestCase):
 
     def test_photo_screening_uses_transcript_not_image_and_rejects_truncation(self):
         for transcript in ("Ordinary receipt text.", "x" * 2100):
-            semantic = TideLM(generator=Mock(return_value=answer()))
-            vision = TideVision(generator=lambda _path: json.dumps({"records": [], "transcript": transcript}),
+            semantic = GuardLM(generator=Mock(return_value=answer()))
+            vision = GuardVision(generator=lambda _path: json.dumps({"records": [], "transcript": transcript}),
                                 semantic_model=semantic)
-            with patch("tideway.vision.decode_image", return_value=b"sanitized-jpeg"), \
-                    patch.dict("os.environ", {"TIDEWAY_SEMANTIC_SCREENING": "1"}):
+            with patch("moneyguard.vision.decode_image", return_value=b"sanitized-jpeg"), \
+                    patch.dict("os.environ", {"MONEYGUARD_SEMANTIC_SCREENING": "1"}):
                 result = vision.read(self.app, SHAPLA, "unused-photo-input")
             if len(transcript) > 2000:
                 semantic._generator.assert_not_called()

@@ -6,10 +6,10 @@ import vm from 'node:vm';
 const events = {}, problems = [], sent = [];
 const window = {scrollTo() {}};
 for (const name of ['Lab','Home','Learn','Owner','Portfolio','Treasury']) {
-  window['Tideway'+name] = {bind() {},reset() {}};
+  window['MoneyGuard'+name] = {bind() {},reset() {}};
 }
 const context = vm.createContext({window, problems, sent,
-  localStorage:{getItem:key=>key==='tideway:ai'?'1':null},
+  localStorage:{getItem:key=>key==='moneyguard:ai'?'1':null},
   fetch:()=>new Promise(()=>{}), // Keep the application bootstrap pending.
   document:{getElementById:()=>null,querySelectorAll:()=>[],addEventListener:(name,fn)=>(events[name]??=[]).push(fn)}});
 const run = code=>vm.runInContext(code, context);
@@ -31,10 +31,10 @@ assert.deepEqual(sent.map(body=>body.consent),[true,false]);
 function privateDraft() {
   for (const handler of events.input.slice(0,1)) handler({target:{id:'shield-text',value:'sensitive reference'}});
   run(`state.recordQuery='private customer'; state.recordFilter='bill'; setAi(true)`);
-  assert.match(run('window.TidewayShield.render()'),/sensitive reference/);
+  assert.match(run('window.MoneyGuardShield.render()'),/sensitive reference/);
 }
 function verifyCleared() {
-  assert.doesNotMatch(run('window.TidewayShield.render()'),/sensitive reference/);
+  assert.doesNotMatch(run('window.MoneyGuardShield.render()'),/sensitive reference/);
   assert.equal(run('state.recordQuery'),'');
   assert.equal(run('state.recordFilter'),'all');
   assert.equal(run('state.aiConsent'),false);
@@ -61,9 +61,9 @@ const button = run(`globalThis.Element=class {closest(s){return s==="[data-actio
   Object.assign(new Element(),{dataset:{action:'inbox-shield'}})`);
 await events.click.at(-1)({target:button});
 assert.equal(run("state.view"),"shield");
-assert.match(run("window.TidewayShield.render()"),/exact checked message/);
-assert.match(run("window.TidewayShield.render()"),/Likely scam/);
-assert.doesNotMatch(run("window.TidewayShield.render()"),/different draft/);
+assert.match(run("window.MoneyGuardShield.render()"),/exact checked message/);
+assert.match(run("window.MoneyGuardShield.render()"),/Likely scam/);
+assert.doesNotMatch(run("window.MoneyGuardShield.render()"),/different draft/);
 
 run(`state.config.vision={max_upload_bytes:3};
   globalThis.URL={createObjectURL:()=>'blob:test',revokeObjectURL:()=>{}};

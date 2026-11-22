@@ -23,9 +23,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tideway.domain import canonical_json  # noqa: E402
-from tideway.service import Tideway  # noqa: E402
-from tideway.treasury import HEALTH_WEIGHTS, Treasury  # noqa: E402
+from moneyguard.domain import canonical_json  # noqa: E402
+from moneyguard.service import MoneyGuard  # noqa: E402
+from moneyguard.treasury import HEALTH_WEIGHTS, Treasury  # noqa: E402
 
 BUSINESSES = ("shapla-services", "lotus-print", "harbourline-traders")
 REPEATS = 5
@@ -53,8 +53,8 @@ def commit():
 
 
 def evaluate():
-    tideway = Tideway(":memory:")
-    treasury = Treasury(tideway)
+    moneyguard = MoneyGuard(":memory:")
+    treasury = Treasury(moneyguard)
     report = {"version": "treasury-evaluation-v1", "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
               "source_commit": commit(), "working_tree_note": "Run on the working tree; uncommitted changes may be present.",
               "python": platform.python_version(), "platform": platform.platform(),
@@ -106,12 +106,12 @@ def evaluate():
                          "verify_wrong_business": {key: value for key, value in treasury.verify_passport(other, passport).items()
                                                    if key in ("valid", "reason")},
                          "verify_after_expiry": {key: expired[key] for key in ("valid", "reason")},
-                         "verify_as_mandate": tideway.store.verify_mandate_document(passport)["signature_valid"]},
+                         "verify_as_mandate": moneyguard.store.verify_mandate_document(passport)["signature_valid"]},
             "deterministic_repeat": deterministic,
             "timings": {"twcf": plan_time, "health_with_1000_run_monte_carlo": health_time, "scan_ledger": scan_time,
                         "scan_with_synthetic_sample": sample_time, "passport_issue": issue_time, "passport_verify": verify_time},
         })
-    tideway.store.close()
+    moneyguard.store.close()
     rows = report["businesses"]
     report["summary"] = {
         "businesses": len(rows),

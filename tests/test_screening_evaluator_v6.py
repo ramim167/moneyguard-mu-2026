@@ -160,7 +160,7 @@ class ScreeningEvaluatorProtocolTests(unittest.TestCase):
     def test_source_manifest_covers_resources_not_bytecode(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            package = root / "tideway"
+            package = root / "moneyguard"
             package.mkdir()
             (package / "inert.py").write_text("# inert test file\n", encoding="utf-8")
             (package / "data.json").write_text("{}\n", encoding="utf-8")
@@ -168,7 +168,7 @@ class ScreeningEvaluatorProtocolTests(unittest.TestCase):
             cache.mkdir()
             (cache / "inert.pyc").write_bytes(b"generated")
             self.assertEqual(set(evaluator.implementation_manifest(root)),
-                             {"tideway/inert.py", "tideway/data.json"})
+                             {"moneyguard/inert.py", "moneyguard/data.json"})
 
     def test_external_artifact_change_is_measurable(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -191,8 +191,8 @@ class ScreeningEvaluatorProtocolTests(unittest.TestCase):
                 "fixture_sha256": evaluator.sha256_file(paths["fixture"]),
                 "counts": evaluator.case_counts(cases),
             })
-            (root / "tideway").mkdir()
-            (root / "tideway/inert.py").write_text("# never imported\n", encoding="utf-8")
+            (root / "moneyguard").mkdir()
+            (root / "moneyguard/inert.py").write_text("# never imported\n", encoding="utf-8")
             (root / "scripts").mkdir()
             (root / "scripts/evaluate_screening_v6.py").write_bytes(MODULE_PATH.read_bytes())
             artifact = root / "inert.bin"
@@ -212,7 +212,7 @@ class ScreeningEvaluatorProtocolTests(unittest.TestCase):
                     outer.assertTrue(enabled)
                     return dummy_result("uncertain")
 
-            with mock.patch.object(evaluator.importlib, "import_module", return_value=SimpleNamespace(TideLM=FakeActualClient)), \
+            with mock.patch.object(evaluator.importlib, "import_module", return_value=SimpleNamespace(GuardLM=FakeActualClient)), \
                  mock.patch.dict(evaluator.os.environ, {}, clear=False):
                 result_path = evaluator.run_evaluation(root)
             result = json.loads(result_path.read_text(encoding="utf-8"))

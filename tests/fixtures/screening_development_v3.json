@@ -1,5 +1,5 @@
 {
-  "version": "tideway-screening-development-v3",
+  "version": "moneyguard-screening-development-v3",
   "methodology": "Author-labelled synthetic development cases fixed before implementation. Not independent validation or prevalence estimates. Payment-detail changes and missing historical accounts require verification even when legitimate; review is distinct from an instruction attack.",
   "messages": [
     {"id":"D-B01","malicious":false,"text":"Invoice receipt: https://supplier.example/invoices/42"},

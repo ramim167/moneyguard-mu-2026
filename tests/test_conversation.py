@@ -1,9 +1,9 @@
 """The conversational layer: small talk, varied context-aware answers and suggestions, no dead ends."""
 import unittest
 
-from tideway.agent import Agent
-from tideway.conversation import classify
-from tideway.service import Tideway
+from moneyguard.agent import Agent
+from moneyguard.conversation import classify
+from moneyguard.service import MoneyGuard
 
 SHAPLA = "shapla-services"
 
@@ -11,7 +11,7 @@ SHAPLA = "shapla-services"
 class Conversation(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = Tideway(":memory:")
+        cls.app = MoneyGuard(":memory:")
         cls.agent = Agent(cls.app)
 
     def ask(self, message):
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
 class CounterpartyRisk(unittest.TestCase):
     def test_never_pays_loses_the_whole_invoice_inside_the_horizon(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         network = app.network(SHAPLA)
         nila = next(item for item in network["customers"] if item["name"] == "Nila Traders")
         self.assertEqual(nila["if_never_pays"]["horizon_cash_drop_minor"], nila["open_minor"])
@@ -67,14 +67,14 @@ class CounterpartyRisk(unittest.TestCase):
         self.assertEqual(impacts, sorted(impacts, reverse=True))
 
     def test_payer_outside_the_horizon_is_explained_not_zeroed(self):
-        headline = Tideway(":memory:").network("harbourline-traders")["headline"]
+        headline = MoneyGuard(":memory:").network("harbourline-traders")["headline"]
         self.assertIn("does not count on it", headline)
 
 
 class BankPack(unittest.TestCase):
     def test_bank_pack_is_escaped_and_complete(self):
-        from tideway.copilot import bank_pack, bank_pack_html
-        app = Tideway(":memory:")
+        from moneyguard.copilot import bank_pack, bank_pack_html
+        app = MoneyGuard(":memory:")
         pack = bank_pack(app, SHAPLA)
         pack["business"]["name"] = "<script>alert(1)</script>"
         page = bank_pack_html(pack)

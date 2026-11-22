@@ -12,7 +12,7 @@ customer or supplier is connected and no real money moves.
 
 - **13-week cash flow.** Weekly receipts by customer, supplier bills, payroll,
   other spend, net flow, closing and lowest cash against the reserve, for the
-  scheduled, likely (TidePay) and stress scenarios. Buckets are taken directly
+  scheduled, likely (GuardPay) and stress scenarios. Buckets are taken directly
   from the projection engine; the server refuses to answer if week-13 closing cash
   or the daily minimum disagrees with it. CSV export (`/api/export?kind=twcf`).
 - **Working-capital health score.** Six weighted components (collection speed,
@@ -44,7 +44,7 @@ customer or supplier is connected and no real money moves.
 
 An early-warning view for banks, lenders and large buyers over a seeded synthetic
 portfolio of 60 SMEs (BDT, CNY, INR, SGD; five sectors). Per SME: breach
-probability from 400 TidePay-driven simulated futures, 14/30-day risk, expected
+probability from 400 GuardPay-driven simulated futures, 14/30-day risk, expected
 and worst-5% shortfall, the main driver, a red/amber/green tier and advisory
 text. Portfolio totals are kept per currency (never summed across currencies).
 A shock control re-runs the portfolio with extra customer delay and shows the
@@ -55,7 +55,7 @@ radar AUC 0.971 (95% bootstrap interval 0.954–0.984), Brier 0.057, red-tier
 precision 97% and recall 69%, versus 0.928 / 0.143 / 100% / 41% for a
 scheduled-only projection and AUC 0.783 for cash ÷ payroll. Calibration is weak
 in the 5–50% range (observed rates 1.5–2.2× predicted), and the realised futures
-come from the same synthetic generator TidePay learned from, so these figures
+come from the same synthetic generator GuardPay learned from, so these figures
 are flattered. The radar never reads tenant workspaces (the module does not
 import the store, service or server; a test enforces this), is not a credit
 decision and has not been validated on real data. Cold call ≈1.6 s on the build PC.
@@ -86,11 +86,11 @@ decision and has not been validated on real data. Cold call ≈1.6 s on the buil
 - The Decision-lab technical JSON is readable (dark text on its light panel).
 - Simple view is English-only; the assistant remains multilingual.
 
-## TideLM trained on a consumer GPU
+## GuardLM trained on a consumer GPU
 
-[Details](TIDELM_CUDA.md) · evidence: `evidence/ml-cuda/`
+[Details](GUARDLM_CUDA.md) · evidence: `evidence/ml-cuda/`
 
-A PyTorch/PEFT path trains the TideLM LoRA adapter on Windows with an NVIDIA RTX
+A PyTorch/PEFT path trains the GuardLM LoRA adapter on Windows with an NVIDIA RTX
 3060 Ti (7.3 minutes, 5.2 GB peak VRAM) on Qwen3-1.7B. On the full held-out
 synthetic test set: exact tool plans 21.3% to 92.7%, extraction F1 0.30 to 0.99,
 injection-flag accuracy 62% to 100%. A loopback-only server lets the app use it.
@@ -106,7 +106,7 @@ mobile-money alerts with clearly labelled rules. Drafts still need confirmation.
 
 `scripts/pitch_video/` renders a narrated, captioned video of at most 4:55 from
 `storyboard.json`: animated vector title scenes plus live recordings of the app
-on a fresh synthetic database. Output: `dist/video/tideway-pitch.mp4`.
+on a fresh synthetic database. Output: `dist/video/moneyguard-pitch.mp4`.
 
 ## Verification
 

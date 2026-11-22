@@ -1,7 +1,7 @@
 """MOCK funding must disclose timing, unsupported eligibility and repayment gaps."""
 import copy
 import unittest
-from tideway.financing import compare
+from moneyguard.financing import compare
 
 class FinancingComparison(unittest.TestCase):
     def setUp(self):

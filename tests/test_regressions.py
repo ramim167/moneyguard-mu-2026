@@ -10,13 +10,13 @@ from pathlib import Path
 from http.server import ThreadingHTTPServer
 from unittest import mock
 
-from tideway import counterparty, server
-from tideway.security import RateLimiter
-from tideway.agent import Agent
-from tideway.domain import ValidationError, validate_policy
-from tideway.selftest import LOTUS, SHAPLA, TARGET, _mandate, _ops
-from tideway.server import Application, make_handler
-from tideway.service import Tideway
+from moneyguard import counterparty, server
+from moneyguard.security import RateLimiter
+from moneyguard.agent import Agent
+from moneyguard.domain import ValidationError, validate_policy
+from moneyguard.selftest import LOTUS, SHAPLA, TARGET, _mandate, _ops
+from moneyguard.server import Application, make_handler
+from moneyguard.service import MoneyGuard
 
 
 def audit_count(app, business=SHAPLA):
@@ -30,7 +30,7 @@ def mandate_status(app, mandate_id):
 
 class StoreRegressions(unittest.TestCase):
     def setUp(self):
-        self.app = Tideway(":memory:")
+        self.app = MoneyGuard(":memory:")
         self.owner, self.accountant, self.viewer = _ops(self.app)
 
     def test_reminder_does_not_invalidate_approved_mandate(self):  # bugs 2 and 3
@@ -107,7 +107,7 @@ class StoreRegressions(unittest.TestCase):
     def test_legacy_issued_votes_allow_original_approvers_to_restart_after_time_expires(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "legacy.sqlite3"
-            app = Tideway(path)
+            app = MoneyGuard(path)
             plan, mandate = _mandate(app)
             pid = plan["plan_id"]
             self.assertEqual(app.store.plan(SHAPLA, pid)["status"], "approved")
@@ -118,10 +118,10 @@ class StoreRegressions(unittest.TestCase):
                                "VALUES (?,?,?,?,?,?,?,?)", ("old-" + vote["operator_id"], SHAPLA, pid, "recommended",
                                vote["operator_id"], vote["role"], vote["review_ms"], vote["created_at"]))
             app.store.close()
-            app = Tideway(path)
+            app = MoneyGuard(path)
             owner, accountant, _ = _ops(app)
             future = datetime.fromisoformat(mandate["expires_at"]) + timedelta(seconds=1)
-            with mock.patch("tideway.store.datetime", wraps=datetime) as clock:
+            with mock.patch("moneyguard.store.datetime", wraps=datetime) as clock:
                 clock.now.return_value = future
                 fresh = app.store.latest_plan(SHAPLA, TARGET)
                 self.assertEqual(fresh["plan_id"], pid)
@@ -203,7 +203,7 @@ class StoreRegressions(unittest.TestCase):
         web = Application(":memory:")
         for business in (SHAPLA, LOTUS, "harbourline-traders"):
             body, _, _ = web.export({"kind": ["records"], "business_id": [business]}, self.owner)
-            result = web.tideway.import_csv(business, body, "x", False)
+            result = web.moneyguard.import_csv(business, body, "x", False)
             self.assertEqual(result["total_added"], 0, business)
 
     def test_large_native_csv_round_trip_and_import_screening(self):
@@ -216,12 +216,12 @@ class StoreRegressions(unittest.TestCase):
             records.append(f"transaction,restore-{n},2026-10-02,{description},10,income,BDT,Sales,untrusted-input")
         csv_text = header + "\n".join(records)
         self.assertGreater(len(csv_text), 1_500_000)
-        result = web.tideway.import_csv(SHAPLA, csv_text, "x")
+        result = web.moneyguard.import_csv(SHAPLA, csv_text, "x")
         self.assertEqual(result["total_added"], 5100)
         self.assertEqual(result["quarantined_text"],
                          [{"kind": "transaction", "id": "restore-0", "flags": ["hidden_characters"]}])
         exported, _, _ = web.export({"kind": ["records"], "business_id": [SHAPLA]}, self.owner)
-        self.assertEqual(web.tideway.import_csv(SHAPLA, exported, "x")["total_added"], 0)
+        self.assertEqual(web.moneyguard.import_csv(SHAPLA, exported, "x")["total_added"], 0)
 
     def test_identical_rows_with_ids_are_both_kept(self):  # bug 12
         csv_text = ("record_type,id,date,description,amount,type,currency,category\n"
@@ -242,10 +242,10 @@ class StoreRegressions(unittest.TestCase):
         reply = Agent(self.app).chat(SHAPLA, TARGET, "what if Nila Traders pays 99 days late", actor="agent:local")
         self.assertTrue(reply["text"].startswith("I couldn't do that"))
 
-    def test_profiles_carry_tidepay_delay(self):  # bug 32
+    def test_profiles_carry_guardpay_delay(self):  # bug 32
         derived = self.app.store.derived(self.app.store.snapshot(SHAPLA))
         owing = [item for item in derived["profiles"]["customers"].values() if item["open_exposure_minor"]]
-        self.assertTrue(owing and all(item["tidepay_delay_days"] is not None for item in owing))
+        self.assertTrue(owing and all(item["guardpay_delay_days"] is not None for item in owing))
 
 
 class RateLimiterRegressions(unittest.TestCase):
@@ -274,7 +274,7 @@ class HttpRegressions(unittest.TestCase):
 
     def raw(self, body, headers=None):
         conn = http.client.HTTPConnection("127.0.0.1", self.port, timeout=10)
-        base = {"Host": f"127.0.0.1:{self.port}", "Content-Type": "application/json", "X-Tideway-Token": self.app.csrf,
+        base = {"Host": f"127.0.0.1:{self.port}", "Content-Type": "application/json", "X-MoneyGuard-Token": self.app.csrf,
                 "Origin": f"http://127.0.0.1:{self.port}", **(headers or {})}
         conn.putrequest("POST", "/api/session/login", skip_host=True, skip_accept_encoding=True)
         for key, value in base.items():
@@ -295,7 +295,7 @@ class HttpRegressions(unittest.TestCase):
     def test_rejected_posts_deliver_403_without_reset_or_state_changes(self):
         before = audit_count(self.app)
         body = b"untrusted body that must never be parsed " * 2048
-        for headers in ({"Origin": "http://evil.example"}, {"X-Tideway-Token": "wrong"}):
+        for headers in ({"Origin": "http://evil.example"}, {"X-MoneyGuard-Token": "wrong"}):
             for _ in range(8):
                 self.assertEqual(self.raw(body, {"Content-Length": str(len(body)), **headers}), 403)
         self.assertEqual(audit_count(self.app), before)
@@ -312,7 +312,7 @@ class HttpRegressions(unittest.TestCase):
         nested = ("[" * 100_000 + "]" * 100_000).encode()
         self.assertEqual(self.raw(nested, {"Content-Length": str(len(nested))}), 400)
         self.assertEqual(self.raw(b"{}", {"Content-Length": "abc"}), 400)
-        self.assertEqual(self.raw(b"{}", {"Content-Length": "2", "X-Tideway-Token": "tök€n".encode()}), 403)
+        self.assertEqual(self.raw(b"{}", {"Content-Length": "2", "X-MoneyGuard-Token": "tök€n".encode()}), 403)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-# Project brief: making Tideway a winning FinTechathon 2026 entry
+# Project brief: making MoneyGuard a winning FinTechathon 2026 entry
 
 *English translation and restructuring of the team lead's original Bangla brief (14 October 2026).*
 

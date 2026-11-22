@@ -2,8 +2,8 @@
 import json
 import unittest
 
-from tideway.service import Tideway
-from tideway.tidelm import TideLM
+from moneyguard.service import MoneyGuard
+from moneyguard.guardlm import GuardLM
 
 
 BUSINESS = "shapla-services"
@@ -15,11 +15,11 @@ def selection(tool, **args):
 
 class ModelArgumentGrounding(unittest.TestCase):
     def setUp(self):
-        self.app = Tideway(":memory:")
+        self.app = MoneyGuard(":memory:")
         self.addCleanup(self.app.store.close)
 
     def ask(self, question, output):
-        return TideLM(generator=lambda _s, _u: json.dumps(output)).ask(self.app, BUSINESS, None, question, "owner")
+        return GuardLM(generator=lambda _s, _u: json.dumps(output)).ask(self.app, BUSINESS, None, question, "owner")
 
     def assert_stopped(self, question, output):
         before = self.app.store.snapshot(BUSINESS)["snapshot_hash"]
@@ -86,7 +86,7 @@ class ModelArgumentGrounding(unittest.TestCase):
 
     def test_second_model_selection_cannot_add_an_ungrounded_credit_check(self):
         outputs = iter([selection("propose_plan"), selection("credit_check", customer="Nila Traders", amount=30, terms_days=30)])
-        reply = TideLM(generator=lambda _s, _u: json.dumps(next(outputs))).ask(
+        reply = GuardLM(generator=lambda _s, _u: json.dumps(next(outputs))).ask(
             self.app, BUSINESS, None, "Propose a recovery; consider Nila Traders with 30 days credit terms.", "owner")
         self.assertEqual(reply["model_iterations"], 2)
         self.assertNotIn("credit_check", [row["tool"] for row in reply["trace"]])

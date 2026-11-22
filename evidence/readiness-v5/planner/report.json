@@ -3,8 +3,8 @@
   "run_at_utc": "2026-10-17T07:25:10+00:00",
   "source_tree_sha256": "77ae338a4849cd0dcd4133ad0d994ee9fae5bbebd7a02673b784bf46b88eedcf",
   "source_unchanged_during_run": true,
-  "evaluation_script_sha256": "6f4439618cb62689a647be0c54602b710ac05f9993a3dd9a64de580857b20ec2",
-  "fixture_sha256": "0fd9b482d1a13bb91d5126ab751db2b4eb019c3fcefee8d1063c47f0460d4a46",
+  "evaluation_script_sha256": "2f365a8f6339703ec7b81c522d5a51517c73c8a570f895243df1d298a87a0792",
+  "fixture_sha256": "312b07d718914d5d78179b6768ac9da204ec82d320d9f3f33f5d4b27d1cc4e80",
   "historical_baseline": {
     "path": "baseline-scenarios.json",
     "sha256": "3929dac2909842c708c94681ab73b1f0a841ef117d2c54b59d6b3cc2046429e8",
@@ -1141,7 +1141,7 @@
   "limitations": [
     "Known disclosed synthetic cases reused after inspecting failures; not fresh held-out performance.",
     "Receipt timing is uncertain; accepted early-payment agreements are fixed in the sandbox simulation. Their real-world reliability is not measured.",
-    "Fresh seeds reduce Monte Carlo sampling noise, not TidePay model error or unmodelled business risks.",
+    "Fresh seeds reduce Monte Carlo sampling noise, not GuardPay model error or unmodelled business risks.",
     "Below-target estimates are not guarantees; above-target approvals still require exact bound residual-risk acknowledgement from each approver.",
     "No real money, genuine counterparties, model inference or external services tested."
   ]

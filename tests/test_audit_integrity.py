@@ -7,10 +7,10 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from tideway.selftest import SHAPLA, _mandate, _ops
-from tideway.service import Tideway
+from moneyguard.selftest import SHAPLA, _mandate, _ops
+from moneyguard.service import MoneyGuard
 
-from tideway.store import Store
+from moneyguard.store import Store
 
 
 class AuditWitnessIntegrityTests(unittest.TestCase):
@@ -111,7 +111,7 @@ class AuditWitnessIntegrityTests(unittest.TestCase):
                                     "opening_cash": "1000", "opening_date": "2026-10-01",
                                     "default_target_date": "2026-10-31"},
                                    {"reserve_floor": "100", "action_limit": "100"})
-        code = ("from tideway.store import Store; import sys; "
+        code = ("from moneyguard.store import Store; import sys; "
                 "s=Store(sys.argv[1], witness_path=sys.argv[2]); "
                 "assert all(s.witness_cosign(sys.argv[3])['cosigned'] for _ in range(10))")
         procs = [subprocess.Popen([sys.executable, "-B", "-c", code, str(self.db_path), str(self.witness_path), key])
@@ -125,13 +125,13 @@ class AuditWitnessIntegrityTests(unittest.TestCase):
         self._cosign()
         old = self.witness_path.read_bytes()
         self.store.audit(self.business_id, "review", "operator", "read", {})
-        with mock.patch("tideway.store.os.replace", side_effect=OSError("disk full")):
+        with mock.patch("moneyguard.store.os.replace", side_effect=OSError("disk full")):
             self.assertEqual(self.store.witness_cosign(self.business_id)["status"], "pending")
         self.assertEqual(self.witness_path.read_bytes(), old)
         self._cosign()
 
     def test_execute_persists_and_recovers_witness_on_same_key(self):
-        app = Tideway(Path(self.tempdir.name) / "demo.sqlite3")
+        app = MoneyGuard(Path(self.tempdir.name) / "demo.sqlite3")
         _plan, mandate = _mandate(app)
         owner, _, _ = _ops(app)
         mid, key = mandate["mandate_id"], "recover-me"

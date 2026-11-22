@@ -82,7 +82,7 @@ was performed after viewing this set, and no miss was removed.
 
 The device run uses the checksum-pinned compatible
 `Qwen3-4B-Instruct-2507-Q4_K_M` model and macOS arm64 llama.cpp `b11678` on
-literal loopback. It is separate from the released TideLM MLX adapter and does
+literal loopback. It is separate from the released GuardLM MLX adapter and does
 not validate that adapter or the receipt-photo model.
 
 [`model-provenance.json`](../evidence/readiness-v3/blind/model-provenance.json)
@@ -134,8 +134,8 @@ directory to reproduce the disclosed regression evaluation; a reproduction is
 not another blind measurement. No new dependencies are needed for screening.
 
 ```bash
-python3 scripts/evaluate_blind_readiness.py seal-screening --out /tmp/tideway-blind-reproduction
-python3 scripts/evaluate_blind_readiness.py screening --out /tmp/tideway-blind-reproduction
+python3 scripts/evaluate_blind_readiness.py seal-screening --out /tmp/moneyguard-blind-reproduction
+python3 scripts/evaluate_blind_readiness.py screening --out /tmp/moneyguard-blind-reproduction
 ```
 
 For actual local inference, install the pinned optional model once and leave its
@@ -150,11 +150,11 @@ In another terminal, use the same local backend and schema setting as the
 recorded run:
 
 ```bash
-export TIDEWAY_LOCAL_MODEL_URL=http://127.0.0.1:8790/v1
-export TIDEWAY_LOCAL_TEXT_MODEL=Qwen3-4B-Instruct-2507-Q4_K_M
-export TIDEWAY_LOCAL_STRUCTURED_PLANS=1
-python3 scripts/evaluate_blind_readiness.py seal-model --out /tmp/tideway-blind-reproduction
-python3 scripts/evaluate_blind_readiness.py model --out /tmp/tideway-blind-reproduction
+export MONEYGUARD_LOCAL_MODEL_URL=http://127.0.0.1:8790/v1
+export MONEYGUARD_LOCAL_TEXT_MODEL=Qwen3-4B-Instruct-2507-Q4_K_M
+export MONEYGUARD_LOCAL_STRUCTURED_PLANS=1
+python3 scripts/evaluate_blind_readiness.py seal-model --out /tmp/moneyguard-blind-reproduction
+python3 scripts/evaluate_blind_readiness.py model --out /tmp/moneyguard-blind-reproduction
 ```
 
 Do not edit fixture, evaluator or evaluated source between sealing and running.

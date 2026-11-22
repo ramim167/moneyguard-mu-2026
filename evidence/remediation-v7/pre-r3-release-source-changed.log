@@ -101,7 +101,7 @@ timing H12: median=0.33 ms
   }
 }
 Running Payment delay and fresh approvals
-Linked delay passed: stale execution blocked, fresh execution/read-back verified -> /Users/ashraf/Desktop/tideway/evidence/remediation-v7/payment-delay.json
+Linked delay passed: stale execution blocked, fresh execution/read-back verified -> /Users/ashraf/Desktop/moneyguard/evidence/remediation-v7/payment-delay.json
 Changed actions: True
 Running Browser desktop/mobile and delay
 Chrome Chrome/155.0.8059.82
@@ -135,13 +135,13 @@ saved 23-guide-mobile.png
 saved 24-guide-desktop.png
 Source changed during browser verification; repeat after edits are complete.
 Traceback (most recent call last):
-  File "/Users/ashraf/Desktop/tideway/scripts/prepare_release.py", line 79, in <module>
+  File "/Users/ashraf/Desktop/moneyguard/scripts/prepare_release.py", line 79, in <module>
     raise SystemExit(main())
                      ~~~~^^
-  File "/Users/ashraf/Desktop/tideway/scripts/prepare_release.py", line 56, in main
+  File "/Users/ashraf/Desktop/moneyguard/scripts/prepare_release.py", line 56, in main
     run('Browser desktop/mobile and delay', ['node', 'scripts/capture_screens.mjs', '--test-payment-delay'])
     ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/ashraf/Desktop/tideway/scripts/prepare_release.py", line 43, in run
+  File "/Users/ashraf/Desktop/moneyguard/scripts/prepare_release.py", line 43, in run
     subprocess.run(command, cwd=ROOT, env=env, check=True)
     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run

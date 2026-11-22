@@ -4,13 +4,13 @@ import json
 import unittest
 from unittest import mock
 
-from tideway import ai_providers, inbox_rules
-from tideway.agent import ProviderError, chat_to_responses
-from tideway.ai_providers import Provider, make_transport
-from tideway.currency_view import question
-from tideway.domain import ValidationError, check_new_pin
-from tideway.server import Application
-from tideway.store import dhaka_day_utc_bounds
+from moneyguard import ai_providers, inbox_rules
+from moneyguard.agent import ProviderError, chat_to_responses
+from moneyguard.ai_providers import Provider, make_transport
+from moneyguard.currency_view import question
+from moneyguard.domain import ValidationError, check_new_pin
+from moneyguard.server import Application
+from moneyguard.store import dhaka_day_utc_bounds
 
 OWNER = {"id": "nadia", "name": "Nadia", "role": "owner"}
 

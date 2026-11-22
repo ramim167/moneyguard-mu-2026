@@ -4,7 +4,7 @@ from http.server import ThreadingHTTPServer
 import json
 import threading
 import unittest
-from tideway.server import Application, make_handler
+from moneyguard.server import Application, make_handler
 
 
 class OwnerViewHTTP(unittest.TestCase):
@@ -27,7 +27,7 @@ class OwnerViewHTTP(unittest.TestCase):
     def login(cls,identifier,pin):
         conn = http.client.HTTPConnection("127.0.0.1",cls.port,timeout=20)
         conn.request("POST","/api/session/login",json.dumps(dict(operator_id=identifier,pin=pin)),
-                     {"Content-Type":"application/json","X-Tideway-Token":cls.app.csrf})
+                     {"Content-Type":"application/json","X-MoneyGuard-Token":cls.app.csrf})
         response = conn.getresponse()
         assert response.status == 200,response.read()
         cookie = response.getheader("Set-Cookie").split(";",1)[0]
@@ -37,7 +37,7 @@ class OwnerViewHTTP(unittest.TestCase):
     def request(self,route,body,cookie=None,csrf=True):
         conn = http.client.HTTPConnection("127.0.0.1",self.port,timeout=30)
         headers = {"Content-Type":"application/json"}
-        if csrf:headers["X-Tideway-Token"] = self.app.csrf
+        if csrf:headers["X-MoneyGuard-Token"] = self.app.csrf
         if cookie:headers["Cookie"] = cookie
         conn.request("POST","/api/owner/"+route,json.dumps(body),headers)
         response = conn.getresponse()

@@ -2,11 +2,11 @@
 
 // Treasury hub UI. Read-only views for lenders and finance teams; the server
 // computes, scopes, signs and verifies everything. Every server string is escaped.
-window.TidewayTreasury = (() => {
+window.MoneyGuardTreasury = (() => {
   let key = "", epoch = 0, tab = "twcf", scenario = "likely", synthetic = false, pending = false;
   let results = {}, requested = new Set(), passport = null, verification = null, drill = null, fileCheck = null, failure = "";
   const tabs = {twcf: "13-week cash flow", health: "Working-capital health", scan: "Payment integrity", passport: "Credit passport"};
-  const scenarioNames = {scheduled: "Scheduled", likely: "Likely (TidePay)", stress: "Stress (TidePay p80)"};
+  const scenarioNames = {scheduled: "Scheduled", likely: "Likely (GuardPay)", stress: "Stress (GuardPay p80)"};
   const severityPill = {high: "storm", medium: "unsettled", low: "info"};
   const ruleNames = {duplicate_bill: "Possible duplicate", split_below_threshold: "Split below threshold", amount_outlier: "Amount outlier",
     bank_details_changed: "Bank details changed", lookalike_payee: "Look-alike payee", round_amount: "Round amount"};
@@ -63,8 +63,8 @@ window.TidewayTreasury = (() => {
     const body = lines.map(([label, pick, total, cls]) => `<tr class="${cls}"><td>${esc(label)}</td>${weeks.map((w) => { const v = pick(w); return `<td class="num ${w.below_reserve ? "tw-below" : ""} ${v < 0 ? "negative" : ""}">${units(v)}</td>`; }).join("")}<td class="num ${total < 0 ? "negative" : ""}">${units(total)}</td></tr>`).join("");
     const series = (name) => r.scenarios[name].daily.map((item) => ({date: item.date, value: item.closing_cash_minor}));
     const low = s.daily.find((item) => item.date === t.lowest_cash_date);
-    const chart = chartSvg({lines: [{cls: "line-base", label: "Scheduled", points: series("scheduled")}, {cls: "line-likely", label: "Likely (TidePay)", points: series("likely")},
-      {cls: "line-what", label: "Stress (TidePay p80)", points: series("stress")}], reserve: r.reserve_floor_minor,
+    const chart = chartSvg({lines: [{cls: "line-base", label: "Scheduled", points: series("scheduled")}, {cls: "line-likely", label: "Likely (GuardPay)", points: series("likely")},
+      {cls: "line-what", label: "Stress (GuardPay p80)", points: series("stress")}], reserve: r.reserve_floor_minor,
       markers: low ? [{date: low.date, value: low.closing_cash_minor, cls: "marker-breach", label: `Lowest ${scenarioNames[scenario]} cash ${money(low.closing_cash_minor)}`, text: "lowest", textCls: "label-reserve"}] : [], height: 230});
     const rec = s.reconciliation;
     const below = t.weeks_below_reserve;
@@ -77,7 +77,7 @@ window.TidewayTreasury = (() => {
         ${metric("Lowest cash", money(t.lowest_cash_minor), `${day(t.lowest_cash_date, true)} · week ${t.lowest_week}`, t.lowest_cash_minor < r.reserve_floor_minor ? "bad" : "")}
         ${metric("Weeks below reserve", `${below.length} of 13`, below.length ? `First: week ${t.first_week_below_reserve} · reserve ${money(r.reserve_floor_minor)}` : `Reserve ${money(r.reserve_floor_minor)} holds`, below.length ? "bad" : "good")}
       </div>
-      <div class="section-gap">${chart}<div class="legend"><span><i class="base"></i>Scheduled</span><span><i></i>Likely (TidePay)</span><span><i class="what"></i>Stress (p80)</span><span><i class="reserve"></i>Reserve floor</span></div></div>
+      <div class="section-gap">${chart}<div class="legend"><span><i class="base"></i>Scheduled</span><span><i></i>Likely (GuardPay)</span><span><i class="what"></i>Stress (p80)</span><span><i class="reserve"></i>Reserve floor</span></div></div>
       <div class="table-wrap section-gap tw-table"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
       <div class="row section-gap"><span class="pill ${rec.matches ? "ok" : "storm"}">${icon(rec.matches ? "check" : "x")}${rec.matches ? "Reconciles exactly with the projection engine" : "Does not reconcile"}</span>
         <span class="small muted">Week-13 closing ${money(rec.twcf_closing_cash_minor)} = engine ${money(rec.engine_closing_cash_minor)} · daily minimum ${money(rec.twcf_minimum_cash_minor)} = engine ${money(rec.engine_minimum_cash_minor)}</span></div>
@@ -238,7 +238,7 @@ window.TidewayTreasury = (() => {
     if (name === "download") {
       if (!passport) throw new Error("Issue a passport first.");
       const url = URL.createObjectURL(new Blob([JSON.stringify(passport, null, 2)], {type: "application/json"}));
-      const link = document.createElement("a"); link.href = url; link.download = `tideway-${state.businessId}-credit-passport.json`; link.click();
+      const link = document.createElement("a"); link.href = url; link.download = `moneyguard-${state.businessId}-credit-passport.json`; link.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       toast("Credit passport JSON downloaded.");
       return;

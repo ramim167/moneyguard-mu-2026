@@ -8,7 +8,7 @@
     "processor": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
   },
   "config": {
-    "version": "tideway-portfolio-radar-v1",
+    "version": "moneyguard-portfolio-radar-v1",
     "default_seed": 2026,
     "smes": 60,
     "runs_per_sme": 400,
@@ -698,7 +698,7 @@
       10
     ],
     "smes": 600,
-    "method": "For every SME one realised 60-day future is drawn from the generative payment process (customer personality, invoice size, month-end, terms, trend and tail delays) with an independent seed, plus a 15% chance of an unexpected expense the radar cannot see. A breach is any day below the reserve floor. The radar's breach probability is scored with ROC AUC and Brier score and its red tier with precision/recall, against (a) the deterministic scheduled projection (every invoice paid on its due date; score = reserve minus scheduled minimum cash, per month of payroll; red = scheduled breach) and (b) the opening cash-to-payroll ratio. Synthetic, in-distribution for TidePay: not real-world validation.",
+    "method": "For every SME one realised 60-day future is drawn from the generative payment process (customer personality, invoice size, month-end, terms, trend and tail delays) with an independent seed, plus a 15% chance of an unexpected expense the radar cannot see. A breach is any day below the reserve floor. The radar's breach probability is scored with ROC AUC and Brier score and its red tier with precision/recall, against (a) the deterministic scheduled projection (every invoice paid on its due date; score = reserve minus scheduled minimum cash, per month of payroll; red = scheduled breach) and (b) the opening cash-to-payroll ratio. Synthetic, in-distribution for GuardPay: not real-world validation.",
     "metrics": {
       "n": 600,
       "breached": 146,
@@ -918,7 +918,7 @@
     "Only customer payment timing is uncertain in the radar; costs and new sales are fixed assumptions.",
     "Ledgers include confirmed billing up to day 30; later sales are not modelled, so late-horizon risk is conservative.",
     "Expected shortfall totals are per currency and never summed across currencies.",
-    "Realised futures come from the same generative family TidePay was trained on (in-distribution), which flatters the radar relative to real data.",
-    "The scheduled-projection baseline ignores lateness by construction; a stronger baseline (e.g. a deterministic TidePay 'likely' projection) was not evaluated."
+    "Realised futures come from the same generative family GuardPay was trained on (in-distribution), which flatters the radar relative to real data.",
+    "The scheduled-projection baseline ignores lateness by construction; a stronger baseline (e.g. a deterministic GuardPay 'likely' projection) was not evaluated."
   ]
 }

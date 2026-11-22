@@ -3,10 +3,10 @@ import json
 import string
 import unittest
 
-from tideway import i18n
-from tideway.ml.tidelm_data import T
-from tideway.service import Tideway
-from tideway.tidelm import TideLM
+from moneyguard import i18n
+from moneyguard.ml.guardlm_data import T
+from moneyguard.service import MoneyGuard
+from moneyguard.guardlm import GuardLM
 
 
 def fields(template):
@@ -43,10 +43,10 @@ class Phrasebook(unittest.TestCase):
 
 class LocalisedAnswers(unittest.TestCase):
     def test_same_numbers_in_every_language(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         plan = {"intent": "what_if", "calls": [{"tool": "what_if", "args": {"customer_delays": {"Bay Logistics": 20},
                                                                             "extra_expense": None, "drop_invoice_customer": None}}]}
-        model = TideLM(generator=lambda _s, _u: json.dumps(plan))
+        model = GuardLM(generator=lambda _s, _u: json.dumps(plan))
         replies = {lang: model.ask(app, "shapla-services", None, question, "owner") for lang, question in (
             ("en", "What if Bay Logistics pays 20 days late?"), ("zh", "如果Bay Logistics晚20天付款会怎样？"),
             ("es", "¿Qué pasa si Bay Logistics paga 20 días tarde?"))}

@@ -31,7 +31,7 @@ const context = {window:{},Node:{TEXT_NODE:3,ELEMENT_NODE:1},NodeFilter:{SHOW_TE
   MutationObserver:class {constructor(cb){notify=cb;} observe(){} disconnect(){}}
 };
 for (const file of ['i18n-bn-dict','i18n-bn']) vm.runInNewContext(readFileSync(new URL('../web/'+file+'.js',import.meta.url),'utf8'),context);
-const ui = context.window.TidewayBangla;
+const ui = context.window.MoneyGuardBangla;
 const placeholder = 'e.g. Invoice INV-2291 to Nila Traders, EUR 100, due 5 Nov';
 for (const names of [[], ['Nila Traders']]) {
   ui.setNames(names);

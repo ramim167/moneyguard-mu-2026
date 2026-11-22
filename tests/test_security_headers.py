@@ -4,7 +4,7 @@ from http.server import ThreadingHTTPServer
 import threading
 import unittest
 
-from tideway.server import Application, make_handler
+from moneyguard.server import Application, make_handler
 
 
 class SecurityHeaders(unittest.TestCase):
@@ -32,7 +32,7 @@ class SecurityHeaders(unittest.TestCase):
         conn.close()
         return response
 
-    def test_microphone_only_for_tideway_itself(self):
+    def test_microphone_only_for_moneyguard_itself(self):
         policy = self.headers("/").getheader("Permissions-Policy")
         self.assertIn("microphone=(self)", policy)  # "Speak your question" needs it; other origins never get it
         self.assertIn("camera=()", policy)

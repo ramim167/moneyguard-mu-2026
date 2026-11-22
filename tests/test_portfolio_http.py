@@ -5,7 +5,7 @@ import json
 import threading
 import unittest
 
-from tideway.server import Application, STATIC, make_handler
+from moneyguard.server import Application, STATIC, make_handler
 
 
 class PortfolioRouteTests(unittest.TestCase):
@@ -20,7 +20,7 @@ class PortfolioRouteTests(unittest.TestCase):
         threading.Thread(target=cls.server.serve_forever, daemon=True).start()
         conn = http.client.HTTPConnection("127.0.0.1", cls.port, timeout=10)
         conn.request("POST", "/api/session/login", json.dumps({"operator_id": "guest", "pin": "0000"}),
-                     {"Content-Type": "application/json", "X-Tideway-Token": cls.app.csrf})
+                     {"Content-Type": "application/json", "X-MoneyGuard-Token": cls.app.csrf})
         result = conn.getresponse()
         assert result.status == 200, result.read()
         cls.cookie = result.getheader("Set-Cookie").split(";", 1)[0]

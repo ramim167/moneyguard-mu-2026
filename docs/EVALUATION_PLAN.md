@@ -4,7 +4,7 @@ This plan separates what we have **measured** (deterministic, local, reproducibl
 
 ## 1. Measured today (reproducible)
 
-`python3 scripts/evaluate.py` runs `tideway.selftest` (every case on a fresh in-memory copy of the synthetic fixtures) and writes `evidence/results.csv`, `evidence/run-log.jsonl` and `evidence/verification-summary.json`. `python3 -m unittest discover -s tests -v` runs the offline suite (latest count in `evidence/test-summary.json`). `node scripts/capture_screens.mjs` drives headless Chrome through the full story and fails on any page error.
+`python3 scripts/evaluate.py` runs `moneyguard.selftest` (every case on a fresh in-memory copy of the synthetic fixtures) and writes `evidence/results.csv`, `evidence/run-log.jsonl` and `evidence/verification-summary.json`. `python3 -m unittest discover -s tests -v` runs the offline suite (latest count in `evidence/test-summary.json`). `node scripts/capture_screens.mjs` drives headless Chrome through the full story and fails on any page error.
 
 | Dimension (roadmap target) | What we run | Result today |
 |---|---|---|
@@ -31,9 +31,9 @@ denominators, failure examples and planner timing are documented in
 [SCENARIO_EVALUATION_V2.md](SCENARIO_EVALUATION_V2.md), with raw outputs in
 `evidence/upgrade-v1/scenarios/`. The original narrow experiment remains intact.
 
-## 3. TidePay chronological audit (measured)
+## 3. GuardPay chronological audit (measured)
 
-`python3 scripts/evaluate_tidepay_v2.py` evaluates identical final-test records
+`python3 scripts/evaluate_guardpay_v2.py` evaluates identical final-test records
 for prior, fixed heuristic, local-only, simulated federated and pooled models.
 It writes separate v2 evidence and leaves the shipped model and historical
 `evidence/ml/` outputs unchanged. The historical prior baseline's day forecast
@@ -77,8 +77,8 @@ Wilson intervals. Test class counts are 605/454/538/512/267; event positives
 are 1,317/2,376. Per-business and sector/history/SME-size/terms/invoice-size
 subgroups, raw per-example predictions, validation results, hashes, seeds,
 config and machine details are in
-[`evidence/upgrade-v1/tidepay/report.json`](../evidence/upgrade-v1/tidepay/report.json).
-The [full audit](TIDEPAY_EVALUATION_V2.md) explains maturity-selection effects,
+[`evidence/upgrade-v1/guardpay/report.json`](../evidence/upgrade-v1/guardpay/report.json).
+The [full audit](GUARDPAY_EVALUATION_V2.md) explains maturity-selection effects,
 correlation, the missing cold-start subgroup and the distinction from the
 unchanged production artifact. Federation remains a single-process simulation
 with pooled training scaling and predictable illustrative masks, without a
@@ -104,7 +104,7 @@ We may say: "30 of 30 defined sandbox cases pass", with the case list. We may no
 ```bash
 python3 -m unittest discover -s tests -v
 python3 scripts/evaluate.py
-python3 scripts/evaluate_tidepay_v2.py
+python3 scripts/evaluate_guardpay_v2.py
 python3 scripts/evaluate_upgrade_scenarios.py
 node scripts/capture_screens.mjs
 ```

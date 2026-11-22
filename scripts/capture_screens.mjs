@@ -28,7 +28,7 @@ function sourceDigest() {
 const initialSourceDigest = sourceDigest();
 const option = (name) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : undefined; };
 const OUT = option("--out") || join(ROOT, "evidence", "screens");
-const PORT = Number(process.env.TIDEWAY_E2E_PORT || 8799), DEBUG_PORT = Number(process.env.TIDEWAY_DEBUG_PORT || 9333);
+const PORT = Number(process.env.MONEYGUARD_E2E_PORT || 8799), DEBUG_PORT = Number(process.env.MONEYGUARD_DEBUG_PORT || 9333);
 const CHROME = option("--chrome") || process.env.CHROME || [
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "C:/Program Files/Google/Chrome/Application/chrome.exe",
@@ -47,12 +47,12 @@ const ownerOnly = process.argv.includes("--test-owner-view-only");
 const testOwnerView = process.argv.includes("--test-owner-view") || ownerOnly;
 const currencyOnly = process.argv.includes("--test-currency-only");
 const testCurrency = process.argv.includes("--test-currency") || currencyOnly;
-let tidelmAvailable = false;
+let guardlmAvailable = false;
 if (testLocalBackend && testRealBackend) throw new Error("Choose either --test-local-backend (test double) or --test-real-backend (actual inference).");
-if (testRealBackend && (!process.env.TIDEWAY_LOCAL_MODEL_URL || !process.env.TIDEWAY_LOCAL_TEXT_MODEL
-    || process.env.TIDEWAY_LOCAL_TEXT_MODEL === "tideway-browser-test"
-    || process.env.TIDEWAY_LOCAL_STRUCTURED_PLANS?.trim() !== "1")) {
-  throw new Error("--test-real-backend requires an explicitly configured real local model URL, model ID and TIDEWAY_LOCAL_STRUCTURED_PLANS=1.");
+if (testRealBackend && (!process.env.MONEYGUARD_LOCAL_MODEL_URL || !process.env.MONEYGUARD_LOCAL_TEXT_MODEL
+    || process.env.MONEYGUARD_LOCAL_TEXT_MODEL === "moneyguard-browser-test"
+    || process.env.MONEYGUARD_LOCAL_STRUCTURED_PLANS?.trim() !== "1")) {
+  throw new Error("--test-real-backend requires an explicitly configured real local model URL, model ID and MONEYGUARD_LOCAL_STRUCTURED_PLANS=1.");
 }
 let realModelVerification = null;
 let modelServer;
@@ -62,7 +62,7 @@ if (testLocalBackend) {
   modelServer = createServer((request, response) => {
     response.setHeader("Content-Type", "application/json");
     if (request.url === "/v1/models") {
-      response.end(JSON.stringify({data: [{id: "tideway-browser-test"}]}));
+      response.end(JSON.stringify({data: [{id: "moneyguard-browser-test"}]}));
       return;
     }
     let raw = "";
@@ -89,8 +89,8 @@ if (testLocalBackend) {
     });
   });
   await new Promise(resolve => modelServer.listen(0, "127.0.0.1", resolve));
-  Object.assign(modelEnvironment, {TIDEWAY_LOCAL_MODEL_URL: `http://127.0.0.1:${modelServer.address().port}/v1`,
-    TIDEWAY_LOCAL_TEXT_MODEL: "tideway-browser-test", TIDEWAY_LOCAL_VISION_MODEL: testPhoto ? "tideway-browser-test" : ""});
+  Object.assign(modelEnvironment, {MONEYGUARD_LOCAL_MODEL_URL: `http://127.0.0.1:${modelServer.address().port}/v1`,
+    MONEYGUARD_LOCAL_TEXT_MODEL: "moneyguard-browser-test", MONEYGUARD_LOCAL_VISION_MODEL: testPhoto ? "moneyguard-browser-test" : ""});
 }
 
 async function waitFor(url, tries = 60) {
@@ -101,7 +101,7 @@ async function waitFor(url, tries = 60) {
   throw new Error(`Timed out waiting for ${url}`);
 }
 
-const work = mkdtempSync(join(tmpdir(), "tideway-e2e-"));
+const work = mkdtempSync(join(tmpdir(), "moneyguard-e2e-"));
 let serverLog = '';
 const server = spawn(process.env.PYTHON || (process.platform === "win32" ? "python" : "python3"),
   [join(ROOT, "run.py"), "--db", join(work, "e2e.sqlite3"), "--port", String(PORT)],
@@ -147,8 +147,8 @@ const until = async (expression, label, tries = 80) => {
 };
 const loginAs = (id, pin) => evaluate(`(async () => {
   const config = await (await fetch('/api/config')).json();
-  await fetch('/api/session/logout', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Tideway-Token': config.csrf_token}, body: '{}'});
-  const response = await fetch('/api/session/login', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Tideway-Token': config.csrf_token}, body: JSON.stringify({operator_id: '${id}', pin: '${pin}'})});
+  await fetch('/api/session/logout', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-MoneyGuard-Token': config.csrf_token}, body: '{}'});
+  const response = await fetch('/api/session/login', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-MoneyGuard-Token': config.csrf_token}, body: JSON.stringify({operator_id: '${id}', pin: '${pin}'})});
   if(!response.ok)throw new Error((await response.json()).error || 'Test sign-in failed');
   return response.status; })()`);
 async function reload() {
@@ -247,7 +247,7 @@ try {
     const beforeMidnight = new Date('2026-11-20T17:59:59Z');
     const afterMidnight = new Date('2026-11-20T18:00:00Z');
     today.dateTime = '2000-01-01';
-    window.TidewayHome.refreshDate();
+    window.MoneyGuardHome.refreshDate();
     return today.dateTime === dhakaDate() && demo.dateTime === '2026-10-01'
       && demo.parentElement.textContent.includes('Demo ledger date')
       && dhakaDate(beforeMidnight) === '2026-11-20' && dhakaDate(afterMidnight) === '2026-11-21'
@@ -295,14 +295,14 @@ try {
   await until("!!document.querySelector('.shield-result.storm') && document.querySelector('.shield-verdict').textContent.includes('সম্ভবত প্রতারণা')", "Scam check flags a fake cash-in SMS");
   await shot("00d-scam-check-bangla");
   // Money lessons: six lessons in Bangla, each with the business's own numbers and a one-question check.
-  await evaluate("localStorage.removeItem('tideway:lessons:' + state.operator.id), true");
+  await evaluate("localStorage.removeItem('moneyguard:lessons:' + state.operator.id), true");
   await view("learn");
   await until("state.view === 'learn' && document.querySelector('#page-title').textContent === 'টাকার পাঠ' && document.querySelectorAll('.learn-item').length === 6", "Money lessons in Bangla");
   if (!await evaluate("document.querySelector('.learn-yours').textContent.includes('20,000') && document.querySelector('.learn-yours').textContent.includes('নিরাপত্তার টাকা')")) throw new Error("Money lessons do not use the business's own safety money");
   await click('[data-action="learn-answer"][data-id="safety"][data-i="0"]');
   await until("!!document.querySelector('.learn-feedback.wrong')", "wrong answer explained");
   await click('[data-action="learn-answer"][data-id="safety"][data-i="1"]');
-  await until("!!document.querySelector('.learn-feedback.right') && localStorage.getItem('tideway:lessons:' + state.operator.id) === '[\"safety\"]' && document.querySelector('.learn-progress').textContent.includes('১টি')", "lesson marked done");
+  await until("!!document.querySelector('.learn-feedback.right') && localStorage.getItem('moneyguard:lessons:' + state.operator.id) === '[\"safety\"]' && document.querySelector('.learn-progress').textContent.includes('১টি')", "lesson marked done");
   await shot("00e-money-lessons-bangla");
   await click('[data-view="shield"]');
   await until("state.view === 'shield'", "back to Scam check");
@@ -390,7 +390,7 @@ try {
           probability_breach_after:bundle.probability_breach_after,risk_target:constrained.risk_target} : null;
       const body = {business_id:"shapla-services",plan_id:constrained.plan_id,bundle_id:bundle.bundle_id,
         pin,review_ms:9000,confirm_amount_minor:bundle.exposure_minor,risk_acknowledgement:acknowledgement};
-      const result = await evaluate(`(async()=>{const c=await(await fetch('/api/config')).json();const r=await fetch('/api/plan/approve',{method:'POST',headers:{'Content-Type':'application/json','X-Tideway-Token':c.csrf_token},body:JSON.stringify(${JSON.stringify(body)})});const a=await r.json();if(!r.ok)throw new Error(a.error);return a;})()`);
+      const result = await evaluate(`(async()=>{const c=await(await fetch('/api/config')).json();const r=await fetch('/api/plan/approve',{method:'POST',headers:{'Content-Type':'application/json','X-MoneyGuard-Token':c.csrf_token},body:JSON.stringify(${JSON.stringify(body)})});const a=await r.json();if(!r.ok)throw new Error(a.error);return a;})()`);
       if (result.status === "mandate_issued") break;
     }
     await loginAs("nadia", "2468");await reload();await view("rescue");
@@ -464,7 +464,7 @@ try {
       for (const [who, pin] of [["imran", "1357"], ["nadia", "2468"]]) {
         await loginAs(who, pin);
         const consent = bundle.probability_breach_after > plan.risk_target ? {risk_acknowledgement:{acknowledged:true,plan_id:plan.plan_id,plan_hash:plan.plan_hash,bundle_id:bundle.bundle_id,probability_breach_after:bundle.probability_breach_after,risk_target:plan.risk_target}} : {};
-        const result = await evaluate(`(async () => { const c = await (await fetch('/api/config')).json(); const r = await fetch('/api/plan/approve', {method:'POST', headers:{'Content-Type':'application/json','X-Tideway-Token':c.csrf_token},body:JSON.stringify(${JSON.stringify({business_id:"shapla-services",plan_id:plan.plan_id,bundle_id:bundle.bundle_id,pin,confirm_amount_minor:bundle.exposure_minor,review_ms:9000,...consent})})}); const answer = await r.json(); if (!r.ok) throw new Error(answer.error); return answer; })()`);
+        const result = await evaluate(`(async () => { const c = await (await fetch('/api/config')).json(); const r = await fetch('/api/plan/approve', {method:'POST', headers:{'Content-Type':'application/json','X-MoneyGuard-Token':c.csrf_token},body:JSON.stringify(${JSON.stringify({business_id:"shapla-services",plan_id:plan.plan_id,bundle_id:bundle.bundle_id,pin,confirm_amount_minor:bundle.exposure_minor,review_ms:9000,...consent})})}); const answer = await r.json(); if (!r.ok) throw new Error(answer.error); return answer; })()`);
         if (result.status === "mandate_issued") break;
       }
       await loginAs("nadia", "2468"); await reload(); await view("rescue");
@@ -491,13 +491,13 @@ try {
   await shot("06-cash-weather-after");
 
   // Assistant, what-if and evidence on the same business.
-  // When TideLM is not installed the assistant shows a status card and keeps the local agent.
+  // When GuardLM is not installed the assistant shows a status card and keeps the local agent.
   // When it is, the chips change and asking would load the model, so this check only looks.
-  tidelmAvailable = await evaluate("state.config.tidelm?.available === true");
-  if (testRealBackend && !tidelmAvailable) throw new Error("Actual-model browser verification requires an available configured local model; fallback is not evidence of inference.");
+  guardlmAvailable = await evaluate("state.config.guardlm?.available === true");
+  if (testRealBackend && !guardlmAvailable) throw new Error("Actual-model browser verification requires an available configured local model; fallback is not evidence of inference.");
   await view("assistant");
-  if (!tidelmAvailable) {
-    await until("document.body.textContent.includes('TideLM is not running on this computer')", "TideLM status card");
+  if (!guardlmAvailable) {
+    await until("document.body.textContent.includes('GuardLM is not running on this computer')", "GuardLM status card");
     await click('[data-prompt="Can I pay payroll on time?"]');
     await until("document.querySelectorAll('.chat-log .msg:not(.pending)').length >= 3", "assistant answer");
     await click('[data-prompt="Approve the plan and pay the supplier"]');
@@ -510,8 +510,8 @@ try {
     await until("document.body.textContent.includes('not permitted')", "compatible model forbidden tool denied");
   } else if (testRealBackend) {
     await until("document.body.textContent.includes('unbenchmarked')", "actual compatible model labelled honestly");
-    const identity = await evaluate("state.config.tidelm");
-    if (identity.backend !== "local-compatible" || identity.model !== process.env.TIDEWAY_LOCAL_TEXT_MODEL) {
+    const identity = await evaluate("state.config.guardlm");
+    if (identity.backend !== "local-compatible" || identity.model !== process.env.MONEYGUARD_LOCAL_TEXT_MODEL) {
       throw new Error("Browser is not using the explicitly selected actual local model.");
     }
     const financialState = () => evaluate(`(async () => {
@@ -670,7 +670,7 @@ try {
     const freePort=async()=>{const socket=createServer();await new Promise(resolve=>socket.listen(0,'127.0.0.1',resolve));const port=socket.address().port;await new Promise(resolve=>socket.close(resolve));return port;};
     const currencyPort=await freePort();let currencyDebug=await freePort();while(currencyDebug===currencyPort)currencyDebug=await freePort();
     const result=spawnSync(process.execPath,[join(ROOT,'scripts/capture_screens.mjs'),'--test-currency-only','--chrome',CHROME,'--out',join(OUT,'currency')],
-      {cwd:ROOT,stdio:'inherit',windowsHide:true,env:{...process.env,TIDEWAY_E2E_PORT:String(currencyPort),TIDEWAY_DEBUG_PORT:String(currencyDebug)}});
+      {cwd:ROOT,stdio:'inherit',windowsHide:true,env:{...process.env,MONEYGUARD_E2E_PORT:String(currencyPort),MONEYGUARD_DEBUG_PORT:String(currencyDebug)}});
     if(result.error||result.status!==0)throw new Error(result.error?.message||'Isolated currency browser failed');
   }
 
@@ -717,7 +717,7 @@ try {
   if (await evaluate("!!document.querySelector('[data-action=approve], [data-action=execute], [data-action=run-agent]')")) throw new Error("viewer guidance exposed financial actions");
 
   // Personal team preparation is deliberately unavailable from the product.
-  await evaluate(`(async () => { const c = await (await fetch('/api/config')).json(); await fetch('/api/session/logout', {method:'POST',headers:{'Content-Type':'application/json','X-Tideway-Token':c.csrf_token},body:'{}'}); return true; })()`);
+  await evaluate(`(async () => { const c = await (await fetch('/api/config')).json(); await fetch('/api/session/logout', {method:'POST',headers:{'Content-Type':'application/json','X-MoneyGuard-Token':c.csrf_token},body:'{}'}); return true; })()`);
   for (const route of ["/guide", "/guide.html", "/guide.css", "/guide.js", "/personal-prep/project-guide/guide.html"]) {
     const response = await fetch(`http://127.0.0.1:${PORT}${route}`);
     if (response.status !== 404) throw new Error(`Personal prep route was exposed: ${route} (${response.status})`);
@@ -730,12 +730,12 @@ try {
     run_at: new Date().toISOString(), passed: true, browser: version.Browser, source_tree_sha256:finalSourceDigest,
     source_unchanged_during_browser:true,
     viewport: {desktop: [1440, 900], mobile: [375, 812]}, page_errors: errors,
-    tidelm_available: tidelmAvailable, test_only_local_backend: testLocalBackend, test_real_backend:testRealBackend,
+    guardlm_available: guardlmAvailable, test_only_local_backend: testLocalBackend, test_real_backend:testRealBackend,
     linked_payment_delay: testPaymentDelay, decision_lab_tested:testDecisionLab, owner_view_tested:testOwnerView, currency_tested:testCurrency, model_inference_tested:realModelVerification?.passed === true,
     real_model_verification:realModelVerification,
     coverage: currencyOnly ? ["29 currencies across 10 views", "selected-unit inputs", "exact conversion", "unchanged rounded policy values", "narrative and trace formatting", "approval confirmation conversion", "Inbox review conversion", "CSV presentation export", "unsaved drafts", "currency preferences", "all USD views at mobile width"] : ownerOnly ? ["Owner view desktop and mobile", "Bengali labels", "exact expense preview with no writes", "source-record navigation", "three priority previews", "private brief download", "fresh proposal and viewer isolation"] : labOnly ? ["decision lab tools and role isolation; complete lab helper exercised"] : ["landing", "cash projection", "dual approval", "negotiation", "execution and read-back",
       ...(testRealBackend ? ["actual local model browser risk answer", "actual local model browser money refusal", "actual model chat preserves financial state"]
-        : testLocalBackend ? ["test-double local model browser integration"] : tidelmAvailable ? ["model availability display"] : ["assistant fallback"]),
+        : testLocalBackend ? ["test-double local model browser integration"] : guardlmAvailable ? ["model availability display"] : ["assistant fallback"]),
       "what-if", "audit tamper drill", "international fixtures", "fraud blocks",
       "security self-test", "mobile overflow", "signup", "invite", "viewer isolation", "personal prep unlinked and routes unavailable",
       ...(testDecisionLab ? ["reverse stress witnesses", "assumed agreement stress", "recovery comparison", "privacy preview", "judge challenges", "capsule upload replay", "bilateral proposal", "PIN-gated event replan", "seven lab tabs at mobile width", "lab viewer isolation"] : []),

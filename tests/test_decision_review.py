@@ -2,7 +2,7 @@
 from copy import deepcopy
 import unittest
 
-from tideway.owner_view import customer_receipts
+from moneyguard.owner_view import customer_receipts
 
 
 class CustomerReceiptEvidence(unittest.TestCase):

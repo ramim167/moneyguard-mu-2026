@@ -5,8 +5,8 @@
 // Business data is never translated: customer and supplier names, amounts, dates, IDs and the text of
 // records stay exactly as stored. Numbers, amounts, dates and ledger names inside a sentence become
 // placeholders ({0}, {1}...), so one translated template covers every value.
-window.TidewayBangla = (() => {
-  const DICT = window.TIDEWAY_BN || {};
+window.MoneyGuardBangla = (() => {
+  const DICT = window.MONEYGUARD_BN || {};
   const SKIP = "script,style,code,pre,svg,.msg,.lab-json,.message-preview,.no-translate,[data-no-translate],.record-text";
   const ATTRS = ["placeholder", "title", "aria-label", "data-prompt", "alt"];
   const MONTHS = {Jan: "জানু", Feb: "ফেব্রু", Mar: "মার্চ", Apr: "এপ্রি", May: "মে", Jun: "জুন", Jul: "জুলাই", Aug: "আগ", Sep: "সেপ্টে", Oct: "অক্টো", Nov: "নভে", Dec: "ডিসে"};
@@ -149,7 +149,7 @@ window.TidewayBangla = (() => {
   }
 
   // Coverage check: interface text on screen that has no Bangla yet (used by scripts/bangla_coverage.mjs).
-  const ALLOWED = /^(?:[A-Z]{2,5}|TideLM|TidePay|TideVision|MoneyGuard|bKash|Nagad|Rocket|BUET|MFI|SME|SMS|OTP|PIN|PDF|CSV|JSON|HTML|ISO|API|AI|URL|USSD|ID|UPI|TrxID|HMAC|Ed25519|SHA-256|sha256|Qwen3|MLX|LoRA|CUDA|OWASP|P10|P50|P80|P90|HHI|DSO|APR|IBAN|BDT|USD|EUR|NID|WhatsApp|Wise|SEPA|M-Pesa|GCash|Pix|Alipay|WeChat|PayNow|DuitNow|Hinglish|Banglish|English|বাংলা|Español|Français|Português|Bahasa|中文|v\d+)$/;
+  const ALLOWED = /^(?:[A-Z]{2,5}|GuardLM|GuardPay|GuardVision|MoneyGuard|bKash|Nagad|Rocket|BUET|MFI|SME|SMS|OTP|PIN|PDF|CSV|JSON|HTML|ISO|API|AI|URL|USSD|ID|UPI|TrxID|HMAC|Ed25519|SHA-256|sha256|Qwen3|MLX|LoRA|CUDA|OWASP|P10|P50|P80|P90|HHI|DSO|APR|IBAN|BDT|USD|EUR|NID|WhatsApp|Wise|SEPA|M-Pesa|GCash|Pix|Alipay|WeChat|PayNow|DuitNow|Hinglish|Banglish|English|বাংলা|Español|Français|Português|Bahasa|中文|v\d+)$/;
   function missing(root = document.body) {
     const out = new Map();
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);

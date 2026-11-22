@@ -1,5 +1,5 @@
 {
-  "schema_version": "tideway-reasoning-v2",
+  "schema_version": "moneyguard-reasoning-v2",
   "generated_at_utc": "2026-10-16T04:54:37.976612+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
@@ -14,10 +14,10 @@
     "base_revision": "177466c40ed70980d81354efd3eb4114e32e7cd1",
     "working_tree_changes": "Source hashes identify this run; base revision alone is not the edited tree.",
     "source_sha256": {
-      "tideway\\tidelm.py": "6d238abf33329f07c8b3123af7e58f9a50513c01bb17b458aa3743699d923dd2",
-      "tideway\\copilot.py": "a0e84544ed2d56ed11657cbf287785ad8620ff213f0a2e9f60f275d95e7d2dc1",
-      "tideway\\local_model.py": "b37cec30197eb53e79812a82c62538d801d2931d809af81a743f18c44a7c3db6",
-      "tideway\\agent.py": "260876021a2a33b32ad4447347b6c00f49880377c3ae6831ef01a2117a08849b",
+      "moneyguard\\guardlm.py": "6d238abf33329f07c8b3123af7e58f9a50513c01bb17b458aa3743699d923dd2",
+      "moneyguard\\copilot.py": "3853ba98e881c446e786b1fa240b6a0e2cda655413f4788c67d6ae1cc30257bd",
+      "moneyguard\\local_model.py": "8ae7b55abb9dbbe95a0855c7f6b0db13789fcf73bb19711512a484e8ac809068",
+      "moneyguard\\agent.py": "7e8dd5645157c9e34010737ee0d8ee4a758b48fccc267f657c388d4e020d6bc3",
       "scripts\\smoke_reasoning.py": "dbc127896c59692065a93e592b724b053d57e99d00d237fd7b8cc9e2f0aa21ee"
     }
   },
@@ -29,14 +29,14 @@
     "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
     "backend": "local-compatible",
     "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-    "evaluated_tidelm_adapter": false,
+    "evaluated_guardlm_adapter": false,
     "reason": null
   },
   "requested_identity": {
     "backend": "local-compatible",
     "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
     "adapter_path": null,
-    "released_tidelm_adapter": false
+    "released_guardlm_adapter": false
   },
   "adapter_files": {},
   "downloads_allowed": false,
@@ -55,7 +55,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "Likely view: lowest cash -BDT 42,000 on 3 Nov; reserve shortfall BDT 62,000; payroll is at risk.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -63,7 +63,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -163,7 +163,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "20 of 20 simulated futures breach the reserve; payroll is unfunded in 100% of 1000 runs.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -171,7 +171,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -251,8 +251,8 @@
       "matched": true,
       "generation_attempts": 1,
       "reply": {
-        "text": "Credit check for Nila Traders (BDT 50,000, 30 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 5 settled invoice(s) on record, average 7.6 days late; TidePay expects about 12 days of delay (3% chance of more than 30 days); expected payment around 12 Nov; after this sale 54% of all money owed to you would sit with Nila Traders.",
-        "mode": "tidelm",
+        "text": "Credit check for Nila Traders (BDT 50,000, 30 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 5 settled invoice(s) on record, average 7.6 days late; GuardPay expects about 12 days of delay (3% chance of more than 30 days); expected payment around 12 Nov; after this sale 54% of all money owed to you would sit with Nila Traders.",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -260,7 +260,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -320,11 +320,11 @@
               "exposure_share_after": 0.538,
               "reasons": [
                 "5 settled invoice(s) on record, average 7.6 days late",
-                "TidePay expects about 12 days of delay (3% chance of more than 30 days)",
+                "GuardPay expects about 12 days of delay (3% chance of more than 30 days)",
                 "expected payment around 12 Nov",
                 "after this sale 54% of all money owed to you would sit with Nila Traders"
               ],
-              "model": "TidePay (federated-trained, Tideway's own model)"
+              "model": "GuardPay (federated-trained, MoneyGuard's own model)"
             }
           }
         ],
@@ -347,7 +347,7 @@
         "decision_rationale": {
           "source": "deterministic_tool_results",
           "outcome": "answered_from_tools",
-          "rationale": "Credit check for Nila Traders (BDT 50,000, 30 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 5 settled invoice(s) on record, average 7.6 days late; TidePay expects about 12 days of delay (3% chance of more than 30 days); expected payment around 12 Nov; after this sale 54% of all money owed to you would sit with Nila Traders."
+          "rationale": "Credit check for Nila Traders (BDT 50,000, 30 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 5 settled invoice(s) on record, average 7.6 days late; GuardPay expects about 12 days of delay (3% chance of more than 30 days); expected payment around 12 Nov; after this sale 54% of all money owed to you would sit with Nila Traders."
         },
         "suggestions": [
           "How does Nila Traders usually pay?",
@@ -372,7 +372,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "在这种情况下，最可能的最低现金为-BDT 57,000（11月5日）：比当前最可能的低点-BDT 42,000还少BDT 15,000。储备缺口BDT 77,000。未保存任何更改。",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -380,7 +380,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -513,7 +513,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "I can't approve, pay or transfer money; a person approves in the app with a PIN.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -521,7 +521,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,
@@ -603,7 +603,7 @@
       "generation_attempts": 1,
       "reply": {
         "text": "I couldn't do that safely: propose_plan.max_discount_pct must be at most 10.",
-        "mode": "tidelm",
+        "mode": "guardlm",
         "mode_label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
         "model_identity": {
           "available": true,
@@ -611,7 +611,7 @@
           "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
           "backend": "local-compatible",
           "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-          "evaluated_tidelm_adapter": false,
+          "evaluated_guardlm_adapter": false,
           "reason": null
         },
         "model_called": true,

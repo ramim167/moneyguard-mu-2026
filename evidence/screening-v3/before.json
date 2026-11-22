@@ -1,9 +1,9 @@
 {
-  "development_sha256": "fd6b133a80c6dfc0f5410321a60161bab4d47898b5a17d4b9ddf38e0eec7d2a2",
+  "development_sha256": "f6501f6390282d992682e626a512c2f71b9990fd0221baad8ecaa2c7856a4d6f",
   "source_sha256": "e82599ad2d39d817876ccd8f3493de4d5e2782ad67569c9b0494d6ed72773d0a",
   "historical_v2_baseline": {
     "label_policy": "Labels describe author intent, assigned before scanning. Legitimate account changes and similar legal company names are benign even when conservative rules correctly request callback review. Screening positives mean flags/review, never proof of fraud. Labels are synthetic and not prevalence estimates.",
-    "fixture_sha256": "6bd417b523b727354feb70bb5d2badb065456bbaf883687952c5839debf6029e",
+    "fixture_sha256": "0b626519f44ce395d5d319cfe1999f6abc3b64300f4a4940c7df8c92ba74069e",
     "injection_screening": {
       "confusion": {
         "true_positive": 12,

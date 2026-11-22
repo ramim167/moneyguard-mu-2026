@@ -5,7 +5,7 @@ import os
 import sys
 from pathlib import Path
 
-from tideway.server import serve
+from moneyguard.server import serve
 
 ROOT = Path(__file__).resolve().parent
 
@@ -18,10 +18,10 @@ def load_env():
             if line and not line.startswith("#") and "=" in line:
                 key, value = line.split("=", 1)
                 if key.strip() in ("OPENAI_API_KEY", "OPENAI_MODEL", "OPENROUTER_API_KEY", "OPENROUTER_MODEL", "GEMINI_API_KEY", "GEMINI_MODEL", "GROQ_API_KEY", "GROQ_MODEL",
-                                   "CUSTOM_AI_BASE_URL", "CUSTOM_AI_API_KEY", "CUSTOM_AI_MODEL", "CUSTOM_AI_NAME", "TIDEWAY_AI_ORDER", "TIDEWAY_HOST", "TIDEWAY_PORT", "TIDEWAY_PUBLIC_HOSTS",
-                                   "TIDEWAY_LOCAL_MODEL_URL", "TIDEWAY_LOCAL_TEXT_MODEL", "TIDEWAY_LOCAL_VISION_MODEL",
-                                   "TIDEWAY_SPEECH_MODEL_DIR", "TIDEWAY_SPEECH_GROQ_API_KEY",
-                                   "TIDEWAY_LOCAL_STRUCTURED_PLANS", "TIDEWAY_SEMANTIC_SCREENING", "TIDEWAY_DECISION_LAB"):
+                                   "CUSTOM_AI_BASE_URL", "CUSTOM_AI_API_KEY", "CUSTOM_AI_MODEL", "CUSTOM_AI_NAME", "MONEYGUARD_AI_ORDER", "MONEYGUARD_HOST", "MONEYGUARD_PORT", "MONEYGUARD_PUBLIC_HOSTS",
+                                   "MONEYGUARD_LOCAL_MODEL_URL", "MONEYGUARD_LOCAL_TEXT_MODEL", "MONEYGUARD_LOCAL_VISION_MODEL",
+                                   "MONEYGUARD_SPEECH_MODEL_DIR", "MONEYGUARD_SPEECH_GROQ_API_KEY", "MONEYGUARD_SPEECH_GEMINI_API_KEY", "MONEYGUARD_SPEECH_GEMINI_MODEL",
+                                   "MONEYGUARD_LOCAL_STRUCTURED_PLANS", "MONEYGUARD_SEMANTIC_SCREENING", "MONEYGUARD_DECISION_LAB"):
                     os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
 
 
@@ -32,15 +32,15 @@ if __name__ == "__main__":
         sys.stdout.reconfigure(encoding="utf-8")
     load_env()
     parser = argparse.ArgumentParser(description="MoneyGuard: approval-gated cash-flow rescue (synthetic sandbox)")
-    parser.add_argument("--host", default=os.getenv("TIDEWAY_HOST", "127.0.0.1"),
+    parser.add_argument("--host", default=os.getenv("MONEYGUARD_HOST", "127.0.0.1"),
                         help="Bind address (loopback by default; Docker uses 0.0.0.0 behind a local port mapping)")
-    parser.add_argument("--port", type=int, default=int(os.getenv("TIDEWAY_PORT", "8787")))
-    parser.add_argument("--db", default=str(ROOT / "data" / "tideway.sqlite3"))
+    parser.add_argument("--port", type=int, default=int(os.getenv("MONEYGUARD_PORT", "8787")))
+    parser.add_argument("--db", default=str(ROOT / "data" / "moneyguard.sqlite3"))
     parser.add_argument("--no-demo", action="store_true", help="Start without the synthetic demo businesses")
     args = parser.parse_args()
     # Optional cloud AI. Several providers (Gemini, Groq, OpenRouter, a custom OpenAI-compatible one) are tried in
-    # order, so a busy one never blocks an answer. None is needed for the app to work. See tideway/ai_providers.py.
-    from tideway.ai_providers import label, make_transport, providers_from_env
+    # order, so a busy one never blocks an answer. None is needed for the app to work. See moneyguard/ai_providers.py.
+    from moneyguard.ai_providers import label, make_transport, providers_from_env
     try:
         providers = providers_from_env(os.environ)
     except ValueError as exc:

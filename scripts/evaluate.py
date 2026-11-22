@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from tideway import selftest  # noqa: E402
+from moneyguard import selftest  # noqa: E402
 
 OUT = ROOT / "evidence"
 
@@ -30,7 +30,7 @@ def main():
         writer.writerows(report["results"])
     with (OUT / "run-log.jsonl").open("w", encoding="utf-8") as handle:
         for item in report["results"]:
-            handle.write(json.dumps({"run_at": stamp, "fixture": "tideway-synthetic", "live_ai": False, **item}, sort_keys=True) + "\n")
+            handle.write(json.dumps({"run_at": stamp, "fixture": "moneyguard-synthetic", "live_ai": False, **item}, sort_keys=True) + "\n")
     summary = {"project": "MoneyGuard", "track": "MU CSE Fest 2026 AI Builders Hackathon, FinTech & Financial Intelligence track", "run_at": stamp,
                **report["summary"], "live_model_tested": False,
                "live_model_reason": "The suite uses simulated model transports; no provider key is used.",

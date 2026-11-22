@@ -51,9 +51,9 @@ node scripts/capture_screens.mjs --test-payment-delay --test-decision-lab
 python3 scripts/prepare_release.py
 ```
 
-The browser driver needs Chrome/Edge, Node 22+ and an unused test port. Evaluation uses three disclosed synthetic businesses; it is not a human study or external review. Actual compatible-model checks are stored separately from injected tool/guard tests. Native MLX/TideLM adapter and receipt-model verification remain deferred until Mac access is available. Real SME participants remain zero.
+The browser driver needs Chrome/Edge, Node 22+ and an unused test port. Evaluation uses three disclosed synthetic businesses; it is not a human study or external review. Actual compatible-model checks are stored separately from injected tool/guard tests. Native MLX/GuardLM adapter and receipt-model verification remain deferred until Mac access is available. Real SME participants remain zero.
 
-Set `TIDEWAY_DECISION_LAB=0` in `.env` and restart to hide the workspace and disable its HTTP routes/read tools. Existing financial workflows remain available.
+Set `MONEYGUARD_DECISION_LAB=0` in `.env` and restart to hide the workspace and disable its HTTP routes/read tools. Existing financial workflows remain available.
 
 ## Contest sources
 

@@ -24,8 +24,8 @@ sys.path.insert(0, str(ROOT))
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
-from tideway.service import Tideway  # noqa: E402
-from tideway.tidelm import ADAPTER, BASE_MODEL, TideLM, TideLMUnavailable  # noqa: E402
+from moneyguard.service import MoneyGuard  # noqa: E402
+from moneyguard.guardlm import ADAPTER, BASE_MODEL, GuardLM, GuardLMUnavailable  # noqa: E402
 
 
 QUESTIONS = [
@@ -61,11 +61,11 @@ def machine():
     return {"platform": platform.platform(), "machine": platform.machine(), "python": platform.python_version(),
             "logical_cpus": os.cpu_count(), "dependencies": versions, "base_revision": revision,
             "source_tree_sha256": source_digest()[0],
-            "structured_plans": os.getenv("TIDEWAY_LOCAL_STRUCTURED_PLANS", "").strip() == "1",
+            "structured_plans": os.getenv("MONEYGUARD_LOCAL_STRUCTURED_PLANS", "").strip() == "1",
             "working_tree_changes": "Source hashes identify this run; base revision alone is not the edited tree.",
             "source_sha256": {str(path.relative_to(ROOT)): sha256(path) for path in (
-                ROOT / "tideway/tidelm.py", ROOT / "tideway/copilot.py", ROOT / "tideway/local_model.py",
-                ROOT / "tideway/agent.py", ROOT / "tideway/plan_schema.py", Path(__file__).resolve())}}
+                ROOT / "moneyguard/guardlm.py", ROOT / "moneyguard/copilot.py", ROOT / "moneyguard/local_model.py",
+                ROOT / "moneyguard/agent.py", ROOT / "moneyguard/plan_schema.py", Path(__file__).resolve())}}
 
 
 class RecordedResult(unittest.TextTestResult):
@@ -99,9 +99,9 @@ def injected(report):
                   skipped=len(result.skipped), cases=result.rows, successful=result.wasSuccessful(),
                   limitation="Finite guard tests establish containment for these cases, not model quality or a security proof.")
     if result.wasSuccessful():
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         try:
-            lm = TideLM(generator=lambda _system, _user: json.dumps(
+            lm = GuardLM(generator=lambda _system, _user: json.dumps(
                 {"intent": "rescue", "calls": [{"tool": "propose_plan", "args": {}}]}))
             report["observable_example"] = {
                 "label": "Injected JSON selections; deterministic tool outputs. No model inference.",
@@ -114,12 +114,12 @@ def injected(report):
 
 
 def real_model(report, cases=None):
-    lm = TideLM()
+    lm = GuardLM()
     status = lm.status()
     report.update(kind="real installed model smoke", real_model_inference=False, model_status=status,
                   requested_identity={"backend": status.get("backend"), "model": status.get("model"),
                                       "adapter_path": status.get("adapter"),
-                                      "released_tidelm_adapter": bool(status.get("released_v2_adapter"))},
+                                      "released_guardlm_adapter": bool(status.get("released_v2_adapter"))},
                   adapter_files={path.name: {"bytes": path.stat().st_size, "sha256": sha256(path)}
                                  for path in (ADAPTER / "adapters.safetensors", ADAPTER / "adapter_config.json") if path.is_file()},
                   downloads_allowed=False, successful=False, answers=[])
@@ -128,7 +128,7 @@ def real_model(report, cases=None):
                       real_requests_attempted=0,
                       limitation="No real model inference was run. Injected-output tests are a separate evidence file.")
         return 2
-    app = Tideway(":memory:")
+    app = MoneyGuard(":memory:")
     generations = []
     generate = lm._generate
     def recorded_generate(system, user, max_tokens=400):
@@ -159,7 +159,7 @@ def real_model(report, cases=None):
                                            "observed_tools": sorted(observed), "matched": expected <= observed,
                                            "generation_attempts": len(generations) - generation_start,
                                            "reply": reply, "seconds": round(time.monotonic() - started, 6)})
-            except (TideLMUnavailable, ValueError) as exc:
+            except (GuardLMUnavailable, ValueError) as exc:
                 report["answers"].append({"case_id": case_id, "question": question, "matched": False,
                                            "error": str(exc), "seconds": round(time.monotonic() - started, 6)})
         answers = report["answers"]
@@ -185,7 +185,7 @@ def main():
     parser.add_argument("--out", help="JSON output path (relative to project root by default)")
     parser.add_argument("--cases", help="Optional JSON smoke cases: [{id, question, expected_tools}] (synthetic only)")
     args = parser.parse_args()
-    report = {"schema_version": "tideway-reasoning-v2", "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+    report = {"schema_version": "moneyguard-reasoning-v2", "generated_at_utc": datetime.now(timezone.utc).isoformat(),
               "machine": machine()}
     cases = None
     if args.cases:

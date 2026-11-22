@@ -1,4 +1,4 @@
-"""Copilot tools that TideLM plans can call, plus the validator that runs those plans.
+"""Copilot tools that GuardLM plans can call, plus the validator that runs those plans.
 
 The language model only proposes a JSON plan. This module checks every call
 (known tool, typed arguments, counterparty names that exist in this business,
@@ -154,7 +154,7 @@ def resolve_name(name, candidates):
 
 def validate_plan(plan):
     if not isinstance(plan, dict) or not isinstance(plan.get("calls"), list) or not plan["calls"]:
-        raise ValidationError("TideLM returned no tool calls.")
+        raise ValidationError("GuardLM returned no tool calls.")
     if set(plan) - {"intent", "calls"}:
         raise ValidationError("Plan has unsupported fields; only intent and calls are allowed.")
     if len(plan["calls"]) > MAX_CALLS:
@@ -189,7 +189,7 @@ def suppliers_of(snapshot):
 
 
 def credit_check(app, business_id, customer, amount_units, terms_days, target_date=None, lang="en"):
-    """Should we sell on credit to this customer? TidePay risk + exposure + cash timing, explained."""
+    """Should we sell on credit to this customer? GuardPay risk + exposure + cash timing, explained."""
     snapshot = app.store.snapshot(business_id)
     business, records = snapshot["business"], snapshot["records"]
     customer = resolve_name(customer, customers_of(snapshot))
@@ -202,7 +202,7 @@ def credit_check(app, business_id, customer, amount_units, terms_days, target_da
                        "paid_date": r["paid_date"]} for r in settled if r["customer"] == customer), key=lambda h: h["paid_date"])
     portfolio = statistics.fmean(days_between(r["due_date"], r["paid_date"]) for r in settled) if settled else 5.0
     due = date.fromisoformat(today) + timedelta(days=terms_days)
-    model = analytics.tidepay_model()
+    model = analytics.guardpay_model()
     prediction = predict_for(model, history, float(amount_units), max(1, terms_days), due, portfolio)
     probs = prediction["probabilities"]
     p_over_15, p_over_30 = sum(probs[3:]), probs[4]
@@ -220,7 +220,7 @@ def credit_check(app, business_id, customer, amount_units, terms_days, target_da
     expected_arrival = add_days(due.isoformat(), max(0, round(prediction["expected_delay_days"])))
     reasons = [i18n.t(lang, "r_history", n=len(history), late=f"{statistics.fmean(h['delay'] for h in history):.1f}")
                if history else i18n.t(lang, "r_nohistory"),
-               i18n.t(lang, "r_tidepay", days=max(0, round(prediction["expected_delay_days"])), p30=round(p_over_30 * 100)),
+               i18n.t(lang, "r_guardpay", days=max(0, round(prediction["expected_delay_days"])), p30=round(p_over_30 * 100)),
                i18n.t(lang, "r_arrival", date=i18n.day(lang, expected_arrival))]
     if share >= 0.5:
         reasons.append(i18n.t(lang, "r_share", share=round(share * 100), who=customer))
@@ -231,7 +231,7 @@ def credit_check(app, business_id, customer, amount_units, terms_days, target_da
             "verdict": verdict, "advice": advice, "suggested_terms_days": safe_terms,
             "probabilities": dict(zip([b[2] for b in BUCKETS], probs)), "expected_delay_days": prediction["expected_delay_days"],
             "expected_payment_date": expected_arrival, "exposure_share_after": round(share, 3), "reasons": reasons,
-            "model": "TidePay (federated-trained, Tideway's own model)"}
+            "model": "GuardPay (federated-trained, MoneyGuard's own model)"}
 
 
 def customer_report(app, business_id, customer=None):
@@ -275,7 +275,7 @@ def bank_pack(app, business_id, target_date=None):
             "funding_need_minor": analysis["projections"]["likely"]["reserve_shortfall_minor"],
             "recovery_plan": plan["explanation"] if plan else None,
             "evidence": {"audit_head": app.store.evidence(business_id)["head_hash"]},
-            "note": "Prepared from the business's own records by Tideway. Synthetic sandbox data; not a credit decision."}
+            "note": "Prepared from the business's own records by MoneyGuard. Synthetic sandbox data; not a credit decision."}
 
 
 def preflight_plan(app, business_id, target_date, plan, role="owner"):
@@ -342,7 +342,7 @@ def _bounded_result(value):
 
 
 def run_plan(app, business_id, target_date, plan, actor, lang="en", role="owner", trace=None, source="model_selected", deadline=None):
-    """Execute a validated TideLM plan. Returns tool results for the reply writer."""
+    """Execute a validated GuardLM plan. Returns tool results for the reply writer."""
     plan = preflight_plan(app, business_id, target_date, plan, role)
     snapshot = app.store.snapshot(business_id)
     names = customers_of(snapshot)
@@ -393,7 +393,7 @@ def run_plan(app, business_id, target_date, plan, actor, lang="en", role="owner"
             prefer = args.get("prefer") or "lowest_cost"
             if prefer not in ("lowest_cost", "lowest_risk", "fewest_asks"):
                 raise ValidationError("Unknown preference.")
-            proposal = app.propose(business_id, target_date, actor, proposed_by="agent:tidelm", excluded=tuple(excluded),
+            proposal = app.propose(business_id, target_date, actor, proposed_by="agent:guardlm", excluded=tuple(excluded),
                                    max_discount_bps=None if pct is None else int(round(pct * 100)), prefer=prefer)
             best = proposal["bundles"][0] if proposal["bundles"] else None
             results.append({"tool": tool, "result": {"plan_id": proposal["plan_id"],
@@ -416,7 +416,7 @@ def run_plan(app, business_id, target_date, plan, actor, lang="en", role="owner"
             wanted = [resolve_name(n, names) for n in (args.get("customers") or [])]
             plan_row = app.store.latest_plan(business_id, target_date or snapshot["business"]["default_target_date"])
             if not plan_row:
-                plan_row = app.propose(business_id, target_date, actor, proposed_by="agent:tidelm")
+                plan_row = app.propose(business_id, target_date, actor, proposed_by="agent:guardlm")
             drafts = [r for r in plan_row["reminders"] if not wanted or r["counterparty"] in wanted]
             results.append({"tool": tool, "result": {"drafts": [{"customer": r["counterparty"], "tone": r["tone"],
                                                                   "message": r["message"]} for r in drafts],
@@ -453,7 +453,7 @@ def run_plan(app, business_id, target_date, plan, actor, lang="en", role="owner"
 
 
 def reply_from_results(results, currency, lang="en"):
-    """Number-safe reply in the reader's language, composed from tool output (TideLM decides what to do; code states the facts)."""
+    """Number-safe reply in the reader's language, composed from tool output (GuardLM decides what to do; code states the facts)."""
     t, day = i18n.t, i18n.day
     lines = []
     for item in results:

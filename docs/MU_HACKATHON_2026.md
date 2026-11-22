@@ -30,7 +30,7 @@ quality and team preparedness.
 | **Problem relevance** | Bangladeshi SMEs run on mobile money with no finance team: late customer payments break payroll, and MFS scams (fake cash-in SMS, PIN/OTP theft, "sent by mistake" refunds) hit shopkeepers directly. Demo businesses are three Sylhet firms keeping BDT books. |
 | **Innovation** | One copilot joins cash-flow forecasting, rescue planning, MFS fraud checking and a verifiable credit passport. The AI can only propose; a signed, single-use mandate approved by people is the only path to money moving. |
 | **Feasibility** | A working local prototype exists: standard-library Python, no paid API, runs offline on a laptop. 714 automated tests and a 30-case attack self-test (25/25 attacks blocked). |
-| **AI approach** | TidePay (lateness prediction, federated training), TideLM (fine-tuned small LLM that turns questions and alerts into typed tool plans), the Scam Shield text model (naive Bayes over words and character n-grams) and Monte Carlo cash simulation. Every model output is checked by validators. |
+| **AI approach** | GuardPay (lateness prediction, federated training), GuardLM (fine-tuned small LLM that turns questions and alerts into typed tool plans), the Scam Shield text model (naive Bayes over words and character n-grams) and Monte Carlo cash simulation. Every model output is checked by validators. |
 | **Expected impact** | Earlier warning of payroll gaps, cheaper rescue than informal borrowing, fewer MFS fraud losses, and a path to formal credit through the credit passport. Claims stay honest: no pilot users or field accuracy are claimed yet. |
 | **Presentation quality** | README with a judge-facing feature map, every page of the UI self-explains, answers in বাংলা. |
 | **Team preparedness** | Commit history, test suite, evaluation scripts and evidence files show sustained engineering. |
@@ -39,10 +39,10 @@ quality and team preparedness.
 
 | Theme | Feature | Code |
 |---|---|---|
-| Fraud detection | Scam Shield; payment-integrity scan; payee-change and look-alike blocks; injection quarantine | `tideway/scam_shield.py`, `tideway/treasury.py`, `tideway/screening.py` |
-| Financial literacy | Bangla assistant; plain-language help layer with 40 finance terms; "why this plan" explanations | `tideway/i18n_bn.py`, `tideway/conversation.py`, `web/helper.js` |
-| Financial inclusion | Ed25519-signed credit passport verifiable offline; lender portfolio radar for a Bangladeshi SME book; free Starter plan | `tideway/treasury.py`, `tideway/portfolio.py`, `tideway/store.py` |
-| Digital finance | bKash/Nagad/Rocket/bank alert extraction, 14-day forecast with 1,000 simulated futures, rescue planner, signed mandates | `tideway/inbox_rules.py`, `tideway/projection.py`, `tideway/planner.py` |
+| Fraud detection | Scam Shield; payment-integrity scan; payee-change and look-alike blocks; injection quarantine | `moneyguard/scam_shield.py`, `moneyguard/treasury.py`, `moneyguard/screening.py` |
+| Financial literacy | Bangla assistant; plain-language help layer with 40 finance terms; "why this plan" explanations | `moneyguard/i18n_bn.py`, `moneyguard/conversation.py`, `web/helper.js` |
+| Financial inclusion | Ed25519-signed credit passport verifiable offline; lender portfolio radar for a Bangladeshi SME book; free Starter plan | `moneyguard/treasury.py`, `moneyguard/portfolio.py`, `moneyguard/store.py` |
+| Digital finance | bKash/Nagad/Rocket/bank alert extraction, 14-day forecast with 1,000 simulated futures, rescue planner, signed mandates | `moneyguard/inbox_rules.py`, `moneyguard/projection.py`, `moneyguard/planner.py` |
 
 ## 4. Changes made for this competition (v16)
 

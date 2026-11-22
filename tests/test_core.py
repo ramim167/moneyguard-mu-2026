@@ -1,16 +1,16 @@
-"""Core tests for Tideway (stdlib unittest). Run: python3 -m unittest discover -s tests -v"""
+"""Core tests for MoneyGuard (stdlib unittest). Run: python3 -m unittest discover -s tests -v"""
 import http.client
 import json
 import threading
 import unittest
 from http.server import ThreadingHTTPServer
 
-from tideway import selftest
-from tideway.analytics import discount_apr_bps, monte_carlo
-from tideway.domain import (ValidationError, clean_text, minor_value, normalize_currency, parse_amount,
+from moneyguard import selftest
+from moneyguard.analytics import discount_apr_bps, monte_carlo
+from moneyguard.domain import (ValidationError, clean_text, minor_value, normalize_currency, parse_amount,
                             parse_combined_csv, scan_text, text_value)
-from tideway.server import Application, csv_cell, make_handler
-from tideway.service import Tideway
+from moneyguard.server import Application, csv_cell, make_handler
+from moneyguard.service import MoneyGuard
 
 SHAPLA, TARGET = "shapla-services", "2026-10-31"
 
@@ -69,7 +69,7 @@ class DomainTests(unittest.TestCase):
 
 class AnalysisTests(unittest.TestCase):
     def setUp(self):
-        self.app = Tideway(":memory:")
+        self.app = MoneyGuard(":memory:")
 
     def test_shapla_projection_exact_numbers(self):
         base = self.app.analysis(SHAPLA)["projections"]["base"]
@@ -113,7 +113,7 @@ class HttpTests(unittest.TestCase):
         conn = http.client.HTTPConnection("127.0.0.1", self.port, timeout=10)
         base = {"Host": host or f"127.0.0.1:{self.port}"}
         if body is not None:
-            base.update({"Content-Type": "application/json", "X-Tideway-Token": self.app.csrf,
+            base.update({"Content-Type": "application/json", "X-MoneyGuard-Token": self.app.csrf,
                          "Origin": f"http://127.0.0.1:{self.port}"})
         base.update(headers or {})
         conn.request(method, path, json.dumps(body) if body is not None else None, base)
@@ -133,7 +133,7 @@ class HttpTests(unittest.TestCase):
 
     def test_csrf_origin_host(self):
         body = {"operator_id": "nadia", "pin": "2468"}
-        self.assertEqual(self.call("POST", "/api/session/login", body, {"X-Tideway-Token": "bad"})[0], 403)
+        self.assertEqual(self.call("POST", "/api/session/login", body, {"X-MoneyGuard-Token": "bad"})[0], 403)
         self.assertEqual(self.call("POST", "/api/session/login", body, {"Origin": "http://evil.example"})[0], 403)
         self.assertEqual(self.call("POST", "/api/session/login", body, host="evil.example")[0], 403)
         self.assertEqual(self.call("GET", "/api/config", host="evil.example")[0], 403)

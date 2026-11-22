@@ -1,7 +1,7 @@
 "use strict";
 
 // Exact, shared presentation/input conversion. Ledger values remain integer minor units.
-globalThis.TidewayMoney = (() => {
+globalThis.MoneyGuardMoney = (() => {
   let rates = {};
   const MAX = 100000000000000;
   function decimal(raw, signed=false) {

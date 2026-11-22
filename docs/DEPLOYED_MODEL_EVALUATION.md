@@ -1,25 +1,25 @@
-# Exact deployed TidePay evaluation
+# Exact deployed GuardPay evaluation
 
 The exact weights used by the application now have a separate evaluation on
 **7,427 invoices from 80 new synthetic SMEs**, including cold starts. This closes
 the gap between the earlier corrected benchmark and the artifact actually
-loaded by `analytics.tidepay_model()`. It does not establish real-world accuracy.
+loaded by `analytics.guardpay_model()`. It does not establish real-world accuracy.
 
-The Overview's **TidePay prediction evidence** now shows these exact-artifact
+The Overview's **GuardPay prediction evidence** now shows these exact-artifact
 results and the cold-start limitation. The older audit appears separately as a
 different model/test cohort. The dashboard API exposes the summary under
-`tidepay.card.deployed_evaluation`. It checks the report integrity manifest and
+`guardpay.card.deployed_evaluation`. It checks the report integrity manifest and
 installed weight hash each time; missing, corrupt, inconsistent or different
 weights yield an unavailable summary with no scores. Its `verified` status
 means local report integrity and byte agreement, not external certification.
-The fixed public URLs are `/benchmarks/tidepay-deployed.json` and
-`/benchmarks/tidepay-deployed-reliability.svg`; financial APIs stay protected.
+The fixed public URLs are `/benchmarks/guardpay-deployed.json` and
+`/benchmarks/guardpay-deployed-reliability.svg`; financial APIs stay protected.
 
 The deployed artifact remains unchanged:
 
 ```text
-tideway/ml/tidepay_model.json
-SHA-256 00639d9b3e408f1a51df20130e804db2f8a031772a772d706f09e6a7428aa466
+moneyguard/ml/guardpay_model.json
+SHA-256 81638ca0c17e3ca36c2168cfd2a9fa5ad360fb2520078a2a421b4011d5fc442d
 ```
 
 ## What was frozen and what was new
@@ -30,7 +30,7 @@ each with 20 businesses, create distinct SME/customer ID namespaces. Neither
 model was trained, calibrated, selected or adjusted using their outcomes.
 No newly trained model replaces the shipped one.
 
-The generator family is still `tideway/ml/synth.py`; new seeds and businesses
+The generator family is still `moneyguard/ml/synth.py`; new seeds and businesses
 test generalization within that simulator, not independence from its economic
 assumptions. This evaluator was authored after the model and earlier benchmark
 were visible, so these are fresh evaluation cohorts, not an independently
@@ -67,7 +67,7 @@ latent synthetic customer personalities never enter a prediction.
 One relevant implementation difference is now explicit: the training dataset
 orders customer history by invoice issue date, while the production app orders
 it by payment date. This evaluation follows the **production payment-date
-order**, and a test proves exact agreement with `analytics.tidepay_predictions`
+order**, and a test proves exact agreement with `analytics.guardpay_predictions`
 when invoices settle in a different order from issuance. It does not silently
 change production behavior or reinterpret the earlier audit.
 
@@ -124,25 +124,25 @@ Per-seed deployed MAE ranges from **7.9083 to 9.6150 days**.
 From the project root, using only Python's standard library:
 
 ```bash
-python3 scripts/evaluate_deployed_tidepay.py
-python3 -m unittest tests.test_deployed_tidepay -v
+python3 scripts/evaluate_deployed_guardpay.py
+python3 -m unittest tests.test_deployed_guardpay -v
 ```
 
-Use `--out /tmp/tidepay-fresh-check` to preserve the checked-in run. Configuration,
+Use `--out /tmp/guardpay-fresh-check` to preserve the checked-in run. Configuration,
 dataset/feature/split hashes, exact artifact/source hashes, full metric
 definitions, class balances, all ten calibration bins (including empty ones),
 subgroups and confidence intervals are in
-[`report.json`](../evidence/readiness-v3/tidepay/report.json).
+[`report.json`](../evidence/readiness-v3/guardpay/report.json).
 
 The directory also includes:
 
-- [`report.md`](../evidence/readiness-v3/tidepay/report.md): concise results.
-- [`raw_dataset.jsonl`](../evidence/readiness-v3/tidepay/raw_dataset.jsonl): generated businesses and invoice outcomes, with explicit latent simulation fields retained for audit rather than supplied to models.
-- [`split_manifest.csv`](../evidence/readiness-v3/tidepay/split_manifest.csv): every outcome/date, history count and exact feature vector, including any censored rows.
-- [`predictions.csv`](../evidence/readiness-v3/tidepay/predictions.csv): each model's predictions on identical scored invoice IDs.
-- [`reliability.svg`](../evidence/readiness-v3/tidepay/reliability.svg) and [`reliability.csv`](../evidence/readiness-v3/tidepay/reliability.csv): >7-day lateness calibration, Ns and descriptive Wilson intervals.
-- [`per_business.csv`](../evidence/readiness-v3/tidepay/per_business.csv): metrics per SME/model.
-- [`artifact_sha256.json`](../evidence/readiness-v3/tidepay/artifact_sha256.json): file-integrity manifest.
+- [`report.md`](../evidence/readiness-v3/guardpay/report.md): concise results.
+- [`raw_dataset.jsonl`](../evidence/readiness-v3/guardpay/raw_dataset.jsonl): generated businesses and invoice outcomes, with explicit latent simulation fields retained for audit rather than supplied to models.
+- [`split_manifest.csv`](../evidence/readiness-v3/guardpay/split_manifest.csv): every outcome/date, history count and exact feature vector, including any censored rows.
+- [`predictions.csv`](../evidence/readiness-v3/guardpay/predictions.csv): each model's predictions on identical scored invoice IDs.
+- [`reliability.svg`](../evidence/readiness-v3/guardpay/reliability.svg) and [`reliability.csv`](../evidence/readiness-v3/guardpay/reliability.csv): >7-day lateness calibration, Ns and descriptive Wilson intervals.
+- [`per_business.csv`](../evidence/readiness-v3/guardpay/per_business.csv): metrics per SME/model.
+- [`artifact_sha256.json`](../evidence/readiness-v3/guardpay/artifact_sha256.json): file-integrity manifest.
 
 Wilson bars do not account for correlated invoices. The bootstrap captures
 resampling of these generated SMEs, not uncertainty across real customers,

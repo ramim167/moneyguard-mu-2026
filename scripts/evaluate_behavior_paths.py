@@ -17,9 +17,9 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.evaluate_upgrade_scenarios import load_spec, new_business
 from scripts.verify_submission import source_digest
-from tideway.domain import SecurityError, ValidationError, canonical_json, scan_text
-from tideway.selftest import SHAPLA, TARGET
-from tideway.service import Tideway
+from moneyguard.domain import SecurityError, ValidationError, canonical_json, scan_text
+from moneyguard.selftest import SHAPLA, TARGET
+from moneyguard.service import MoneyGuard
 
 
 def financial_state(app, business=SHAPLA):
@@ -177,7 +177,7 @@ def main():
     rows = []
     for identifier, behavior, check in CASES:
         started = time.monotonic()
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         row = {"id": identifier, "assumed_behavior": behavior, "passed": False}
         try:
             row["observed"] = check(app)

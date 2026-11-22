@@ -7,7 +7,7 @@ import re
 import threading
 import unittest
 
-from tideway.server import Application, STATIC, make_handler
+from moneyguard.server import Application, STATIC, make_handler
 from scripts.build_submission_package import allowed_source
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,7 +37,7 @@ class GuideIsolationTests(unittest.TestCase):
         threading.Thread(target=cls.server.serve_forever, daemon=True).start()
         conn = http.client.HTTPConnection("127.0.0.1", cls.port, timeout=5)
         conn.request("POST", "/api/session/login", json.dumps({"operator_id": "nadia", "pin": "2468"}),
-                     {"Content-Type": "application/json", "X-Tideway-Token": cls.app.csrf})
+                     {"Content-Type": "application/json", "X-MoneyGuard-Token": cls.app.csrf})
         result = conn.getresponse()
         assert result.status == 200
         cls.cookie = result.getheader("Set-Cookie").split(";", 1)[0]

@@ -1,11 +1,11 @@
 // Records every storyboard scene as a constant-frame-rate 1920x1080 H.264 clip.
 //
-// Expects Tideway to be running already (build.py starts it on a fresh database):
+// Expects MoneyGuard to be running already (build.py starts it on a fresh database):
 //   python run.py --port 8792 --db data/video.sqlite3
 // Then:
 //   node scripts/pitch_video/record.mjs --work dist/video/work --ffmpeg <path> [--only id1,id2]
 //
-// Slides are rendered from slide.html (Tideway colours and fonts) and live scenes
+// Slides are rendered from slide.html (MoneyGuard colours and fonts) and live scenes
 // drive the real app. Both are captured with CDP Page.startScreencast; frames are
 // resampled to 30 fps in memory and piped straight into ffmpeg, so no frame
 // files are written to disk.
@@ -104,8 +104,8 @@ async function highlight(selector, ms = 900) {
 }
 async function apiLogin(id, pin) {
   await evaluate(`(async()=>{const c=await(await fetch('/api/config')).json();
-    await fetch('/api/session/logout',{method:'POST',headers:{'Content-Type':'application/json','X-Tideway-Token':c.csrf_token},body:'{}'});
-    const r=await fetch('/api/session/login',{method:'POST',headers:{'Content-Type':'application/json','X-Tideway-Token':c.csrf_token},body:JSON.stringify({operator_id:${js(id)},pin:${js(pin)}})});
+    await fetch('/api/session/logout',{method:'POST',headers:{'Content-Type':'application/json','X-MoneyGuard-Token':c.csrf_token},body:'{}'});
+    const r=await fetch('/api/session/login',{method:'POST',headers:{'Content-Type':'application/json','X-MoneyGuard-Token':c.csrf_token},body:JSON.stringify({operator_id:${js(id)},pin:${js(pin)}})});
     if(!r.ok)throw new Error((await r.json()).error||'sign-in failed');return true;})()`);
 }
 async function reloadPage() {

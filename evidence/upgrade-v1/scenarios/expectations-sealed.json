@@ -1,7 +1,7 @@
 {
-  "version": "tideway-independent-scenarios-v2",
+  "version": "moneyguard-independent-scenarios-v2",
   "sealed_at_utc": "2026-10-15T19:41:13+00:00",
-  "fixture_sha256": "0fd9b482d1a13bb91d5126ab751db2b4eb019c3fcefee8d1063c47f0460d4a46",
+  "fixture_sha256": "312b07d718914d5d78179b6768ac9da204ec82d320d9f3f33f5d4b27d1cc4e80",
   "count": 24,
   "expected_outcomes": {
     "D01": {

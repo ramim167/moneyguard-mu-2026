@@ -9,8 +9,8 @@ Everything is **read-only analysis of synthetic sandbox data**. No page or endpo
 the hub can approve, block, pay, defer or edit a financial record. The only write is one
 audit-log entry when a passport is issued.
 
-Code: [`tideway/treasury.py`](../tideway/treasury.py), [`web/treasury.js`](../web/treasury.js),
-routes in [`tideway/server.py`](../tideway/server.py). Tests:
+Code: [`moneyguard/treasury.py`](../moneyguard/treasury.py), [`web/treasury.js`](../web/treasury.js),
+routes in [`moneyguard/server.py`](../moneyguard/server.py). Tests:
 [`tests/test_treasury.py`](../tests/test_treasury.py),
 [`tests/test_treasury_http.py`](../tests/test_treasury_http.py). Evaluation:
 [`scripts/evaluate_treasury.py`](../scripts/evaluate_treasury.py) →
@@ -35,8 +35,8 @@ sandbox current date), with no look-ahead.
 | Below reserve | The week's lowest balance is under `policy.reserve_floor_minor` (highlighted) |
 
 Three scenarios use the dashboard's own invoice dates: **scheduled** (each invoice on its
-expected collection date), **likely** (TidePay expected delay, `derived["likely_dates"]`)
-and **stress** (TidePay 80th-percentile delay, `derived["stress_dates"]`). Accepted
+expected collection date), **likely** (GuardPay expected delay, `derived["likely_dates"]`)
+and **stress** (GuardPay 80th-percentile delay, `derived["stress_dates"]`). Accepted
 sandbox adjustments and customer promises are applied as on the dashboard.
 
 **Reconciliation.** For each scenario the server checks, and the UI shows, that the
@@ -111,7 +111,7 @@ precision or recall.**
 ## 4. Verifiable credit passport
 
 A JSON document a business can hand a lender, with exactly these top-level fields:
-`type`, `version` (`tideway-credit-passport-v1`), `passport_id`, `issuer` (instance name,
+`type`, `version` (`moneyguard-credit-passport-v1`), `passport_id`, `issuer` (instance name,
 key id, issuing role and operator), `business` (id, name, currency, synthetic flag),
 `as_of`, `issued_at`, `expires_at` (30 days), `snapshot_hash`, `audit` (audit-chain head
 hash and entry count *before* the issuance entry, chain validity), `twcf` (scheduled,
@@ -120,7 +120,7 @@ likely and stress summaries), `health` (score, band, weights, components with fo
 `signature`.
 
 * **Signing.** HMAC-SHA256 with `security.sign`, the same canonical-JSON helper used for
-  mandates, under a purpose-bound sub-key `HMAC(store key, "tideway-credit-passport-v1")`.
+  mandates, under a purpose-bound sub-key `HMAC(store key, "moneyguard-credit-passport-v1")`.
   A passport therefore never verifies as a mandate (tested). Non-integer values are
   encoded as decimal strings so the signature survives JSON round-trips in any language.
 * **Issue** (`POST /api/treasury/passport/issue`, fields `business_id`, `pin`): owner or

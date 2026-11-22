@@ -81,7 +81,7 @@ Paste a bKash, Nagad or Rocket SMS, a WhatsApp message or what a caller said, pl
 - **Advice only.** Scam Shield saves nothing, blocks nothing and moves no money. It also runs automatically on every message pasted into the Inbox.
 
 ```bash
-python -c "from tideway import scam_shield; print(scam_shield.evaluate())"   # reproducible hold-out check
+python -c "from moneyguard import scam_shield; print(scam_shield.evaluate())"   # reproducible hold-out check
 ```
 
 ## Ask in বাংলা
@@ -99,7 +99,7 @@ The assistant detects Bangla script and answers in Bangla, routing the question 
 **For the business**
 
 - **Cash weather.** Exact daily cash projection in integer minor units; scheduled, likely and stress scenarios; 1,000 seeded simulations; a 14-day look-ahead so a deferral cannot hide a gap just past the target date.
-- **TidePay predictions.** Every open invoice gets a probability for each lateness band, learned from payment histories.
+- **GuardPay predictions.** Every open invoice gets a probability for each lateness band, learned from payment histories.
 - **Rescue plan.** The optimiser compares preset supplier deferrals and early-payment discounts across up to six eligible records, and proposes zero-cash reminders. Plans disclose when the search omits records. Simulated counterparties accept, counter-offer or refuse; a counter becomes a new proposal that needs fresh approval.
 - **Ask MoneyGuard.** Plain-language questions in বাংলা, English, Banglish and five more languages, with the tool plan shown under every answer. Works with or without a language model installed.
 - **Zero-entry inbox.** Paste bKash, Nagad, Rocket, bank and card alerts (international formats work too); get draft records. Nothing is saved until a person confirms.
@@ -123,12 +123,12 @@ Trained by the team, running on the device. The language model can only propose;
 
 | Model | What it does | Result on held-out synthetic tests |
 |---|---|---|
-| **TidePay** | Predicts how late each invoice will be paid (federated training across 40 simulated SMEs) | Mean error **8.56 days** vs 10.23 for a history heuristic, on 7,427 unseen invoices |
-| **TideLM** (Qwen3-4B + LoRA, Apple Silicon) | Turns questions and pasted alerts into typed tool plans and draft records | Exact plans **26.7% → 96.7%**, extraction F1 **0.83 → 0.969** |
-| **TideLM** (Qwen3-1.7B + LoRA, NVIDIA RTX 3060 Ti) | The same task, trained in **7.3 minutes** on a consumer GPU | Exact plans **21.3% → 92.7%**, extraction F1 **0.30 → 0.99**, injection flags **62% → 100%** |
+| **GuardPay** | Predicts how late each invoice will be paid (federated training across 40 simulated SMEs) | Mean error **8.56 days** vs 10.23 for a history heuristic, on 7,427 unseen invoices |
+| **GuardLM** (Qwen3-4B + LoRA, Apple Silicon) | Turns questions and pasted alerts into typed tool plans and draft records | Exact plans **26.7% → 96.7%**, extraction F1 **0.83 → 0.969** |
+| **GuardLM** (Qwen3-1.7B + LoRA, NVIDIA RTX 3060 Ti) | The same task, trained in **7.3 minutes** on a consumer GPU | Exact plans **21.3% → 92.7%**, extraction F1 **0.30 → 0.99**, injection flags **62% → 100%** |
 | **Scam Shield text model** (naive Bayes, words + character n-grams) | Scores how similar a pasted MFS message is to known scam patterns, in English, বাংলা and Banglish | Rules + model **18/18** hold-out scams, **0/19** false alarms; independent test set **19/20** "likely scam", **0/10** false alarms (small synthetic sets) |
 
-Details: [model card](docs/MODEL_CARD.md) · [Scam Shield](docs/SCAM_SHIELD.md) · [GPU training](docs/TIDELM_CUDA.md) · [TidePay evaluation](docs/DEPLOYED_MODEL_EVALUATION.md)
+Details: [model card](docs/MODEL_CARD.md) · [Scam Shield](docs/SCAM_SHIELD.md) · [GPU training](docs/GUARDLM_CUDA.md) · [GuardPay evaluation](docs/DEPLOYED_MODEL_EVALUATION.md)
 
 ## Security by design
 
@@ -153,8 +153,8 @@ Details: [model card](docs/MODEL_CARD.md) · [Scam Shield](docs/SCAM_SHIELD.md) 
 flowchart LR
     UI["Browser UI<br/>vanilla JS, no build step"] -->|"CSRF · CSP · roles · tenant checks"| S["server.py<br/>loopback only"]
     S --> AG["Rescue agent + planner<br/>read / propose only"]
-    S --> LM["TideLM or built-in rules<br/>typed plans, draft records"]
-    AG --> EN["Projection · Monte Carlo · TidePay"]
+    S --> LM["GuardLM or built-in rules<br/>typed plans, draft records"]
+    AG --> EN["Projection · Monte Carlo · GuardPay"]
     S --> TH["Treasury hub · Portfolio radar"]
     AG -->|proposal| HU{"People approve<br/>PIN · two-person"}
     HU -->|"signed mandate"| EX["Sandbox execution<br/>once · read-back"]
@@ -180,22 +180,31 @@ Home shows today's date in Bangladesh and the ledger date used for the forecast.
 **Judge tour** — Start on **Home** and open **Cash forecast**. In **Scam check**, try *Fake cash-in SMS*. In **Ask MoneyGuard**, ask `এই মাসে কি বেতন দিতে পারব?` Open **Fix a cash gap** to propose a rescue and follow its approval instructions. In **Add from SMS**, select *Sample: injection attempt* and extract the draft. Run the self-test in **Safety settings**, explore **Bank reports** and **Lender radar**, then try the tamper drill in **Audit trail**.
 
 ```bash
-docker build -t tideway:local . && docker run --rm -p 127.0.0.1:8787:8787 tideway:local   # isolated container
+docker build -t moneyguard:local . && docker run --rm -p 127.0.0.1:8787:8787 moneyguard:local   # isolated container
 python run.py --no-demo --db data/empty.sqlite3                                         # empty workspace
 ```
 
-**Optional: free cloud AI, with automatic fallback.** Not needed for anything above. Copy `.env.example` to `.env` and fill any of: `GEMINI_API_KEY` (Google AI Studio, free tier, good at Bangla), `GROQ_API_KEY` (free tier), `OPENROUTER_API_KEY` (`:free` models), or a custom OpenAI-compatible service. Restart. MoneyGuard tries them in `TIDEWAY_AI_ORDER`, and each provider's model list in order, moving on when one is busy, down or out of quota (`tideway/ai_providers.py`). In **Ask MoneyGuard**, tick the consent box to use it. Names are replaced with pseudonyms before anything is sent, the AI can only call read and propose tools, and every number it writes is checked against tool output. `.env` is git-ignored, so the key never reaches GitHub.
+**Optional: free cloud AI, with automatic fallback.** Not needed for anything above. Copy `.env.example` to `.env` and fill any of: `GEMINI_API_KEY` (Google AI Studio, free tier, good at Bangla), `GROQ_API_KEY` (free tier), `OPENROUTER_API_KEY` (`:free` models), or a custom OpenAI-compatible service. Restart. MoneyGuard tries them in `MONEYGUARD_AI_ORDER`, and each provider's model list in order, moving on when one is busy, down or out of quota (`moneyguard/ai_providers.py`). In **Ask MoneyGuard**, tick the consent box to use it. Names are replaced with pseudonyms before anything is sent, the AI can only call read and propose tools, and every number it writes is checked against tool output. `.env` is git-ignored, so the key never reaches GitHub.
 
 ### Dictation on desktop and phones
 
-Open **Ask MoneyGuard**, pick English or বাংলা, then tap the microphone. With recording enabled, use **Pause**, **Resume**, and **Finish**. The transcript goes into your editable draft. Review it, then press **Ask** to send the question. If your browser’s speech service fails, choose **Use recording** when it appears.
+Open **Ask MoneyGuard**, pick English or বাংলা, then tap the microphone. Use **Pause**, **Resume**, and **Finish**. The transcript goes into your editable draft. Review it, then press **Ask** to send the question.
 
-Recording uses the browser’s microphone on `localhost` or an HTTPS site. On a phone, use the HTTPS address of the hosted demo and allow microphone access. Each recording can hold up to 45 seconds of speech. Use the microphone again to add another clip. [Browser microphone requirements](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia)
+| Browser | How the microphone works |
+| --- | --- |
+| Google Chrome (desktop, Android) | The browser's own speech service, live as you speak. If it fails, MoneyGuard switches to recording automatically. |
+| Firefox, Brave, Edge, Opera, Samsung Internet | MoneyGuard records a clip (16 kHz WAV through the Web Audio API) and the server turns it into text. |
+| Safari (macOS, iPhone, iPad) and every iOS browser | The same recorded clip. |
 
-To enable recording, configure one of these options and restart MoneyGuard.
+Recording needs `localhost` or an HTTPS site, plus microphone permission. Each clip can hold up to 45 seconds; use the microphone again to add another. Before a clip goes to a cloud service, MoneyGuard asks for permission and names the service. [Browser microphone requirements](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia)
 
-- **Local computer**. Install `faster-whisper` in the Python environment that runs MoneyGuard. Download the multilingual `Systran/faster-whisper-base` snapshot using the setup commands below and set `TIDEWAY_SPEECH_MODEL_DIR=models/faster-whisper-base` in `.env`. After setup, MoneyGuard transcribes clips locally without a provider key. [faster-whisper](https://github.com/SYSTRAN/faster-whisper)
-- **Hosted demo**. Set `TIDEWAY_SPEECH_GROQ_API_KEY` as a secret environment variable in the Render dashboard. MoneyGuard asks for permission before making a Groq recording and sends the clip to Groq for transcription. [Groq speech-to-text](https://console.groq.com/docs/speech-to-text)
+Recording turns on when the server has one of these, in this order. Restart MoneyGuard after changing `.env`.
+
+- **Local computer**. Install `faster-whisper` in the Python environment that runs MoneyGuard. Download the multilingual `Systran/faster-whisper-base` snapshot using the setup commands below and set `MONEYGUARD_SPEECH_MODEL_DIR=models/faster-whisper-base` in `.env`. Clips are transcribed locally without a provider key. [faster-whisper](https://github.com/SYSTRAN/faster-whisper)
+- **Groq**. `MONEYGUARD_SPEECH_GROQ_API_KEY`, or the chat assistant's `GROQ_API_KEY`. [Groq speech-to-text](https://console.groq.com/docs/speech-to-text)
+- **Google Gemini**. `MONEYGUARD_SPEECH_GEMINI_API_KEY`, or the chat assistant's `GEMINI_API_KEY` (free tier, good at Bangla). Models tried: `gemini-flash-lite-latest`, then `gemini-flash-latest`; override with `MONEYGUARD_SPEECH_GEMINI_MODEL`.
+
+**Hosted demo (Render).** Add `GEMINI_API_KEY` (or `GROQ_API_KEY`) as a secret environment variable in the Render dashboard. That one key makes the microphone work in every browser.
 
 ```bash
 python -m pip install faster-whisper==1.2.1
@@ -208,7 +217,7 @@ python -c "from huggingface_hub import snapshot_download; snapshot_download('Sys
 
 ```bash
 python -m unittest discover -s tests     # full automated suite
-python -m tideway.selftest               # 30-case task and attack scorecard
+python -m moneyguard.selftest               # 30-case task and attack scorecard
 python scripts/evaluate_treasury.py      # 13-week reconciliation, health score, passport checks
 python scripts/evaluate_portfolio.py     # portfolio radar backtest
 ```
@@ -224,7 +233,7 @@ Raw results live in [`evidence/`](evidence); the [readiness index](docs/READINES
 | [Scam Shield](docs/SCAM_SHIELD.md) | Fraud check design, corpus and evaluation |
 | [Treasury hub](docs/TREASURY_HUB.md) · [Portfolio radar](docs/PORTFOLIO_RADAR.md) | Lender-grade features, formulas and limits |
 | [Decision lab](docs/DECISION_LAB.md) · [Owner view](docs/OWNER_VIEW.md) | Decision support in depth |
-| [Model card](docs/MODEL_CARD.md) · [GPU training](docs/TIDELM_CUDA.md) | Models, training and evaluation |
+| [Model card](docs/MODEL_CARD.md) · [GPU training](docs/GUARDLM_CUDA.md) | Models, training and evaluation |
 | [Setup on Windows and macOS](docs/SETUP_WINDOWS_MAC.md) | Running locally |
 | [Archive: FinTechathon 2026](docs/archive/fintechathon-2026/) | Material from the earlier contest this project was first built for |
 | [Release notes](docs/RELEASE_V16.md) | What changed most recently (MU hackathon edition) |

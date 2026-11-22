@@ -1,8 +1,8 @@
 {
-  "schema_version": "tideway-team-reported-session-metadata-v1",
+  "schema_version": "moneyguard-team-reported-session-metadata-v1",
   "basis": "Follow-up user statements. The user explicitly clarified that the sessions were real and completed, requested English corrections, and subsequently confirmed database resets.",
   "independently_verified": false,
-  "study_type": "Tideway usability study on the team-reported pre-v14 build",
+  "study_type": "MoneyGuard usability study on the team-reported pre-v14 build",
   "session_date": "2026-10-19",
   "moderator": "Ramim",
   "recruitment": "Convenience sample of SME owners, bookkeepers and accountants.",
@@ -52,7 +52,7 @@
     "quantization": "Q4_K_M",
     "runtime": "llama.cpp",
     "runtime_release": "b11678",
-    "execution_context": "Local, inside Tideway through a loopback server.",
+    "execution_context": "Local, inside MoneyGuard through a loopback server.",
     "model_sha256": null,
     "runtime_sha256": null,
     "claimed_manifest_filename": "runtime-provenance.json",
@@ -84,7 +84,7 @@
   "scope": "Team-reported human retest using a fictional financial sandbox. This metadata does not establish native MLX adapter or receipt-model verification, external security review, a blind model benchmark or causal usability improvement.",
   "artifact_verification": {
     "manifest": "verification/manifest.json",
-    "manifest_sha256": "c15d16d7a3db51d0b315e1ab1a45e6e10ca9a7060be14f92e5b7a220063fd50a",
+    "manifest_sha256": "37a78df2dea83388996c1f3ca05e2b01b7b214f268ac59a218e29422d0373760",
     "source_exports": "Archived CSV bytes and 40 rows linked to the intake receipt and aggregate hashes.",
     "overlap": "The 10 team-reported ID pairs exist in both supplied files; this does not independently verify identity.",
     "current_system_info": "verification/system-info.json",
@@ -105,7 +105,7 @@
   "tested_commit_basis": "The user identified commit 9dbe495 in a screenshot as the laptop build used for the survey.",
   "reported_build": {
     "file": "reported-build.json",
-    "sha256": "833231d7d9266dfe9dbb8b7c0069ec318645bf971dd19f5d44fad82a8671a9ab"
+    "sha256": "671f08105c1711b11adbfc1bf38ef77d925afc5d36540ed3ef084366f03b9f6c"
   },
   "covers_v14_ui_upgrade": false
 }

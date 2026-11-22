@@ -15,8 +15,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from tideway.analytics import payee_checks  # noqa: E402
-from tideway.domain import clean_text, scan_text  # noqa: E402
+from moneyguard.analytics import payee_checks  # noqa: E402
+from moneyguard.domain import clean_text, scan_text  # noqa: E402
 
 REVIEW_FLAGS = {"payment_detail_change"}
 

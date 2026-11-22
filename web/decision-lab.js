@@ -1,7 +1,7 @@
 "use strict";
 
 // Decision-support UI. Server calculations and permission checks remain authoritative.
-window.TidewayLab = (() => {
+window.MoneyGuardLab = (() => {
   let epoch=0;
   let key = "", tab = "reverse", results = {}, draft = {}, watching = null, pending = false, eventRequest = null;
   const tabs = {reverse:"Find the breaking point", promises:"Agreement stress", frontier:"Recovery options", events:"Event monitor", replay:"Judge challenge & replay", privacy:"Privacy inspector", bilateral:"Two-business negotiation"};
@@ -19,7 +19,7 @@ window.TidewayLab = (() => {
   const button = (action,label,extra="") => `<button type="button" class="button primary" data-action="lab-${action}" ${pending?"disabled":""} ${extra}>${esc(label)}</button>`;
   const table = (heads,rows) => `<div class="table-wrap"><table><thead><tr>${heads.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
   const percent = value => isNum(value)?`${(value*100).toFixed(2)}%`:"—";
-  const L = text => state.lang === "bn" ? window.TidewayBangla.translate(text) ?? text : text;
+  const L = text => state.lang === "bn" ? window.MoneyGuardBangla.translate(text) ?? text : text;
   const json = (title,value) => `<details class="section-gap"><summary>${esc(L(title))} (${esc(L("original ledger units"))})</summary><pre class="lab-json">${esc(JSON.stringify(value,null,2))}</pre></details>`;
   const common = () => ({business_id:state.businessId,target_date:state.targetDate});
   const defaultQuestion = "Explain Bay Logistics cash risk. Contact owner@example.com; account AC-2201-4471.";
@@ -132,7 +132,7 @@ window.TidewayLab = (() => {
       if(state.businessId!==origin||state.targetDate!==target||state.operator?.id!==actor||epoch!==serial)return;
       if(after==="reload"||after==="proposal") {await loadDashboard();sync();}
       if(after==="watch") {watching={...(watching||{}),enabled:r.enabled};}
-      else if(after==="download") {const url=URL.createObjectURL(new Blob([JSON.stringify(r,null,2)],{type:"application/json"}));const link=document.createElement('a');link.href=url;link.download=`tideway-${origin}-private-replay.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Private replay capsule downloaded.");}
+      else if(after==="download") {const url=URL.createObjectURL(new Blob([JSON.stringify(r,null,2)],{type:"application/json"}));const link=document.createElement('a');link.href=url;link.download=`moneyguard-${origin}-private-replay.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Private replay capsule downloaded.");}
       else if (name === "privacy") {
         sync();
         if (epoch === serial && privacyKey(body) === privacyKey(currentPrivacyBody())) {

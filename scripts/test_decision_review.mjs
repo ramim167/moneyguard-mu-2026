@@ -7,7 +7,7 @@ let currency = 'BDT';
 const esc = value => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
 const context={window:{},esc,day:x=>x,isNum:Number.isFinite,money:x=>`${currency} ${(x/100).toFixed(2)}`};
 vm.runInNewContext(readFileSync(new URL('../web/decision-review.js',import.meta.url),'utf8'),context);
-const ui=context.window.TidewayReview;
+const ui=context.window.MoneyGuardReview;
 const original={payroll:{next_date:'2026-10-31'},customer_receipts:[{customer:'A',settled_invoices:10,late_settlements:7,limited_history:false,open_amount_minor:50000,expected_by_payroll_minor:0,next_receipt:{id:'a',date:'2026-11-02',amount_minor:50000,after_payroll:true}}]};
 let html=ui.customers(original);
 assert.match(html,/7 \/ 10 settled invoices were paid late/);

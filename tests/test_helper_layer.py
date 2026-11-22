@@ -6,7 +6,7 @@ import re
 import threading
 import unittest
 
-from tideway.server import Application, STATIC, make_handler
+from moneyguard.server import Application, STATIC, make_handler
 
 ROOT = Path(__file__).resolve().parents[1]
 HELPER = (ROOT / "web" / "helper.js").read_text(encoding="utf-8")

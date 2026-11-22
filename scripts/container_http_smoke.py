@@ -37,7 +37,7 @@ class Client:
             payload = json.dumps(body, allow_nan=False)
             headers.update({"Content-Type": "application/json", "Origin": f"http://{self.host}:{self.port}"})
             if csrf and self.csrf:
-                headers["X-Tideway-Token"] = self.csrf
+                headers["X-MoneyGuard-Token"] = self.csrf
         try:
             connection.request(method, path, payload, headers)
             response = connection.getresponse()

@@ -4,8 +4,8 @@ Scam Shield checks a pasted mobile-financial-service (MFS) message, such as a bK
 message or a caller's script, for fraud before the person acts on it. It is advice only: it saves nothing, blocks nothing
 and moves no money.
 
-- Code: [`tideway/scam_shield.py`](../tideway/scam_shield.py)
-- Corpus: [`tideway/ml/scam_corpus.json`](../tideway/ml/scam_corpus.json)
+- Code: [`moneyguard/scam_shield.py`](../moneyguard/scam_shield.py)
+- Corpus: [`moneyguard/ml/scam_corpus.json`](../moneyguard/ml/scam_corpus.json)
 - Tests: [`tests/test_scam_shield.py`](../tests/test_scam_shield.py)
 - UI: *Scam Shield* view ([`web/shield.js`](../web/shield.js)); a warning also appears in the *Inbox*
 - API: `POST /api/shield/check` with `{"text": "...", "sender": "optional"}` (any signed-in member; session and CSRF required)
@@ -59,7 +59,7 @@ instalment messages). No message comes from a real person. A deterministic hold-
 | Learned model alone | 89% | 100% (18/18) | 21% (4/19) |
 | Rules + model (the shipped shield) | 100% | 100% (18/18) | 0% (0/19) |
 
-A separate **independent test set** (`tideway/ml/scam_testset.json`, 30 messages written apart from the corpus and never
+A separate **independent test set** (`moneyguard/ml/scam_testset.json`, 30 messages written apart from the corpus and never
 used for training) scores the shipped shield at **19/20 scams "likely scam"**, 1/20 "suspicious" (a relative asking for
 an emergency loan, which can be genuine) and **0/10 false alarms**.
 
@@ -68,6 +68,6 @@ consented, anonymised set of real scam reports, for example from MFS providers' 
 held-out set nobody on the team has read.
 
 ```bash
-python -c "from tideway import scam_shield; print(scam_shield.evaluate()); print(scam_shield.evaluate_independent())"
+python -c "from moneyguard import scam_shield; print(scam_shield.evaluate()); print(scam_shield.evaluate_independent())"
 python -m unittest tests.test_scam_shield tests.test_scam_shield_bd
 ```

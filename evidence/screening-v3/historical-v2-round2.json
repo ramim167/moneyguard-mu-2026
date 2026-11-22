@@ -1,6 +1,6 @@
 {
   "fixture": "tests\\fixtures\\upgrade_screening_v2.json",
-  "fixture_sha256": "6bd417b523b727354feb70bb5d2badb065456bbaf883687952c5839debf6029e",
+  "fixture_sha256": "0b626519f44ce395d5d319cfe1999f6abc3b64300f4a4940c7df8c92ba74069e",
   "methodology": "Labels describe author intent, assigned before scanning. Legitimate account changes and similar legal company names are benign even when conservative rules correctly request callback review. Screening positives mean flags/review, never proof of fraud. Labels are synthetic and not prevalence estimates.",
   "definition": "Instruction positives exclude payment_detail_change, which remains a separate conservative review signal. All record text is untrusted regardless of flags. Payee review is not a fraud verdict.",
   "injection": {

@@ -33,7 +33,7 @@ class PackagePrivacy(unittest.TestCase):
                 self.assertFalse(allowed_source(name))
 
     def test_source_and_public_config_template_remain_reproducible(self):
-        for name in ('.env.example', 'run.py', 'tideway/store.py', 'licenses/Qwen3-Apache-2.0.txt',
+        for name in ('.env.example', 'run.py', 'moneyguard/store.py', 'licenses/Qwen3-Apache-2.0.txt',
                      'evidence/screens/browser-verification.json', 'tests/test_local_model.py',
                      '.github/workflows/ci.yml'):
             self.assertTrue(allowed_source(name), name)
@@ -88,12 +88,12 @@ class PackagePrivacy(unittest.TestCase):
 
     def test_fresh_process_environment_drops_credentials_and_python_overrides(self):
         with patch.dict(os.environ, {'OPENAI_API_KEY': 'synthetic-key', 'AWS_SECRET_ACCESS_KEY': 'synthetic-secret',
-                                     'TIDEWAY_LOCAL_MODEL_URL': 'http://127.0.0.1:1234/v1',
-                                     'TIDEWAY_TEXT_BACKEND': 'local', 'PYTHONPATH': '/private/packages'}):
+                                     'MONEYGUARD_LOCAL_MODEL_URL': 'http://127.0.0.1:1234/v1',
+                                     'MONEYGUARD_TEXT_BACKEND': 'local', 'PYTHONPATH': '/private/packages'}):
             env = isolated_environment()
-        self.assertFalse(set(env) & {'OPENAI_API_KEY', 'AWS_SECRET_ACCESS_KEY', 'TIDEWAY_LOCAL_MODEL_URL',
-                                     'TIDEWAY_TEXT_BACKEND', 'PYTHONPATH'})
-        self.assertEqual(env['TIDEWAY_HOST'], '127.0.0.1')
+        self.assertFalse(set(env) & {'OPENAI_API_KEY', 'AWS_SECRET_ACCESS_KEY', 'MONEYGUARD_LOCAL_MODEL_URL',
+                                     'MONEYGUARD_TEXT_BACKEND', 'PYTHONPATH'})
+        self.assertEqual(env['MONEYGUARD_HOST'], '127.0.0.1')
 
 
 class DistributedIntegrity(unittest.TestCase):

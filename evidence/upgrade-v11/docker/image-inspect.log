@@ -2,7 +2,7 @@
     {
         "Id": "sha256:1583b53bd19407a33182dc9f8a722589b6c9397452a464493c429f44027248e3",
         "RepoTags": [
-            "tideway-verification:2e843fed8cbb"
+            "moneyguard-verification:2e843fed8cbb"
         ],
         "RepoDigests": [],
         "Parent": "sha256:414696a40db49419d05a42966125faaaf663dd66dca7f69cc0ee34a2c01ccaf3",
@@ -15,10 +15,10 @@
         "Size": 534797440,
         "GraphDriver": {
             "Data": {
-                "LowerDir": "/home/ramim/.cache/tideway-docker-audit/data-v11/overlay2/f15773fc559a4740c5272f9ef922d12fc4e18548f1597b0f5b0d646852aa453d/diff:/home/ramim/.cache/tideway-docker-audit/data-v11/overlay2/97e9c80c75ad5f43bc1c25aaccc31a73387a27627b969d6fc7181a2a37dd72e1/diff:/home/ramim/.cache/tideway-docker-audit/data-v11/overlay2/3cb6ebf1340787844368daf928334cad85c313955f46300d127ffab87936a6fa/diff:/home/ramim/.cache/tideway-docker-audit/data-v11/overlay2/46e9a6f903e2ad3cf8381fab48de708271425a53f0a7bcf5120d88210381dc89/diff:/home/ramim/.cache/tideway-docker-audit/data-v11/overlay2/91575b3ecd14bd95cc089d1d69b114ad7dc4bb16b7c5e97ed55b6de41125bf46/diff:/home/ramim/.cache/tideway-docker-audit/data-v11/overlay2/d581b873c5cf2dddd43f8b21d07ea16aa40a9230361dfe455bcc3b52ce9f2382/diff",
-                "MergedDir": "/home/ramim/.cache/tideway-docker-audit/data-v11/overlay2/a13c1206a7e1a41434c8bd52dffa95085274f1921fc2f909e7f88d2203b8432d/merged",
-                "UpperDir": "/home/ramim/.cache/tideway-docker-audit/data-v11/overlay2/a13c1206a7e1a41434c8bd52dffa95085274f1921fc2f909e7f88d2203b8432d/diff",
-                "WorkDir": "/home/ramim/.cache/tideway-docker-audit/data-v11/overlay2/a13c1206a7e1a41434c8bd52dffa95085274f1921fc2f909e7f88d2203b8432d/work"
+                "LowerDir": "/home/ramim/.cache/moneyguard-docker-audit/data-v11/overlay2/f15773fc559a4740c5272f9ef922d12fc4e18548f1597b0f5b0d646852aa453d/diff:/home/ramim/.cache/moneyguard-docker-audit/data-v11/overlay2/97e9c80c75ad5f43bc1c25aaccc31a73387a27627b969d6fc7181a2a37dd72e1/diff:/home/ramim/.cache/moneyguard-docker-audit/data-v11/overlay2/3cb6ebf1340787844368daf928334cad85c313955f46300d127ffab87936a6fa/diff:/home/ramim/.cache/moneyguard-docker-audit/data-v11/overlay2/46e9a6f903e2ad3cf8381fab48de708271425a53f0a7bcf5120d88210381dc89/diff:/home/ramim/.cache/moneyguard-docker-audit/data-v11/overlay2/91575b3ecd14bd95cc089d1d69b114ad7dc4bb16b7c5e97ed55b6de41125bf46/diff:/home/ramim/.cache/moneyguard-docker-audit/data-v11/overlay2/d581b873c5cf2dddd43f8b21d07ea16aa40a9230361dfe455bcc3b52ce9f2382/diff",
+                "MergedDir": "/home/ramim/.cache/moneyguard-docker-audit/data-v11/overlay2/a13c1206a7e1a41434c8bd52dffa95085274f1921fc2f909e7f88d2203b8432d/merged",
+                "UpperDir": "/home/ramim/.cache/moneyguard-docker-audit/data-v11/overlay2/a13c1206a7e1a41434c8bd52dffa95085274f1921fc2f909e7f88d2203b8432d/diff",
+                "WorkDir": "/home/ramim/.cache/moneyguard-docker-audit/data-v11/overlay2/a13c1206a7e1a41434c8bd52dffa95085274f1921fc2f909e7f88d2203b8432d/work"
             },
             "Name": "overlay2"
         },
@@ -46,7 +46,7 @@
                 "--port",
                 "8787",
                 "--db",
-                "/app/data/tideway.sqlite3"
+                "/app/data/moneyguard.sqlite3"
             ],
             "Entrypoint": null,
             "Env": [
@@ -63,7 +63,7 @@
             },
             "Labels": null,
             "OnBuild": null,
-            "User": "tideway",
+            "User": "moneyguard",
             "Volumes": null,
             "WorkingDir": "/app"
         }

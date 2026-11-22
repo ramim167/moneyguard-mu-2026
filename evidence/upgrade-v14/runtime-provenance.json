@@ -8,7 +8,7 @@
   "runtime_release": "b11678",
   "runtime_archive": "llama-b11678-bin-win-vulkan-x64.zip",
   "runtime_archive_sha256": "dad3ea8140d26a821ba113ad6e8cad13cc00065f995ce08bf3481c8f041d0e70",
-  "scope": "Optional compatible text model; not the TideLM adapter or a vision model.",
-  "verification_scope": "Helper verified the pinned model/runtime checksums before starting a new owned loopback server on port 8791. No downloads. Windows compatible Qwen3; not native MLX, TideLM adapter or receipt model.",
+  "scope": "Optional compatible text model; not the GuardLM adapter or a vision model.",
+  "verification_scope": "Helper verified the pinned model/runtime checksums before starting a new owned loopback server on port 8791. No downloads. Windows compatible Qwen3; not native MLX, GuardLM adapter or receipt model.",
   "server_stopped_after_evaluation": true
 }

@@ -1,7 +1,7 @@
 """Disclosed language-class regressions: reported attacks are not live instructions."""
 import unittest
 
-from tideway.screening import scan_text
+from moneyguard.screening import scan_text
 
 
 class ReportedBusinessText(unittest.TestCase):

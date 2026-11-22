@@ -14,14 +14,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tideway import analytics, planner  # noqa: E402
-from tideway.service import Tideway  # noqa: E402
+from moneyguard import analytics, planner  # noqa: E402
+from moneyguard.service import MoneyGuard  # noqa: E402
 
 
 def run():
     path = ROOT / "tests" / "fixtures" / "cash_scenarios.json"
     spec = json.loads(path.read_text(encoding="utf-8"))
-    app = Tideway(":memory:")
+    app = MoneyGuard(":memory:")
     rows = []
     try:
         for case in spec["scenarios"]:
@@ -53,7 +53,7 @@ def run():
                          "spreadsheet_rule": {"feasible": baseline["feasible"], "payroll_ok": baseline["payroll_ok"],
                                               "shortfall_minor": baseline["shortfall_minor"],
                                               "economic_cost_minor": sum(a["economic_cost_minor"] for a in baseline_actions)},
-                         "tideway": {"feasible": outcome["feasible"], "payroll_ok": outcome["payroll_ok"],
+                         "moneyguard": {"feasible": outcome["feasible"], "payroll_ok": outcome["payroll_ok"],
                                      "shortfall_minor": outcome["shortfall_minor"], "actions": len(actions),
                                      "honest_no_safe_plan": bool(plan["action_needed"] and not actions),
                                      "economic_cost_minor": sum(a["economic_cost_minor"] for a in actions),
@@ -66,7 +66,7 @@ def run():
               "method": spec["method"], "rows": rows,
               "summary": {mode: {"feasible_cases": sum(r[mode]["feasible"] for r in rows),
                                   "payroll_funded_cases": sum(r[mode]["payroll_ok"] for r in rows)}
-                          for mode in ("spreadsheet_rule", "tideway")},
+                          for mode in ("spreadsheet_rule", "moneyguard")},
               "limitations": ["Authored perturbations of three existing synthetic fixtures, not independent held-out SMEs.",
                               "Both methods use the same exact ledger evaluator; independent validation is not claimed.",
                               "The comparator is one stated simple rule, not Excel generally or a generic LLM.",

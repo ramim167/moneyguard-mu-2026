@@ -1,7 +1,7 @@
 {
  "run_at": "2026-10-15 04:19",
  "machine": "Apple Silicon laptop",
- "tidelm": {
+ "guardlm": {
   "load_and_cache_seconds": 5.6,
   "answers": [
    {
@@ -21,7 +21,7 @@
       }
      ]
     },
-    "answer": "Credit check for Nila Traders (BDT 50,000, 30 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 5 settled invoice(s) on record, average 7.6 days late; TidePay expects about 12 days of delay (3% chance of more than 30 days); expected payment around 12 Nov; after this sale 54% of all money owed to you would sit with Nila Traders.",
+    "answer": "Credit check for Nila Traders (BDT 50,000, 30 days): CAUTION. The customer pays well, but this sale concentrates too much risk in one account; consider a deposit. 5 settled invoice(s) on record, average 7.6 days late; GuardPay expects about 12 days of delay (3% chance of more than 30 days); expected payment around 12 Nov; after this sale 54% of all money owed to you would sit with Nila Traders.",
     "seconds": 3.81
    },
    {
@@ -103,7 +103,7 @@
       }
      ]
     },
-    "answer": "Nila Traders is your biggest counterparty risk: TidePay gives a 2% chance of paying more than 30 days late, and if they never pay you lose BDT 20,000 of cash by 14 Nov (5 more day(s) under the reserve).",
+    "answer": "Nila Traders is your biggest counterparty risk: GuardPay gives a 2% chance of paying more than 30 days late, and if they never pay you lose BDT 20,000 of cash by 14 Nov (5 more day(s) under the reserve).",
     "seconds": 2.08
    },
    {

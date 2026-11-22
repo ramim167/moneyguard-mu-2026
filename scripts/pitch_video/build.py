@@ -1,10 +1,10 @@
-"""One-command render of the Tideway pitch video.
+"""One-command render of the MoneyGuard pitch video.
 
-    C:\\Users\\Administrator\\tideway-tools-venv\\Scripts\\python.exe scripts\\pitch_video\\build.py
+    C:\\Users\\Administrator\\moneyguard-tools-venv\\Scripts\\python.exe scripts\\pitch_video\\build.py
 
-Steps: narrate every scene (cached TTS) -> start Tideway on port 8792 with a fresh
+Steps: narrate every scene (cached TTS) -> start MoneyGuard on port 8792 with a fresh
 data/video.sqlite3 -> record every scene in headless Chrome (record.mjs) -> stop the
-app -> compose dist/video/tideway-pitch.mp4 (H.264 + AAC, 1920x1080, 30 fps, yuv420p,
+app -> compose dist/video/moneyguard-pitch.mp4 (H.264 + AAC, 1920x1080, 30 fps, yuv420p,
 faststart) with crossfades, burned-in captions and a sidecar .srt -> build-log.json
 and four review stills. Fails loudly if the video would exceed max_seconds (4:55).
 """
@@ -38,8 +38,8 @@ def log(message: str) -> None:
 
 
 def app_python() -> str:
-    if os.environ.get("TIDEWAY_PYTHON"):
-        return os.environ["TIDEWAY_PYTHON"]
+    if os.environ.get("MONEYGUARD_PYTHON"):
+        return os.environ["MONEYGUARD_PYTHON"]
     candidate = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Python" / "Python311" / "python.exe"
     return str(candidate) if candidate.is_file() else sys.executable
 
@@ -68,13 +68,13 @@ def start_app(port: int, db: Path, out_dir: Path) -> subprocess.Popen:
                             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     for _ in range(240):
         if proc.poll() is not None:
-            raise SystemExit(f"Tideway exited early; see {out_dir / 'app.log'}")
+            raise SystemExit(f"MoneyGuard exited early; see {out_dir / 'app.log'}")
         if reachable(f"{base}/api/config"):
-            log(f"Tideway running at {base} (fresh {db.relative_to(ROOT)})")
+            log(f"MoneyGuard running at {base} (fresh {db.relative_to(ROOT)})")
             return proc
         time.sleep(0.25)
     proc.kill()
-    raise SystemExit("Tideway did not start within 60 s")
+    raise SystemExit("MoneyGuard did not start within 60 s")
 
 
 def stop_app(proc: subprocess.Popen | None) -> None:
@@ -203,7 +203,7 @@ def compose(ffmpeg: str, work: Path, out_dir: Path, board: dict, record: dict, n
         handle.writeframes(track.tobytes())
 
     srt = build_srt(timeline, narration, lead)
-    srt_path = out_dir / "tideway-pitch.srt"
+    srt_path = out_dir / "moneyguard-pitch.srt"
     srt_path.write_text(srt, encoding="utf-8")
     (work / "captions.srt").write_text(srt, encoding="utf-8")
 
@@ -222,8 +222,8 @@ def compose(ffmpeg: str, work: Path, out_dir: Path, board: dict, record: dict, n
     if burn:
         chains.append(f"[{last}]subtitles=captions.srt:force_style='{style}'[vout]")
         final_video = "vout"
-    output = out_dir / "tideway-pitch.mp4"
-    partial = out_dir / "tideway-pitch.partial.mp4"
+    output = out_dir / "moneyguard-pitch.mp4"
+    partial = out_dir / "moneyguard-pitch.partial.mp4"
     command = [ffmpeg, "-y", "-hide_banner", "-loglevel", "error", "-stats", *inputs, "-i", str(track_path),
                "-filter_complex", ";".join(chains), "-map", f"[{final_video}]", "-map", f"{len(timeline)}:a",
                "-af", "loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000", "-c:v", "libx264", "-preset", "medium", "-crf", "20",
@@ -300,7 +300,7 @@ def main() -> None:
             raise SystemExit(f"FAIL: recorder failed ({error.returncode}); see dist/video/work/debug and dist/video/app.log") from error
         finally:
             stop_app(app)
-            log("Tideway stopped")
+            log("MoneyGuard stopped")
     record = json.loads((work / "record.json").read_text(encoding="utf-8"))
     require_disk(out_dir, "composition")
     result = compose(ffmpeg, work, out_dir, board, record, narration, not args.no_burn_subtitles)

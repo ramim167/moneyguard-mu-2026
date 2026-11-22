@@ -3,7 +3,7 @@
 // Scam Shield UI: paste a bKash / Nagad / Rocket SMS, WhatsApp message or call script and get a
 // bilingual (English + বাংলা) verdict with reasons and safe next steps. Read-only: the server
 // saves, blocks and pays nothing. Every server string is escaped before rendering.
-window.TidewayShield = (() => {
+window.MoneyGuardShield = (() => {
   let text = "", sender = "", result = null, failure = "", revision = 0, lang = "both", renderGlobal = () => {};
   const SAMPLES = {
     fakeCashIn: {label: "Fake cash-in SMS", sender: "01712345678",

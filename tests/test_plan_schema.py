@@ -4,11 +4,11 @@ import json
 import unittest
 from unittest.mock import patch
 
-from tideway import copilot
-from tideway.domain import SecurityError, ValidationError
-from tideway.local_model import LocalModel, LocalModelUnavailable
-from tideway.plan_schema import PLAN_SCHEMA, plan_schema
-from tideway.service import Tideway
+from moneyguard import copilot
+from moneyguard.domain import SecurityError, ValidationError
+from moneyguard.local_model import LocalModel, LocalModelUnavailable
+from moneyguard.plan_schema import PLAN_SCHEMA, plan_schema
+from moneyguard.service import MoneyGuard
 
 
 def branches(schema):
@@ -102,7 +102,7 @@ class PlanSchemaContract(unittest.TestCase):
                 copilot.validate_plan({"calls": [{"tool": tool, "args": args}]})
 
     def test_schema_is_not_permission_even_if_server_ignores_it(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         self.addCleanup(app.store.close)
         before = app.store.snapshot("shapla-services")["snapshot_hash"]
         for plan, role in (({"calls": [{"tool": "execute", "args": {}}]}, "owner"),
@@ -123,7 +123,7 @@ class StructuredLocalTransport(unittest.TestCase):
             model.generate("system", "question", response_schema=PLAN_SCHEMA)
             payload = request.call_args.args[2]
             self.assertEqual(payload["response_format"], {"type": "json_schema", "json_schema": {
-                "name": "tideway_plan", "strict": True, "schema": PLAN_SCHEMA}})
+                "name": "moneyguard_plan", "strict": True, "schema": PLAN_SCHEMA}})
             self.assertEqual(payload["messages"][1]["content"], "question")
             json.dumps(payload, allow_nan=False)
 

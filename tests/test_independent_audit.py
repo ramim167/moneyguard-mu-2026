@@ -8,10 +8,10 @@ import unittest
 from unittest.mock import patch
 
 import run
-from tideway import analytics, security
-from tideway.domain import ValidationError
-from tideway.financing import compare
-from tideway.store import Store
+from moneyguard import analytics, security
+from moneyguard.domain import ValidationError
+from moneyguard.financing import compare
+from moneyguard.store import Store
 
 
 class SigningKeyIntegrity(unittest.TestCase):
@@ -49,12 +49,12 @@ class StartupConfiguration(unittest.TestCase):
     def test_dotenv_honours_structured_plans_without_overriding_shell(self):
         with tempfile.TemporaryDirectory() as directory:
             (Path(directory) / ".env").write_text(
-                'TIDEWAY_LOCAL_STRUCTURED_PLANS="1"\nTIDEWAY_SEMANTIC_SCREENING=1\nTIDEWAY_PORT=9999\nUNRELATED_AUDIT_SETTING=bad\n', encoding="utf-8")
-            with patch.object(run, "ROOT", Path(directory)), patch.dict(os.environ, {"TIDEWAY_PORT": "8789"}, clear=True):
+                'MONEYGUARD_LOCAL_STRUCTURED_PLANS="1"\nMONEYGUARD_SEMANTIC_SCREENING=1\nMONEYGUARD_PORT=9999\nUNRELATED_AUDIT_SETTING=bad\n', encoding="utf-8")
+            with patch.object(run, "ROOT", Path(directory)), patch.dict(os.environ, {"MONEYGUARD_PORT": "8789"}, clear=True):
                 run.load_env()
-                self.assertEqual(os.environ["TIDEWAY_LOCAL_STRUCTURED_PLANS"], "1")
-                self.assertEqual(os.environ["TIDEWAY_SEMANTIC_SCREENING"], "1")
-                self.assertEqual(os.environ["TIDEWAY_PORT"], "8789")
+                self.assertEqual(os.environ["MONEYGUARD_LOCAL_STRUCTURED_PLANS"], "1")
+                self.assertEqual(os.environ["MONEYGUARD_SEMANTIC_SCREENING"], "1")
+                self.assertEqual(os.environ["MONEYGUARD_PORT"], "8789")
                 self.assertNotIn("UNRELATED_AUDIT_SETTING", os.environ)
 
 

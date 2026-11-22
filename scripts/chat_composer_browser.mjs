@@ -7,7 +7,10 @@ export const testSpeechRecognition = `window.SpeechRecognition = class {
   end() { this.onend?.(); }
   abort() { this.aborted = true; this.end(); }
   speak(...parts) { this.onresult({results: parts.map(transcript => [{transcript}])}); }
-}`;
+};
+// Dictation trusts the built-in speech service only in Google Chrome; report it so headless runs match.
+Object.defineProperty(navigator, "userAgentData", {configurable: true,
+  value: {...navigator.userAgentData, brands: [{brand: "Google Chrome", version: "140"}]}});`;
 
 export async function checkRecordingComposer({evaluate, click, until, viewport, phoneCheck}) {
   const mic = '[data-action="voice"]';
@@ -32,6 +35,16 @@ export async function checkRecordingComposer({evaluate, click, until, viewport, 
     navigator.mediaDevices.getUserMedia = async () => {
       t.opens++;
       if (t.deny) throw new DOMException('Permission denied', 'NotAllowedError');
+      if (t.tone) {
+        // A real audio stream (a 440 Hz tone) for the Web Audio WAV recorder.
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const out = ctx.createMediaStreamDestination();
+        osc.connect(out);
+        osc.start();
+        t.track = out.stream.getAudioTracks()[0];
+        return out.stream;
+      }
       t.track = {enabled: true, stopped: false, stop() { this.stopped = true; }};
       return {getTracks: () => [t.track], getAudioTracks: () => [t.track]};
     };
@@ -67,7 +80,7 @@ export async function checkRecordingComposer({evaluate, click, until, viewport, 
   await evaluate("document.getElementById('chat-input').setSelectionRange(6, 9)");
   await click(mic);
   await evaluate("window.testRecognition.onerror({error: 'network'})");
-  await click(record);
+  // A failed speech service moves straight on to the recording consent step.
   assert.equal(await evaluate("voice.mode === 'consent' && recordingTest.opens === 0 && recordingTest.requests.length === 0"), true);
   assert.match(await evaluate("document.getElementById('chat-voice-note').textContent"), /Groq/);
   await phoneCheck("recording consent", ".voice-panel");
@@ -119,6 +132,33 @@ export async function checkRecordingComposer({evaluate, click, until, viewport, 
   await until(done, "the capped clip is transcribed only after Finish");
   assert.equal(await value(), "Edited while waiting payroll payroll");
 
+  // Gemini accepts WAV only: every browser records 16 kHz mono WAV through Web Audio for it.
+  await evaluate(`recordingTest.tone = true; recordingTest.nextStatus = 200;
+    state.config.speech = {available: true, backend: 'gemini', provider: 'Google Gemini', formats: ['audio/wav'],
+      max_seconds: 45, max_upload_bytes: 1500000}; render()`);
+  await setDraft("Gemini");
+  await click(mic);
+  await evaluate("window.testRecognition.onerror({error: 'service-not-allowed'})");
+  assert.equal(await evaluate("voice.mode === 'consent' && voice.backend === 'gemini'"), true);
+  assert.match(await evaluate("document.getElementById('chat-voice-note').textContent"), /Google Gemini/);
+  await click(record);
+  await until("voice.mode === 'listening'", "WAV recording started");
+  await new Promise(resolve => setTimeout(resolve, 700));
+  await click(finish);
+  await until(done, "WAV recording transcribed");
+  assert.equal(await value(), "Gemini payroll");
+  const wav = await evaluate(`(() => {
+    const r = recordingTest.requests.at(-1);
+    const bytes = Uint8Array.from(atob(r.audio), c => c.charCodeAt(0));
+    const view = new DataView(bytes.buffer);
+    return {mime: r.mime_type, consent: r.cloud_consent, head: String.fromCharCode(...bytes.slice(0, 4)) + String.fromCharCode(...bytes.slice(8, 12)),
+      rate: view.getUint32(24, true), channels: view.getUint16(22, true), samples: view.getUint32(40, true) / 2,
+      peak: Math.max(...Array.from({length: Math.min(4000, view.getUint32(40, true) / 2)}, (_, i) => Math.abs(view.getInt16(44 + i * 2, true))))};
+  })()`);
+  assert.deepEqual([wav.mime, wav.consent, wav.head, wav.rate, wav.channels], ["audio/wav", true, "RIFFWAVE", 16000, 1]);
+  assert.ok(wav.samples > 4000 && wav.peak > 1000, `WAV clip should hold the tone: ${JSON.stringify(wav)}`);
+  await evaluate("recordingTest.tone = false; state.config.speech = {available: true, backend: 'local', max_seconds: 45, max_upload_bytes: 1500000}; render()");
+
   await evaluate("recordingTest.deny = true");
   await click(mic);
   await until("voice.error === 'recordingDenied'", "recording permission denied");
@@ -148,6 +188,8 @@ export async function checkChatComposer({evaluate, click, until, viewport, shot,
     const box = document.getElementById('chat-input');
     return {height: box.clientHeight, scroll: box.scrollHeight, tag: box.tagName};
   })()`);
+  // These checks cover the browser's own speech service; recording has its own test below.
+  await evaluate("window.savedSpeechConfig = state.config.speech; state.config.speech = {...state.config.speech, available: false, backend: null}; render()");
   const short = await dimensions();
   const fullText = "Please explain when salary money runs short and how the business could cover it. ".repeat(5).trim();
   await setDraft(fullText);
@@ -310,4 +352,5 @@ export async function checkChatComposer({evaluate, click, until, viewport, shot,
   await enter(0);
   assert.equal(await evaluate("window.testComposerSubmitted"), "Edited draft\n");
   await setDraft("");
+  await evaluate("state.config.speech = window.savedSpeechConfig; delete window.savedSpeechConfig; render()");
 }

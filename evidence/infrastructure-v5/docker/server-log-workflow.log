@@ -1,4 +1,4 @@
-Tideway is ready: http://127.0.0.1:8787
+MoneyGuard is ready: http://127.0.0.1:8787
 Demo sign-in (synthetic sandbox): owner Nadia PIN 2468 · accountant Imran PIN 1357 · viewer Guest PIN 0000
 Local agent mode (no network). Set OPENAI_API_KEY in .env to try the optional LLM mode.
 [17/Oct/2026 07:24:14] "GET /api/config HTTP/1.1" 200 -

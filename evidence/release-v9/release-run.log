@@ -172,11 +172,11 @@ wrote slides\pitch.pdf
 wrote docs\architecture.pdf
 wrote docs\security-assessment.pdf
 wrote docs\submission-notes.pdf
-wrote docs\Tideway_FinTechathon_2026_Roadmap.pdf
+wrote docs\MoneyGuard_FinTechathon_2026_Roadmap.pdf
 Running Source ZIP
-Verified 916 ZIP entries, 112,753,160 bytes -> dist\Tideway-submission.zip
+Verified 916 ZIP entries, 112,753,160 bytes -> dist\MoneyGuard-submission.zip
 SHA-256 e69de261fb910bdb2140e00aafe9295223f512d8a88d008543d158049374b6fa
-Outstanding: Team leader; Team roles; Registration confirmation; Submission route; Eligibility confirmation; Reviewer access to final source version; Demo video explicitly deferred by the team; add before sending or clarify evidence requirement; Native MLX/TideLM adapter and receipt-model device verification (compatible Qwen3 inference is separate); Consented SME feedback, stronger unseen instruction screening and independent security review
+Outstanding: Team leader; Team roles; Registration confirmation; Submission route; Eligibility confirmation; Reviewer access to final source version; Demo video explicitly deferred by the team; add before sending or clarify evidence requirement; Native MLX/GuardLM adapter and receipt-model device verification (compatible Qwen3 inference is separate); Consented SME feedback, stronger unseen instruction screening and independent security review
 Running Fresh ZIP extraction, tests and server
 {
   "passed": true,
@@ -193,9 +193,9 @@ Running Fresh ZIP extraction, tests and server
     "/guide.html": 200,
     "/guide.css": 200,
     "/guide.js": 200,
-    "/benchmarks/tidepay.json": 200,
-    "/benchmarks/tidepay-deployed.json": 200,
-    "/benchmarks/tidepay-deployed-reliability.svg": 200,
+    "/benchmarks/guardpay.json": 200,
+    "/benchmarks/guardpay-deployed.json": 200,
+    "/benchmarks/guardpay-deployed-reliability.svg": 200,
     "/fonts/space-grotesk.woff2": 200,
     "/fonts/unbounded.woff2": 200,
     "/fonts/jetbrains-mono.woff2": 200,
@@ -228,5 +228,5 @@ Running Fresh ZIP extraction, tests and server
   ]
 }
 Checks passed for source 94eaa408cb303c88ecb771c6faa26a2ff26e3552e63f9e00158e16f42fb06e3e.
-ZIP: dist/Tideway-submission.zip; extraction proof: dist/extraction-verification.json
+ZIP: dist/MoneyGuard-submission.zip; extraction proof: dist/extraction-verification.json
 Review PDF appearance before sharing. Team administration and video remain pending.

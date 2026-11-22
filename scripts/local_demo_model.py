@@ -2,7 +2,7 @@
 
 Run --download once, then --serve in a separate terminal. Weights and native
 runtime stay in ignored models/ by default; --cache-dir can use another drive.
-The compatible models are not the TideLM adapter.
+The compatible models are not the GuardLM adapter.
 """
 from __future__ import annotations
 
@@ -203,15 +203,15 @@ def main():
             "profile": args.profile, "model_id": profile["id"], "model_url": profile["url"],
             "model_revision": profile["revision"], "model_bytes": profile["bytes"], "model_sha256": profile["sha256"],
             "runtime_release": RUNTIME_RELEASE, "runtime_archive": name, "runtime_archive_sha256": sha,
-            "scope": "Optional compatible text model; not the TideLM adapter or a vision model."}, indent=2) + "\n", encoding="utf-8")
+            "scope": "Optional compatible text model; not the GuardLM adapter or a vision model."}, indent=2) + "\n", encoding="utf-8")
     if not archive.is_file() or not model.is_file():
         parser.error("Optional model/runtime not installed. Run this helper with --download first.")
     if digest(archive) != sha or model.stat().st_size != profile["bytes"] or digest(model) != profile["sha256"]:
         raise RuntimeError("Local model/runtime verification failed; rerun --download.")
     print(f"Cache: {cache}", flush=True)
-    print(f"Model: {profile['id']}; optional compatible backend, not TideLM.", flush=True)
-    print(f"TIDEWAY_LOCAL_MODEL_URL=http://127.0.0.1:{args.port}/v1", flush=True)
-    print(f"TIDEWAY_LOCAL_TEXT_MODEL={profile['id']}", flush=True)
+    print(f"Model: {profile['id']}; optional compatible backend, not GuardLM.", flush=True)
+    print(f"MONEYGUARD_LOCAL_MODEL_URL=http://127.0.0.1:{args.port}/v1", flush=True)
+    print(f"MONEYGUARD_LOCAL_TEXT_MODEL={profile['id']}", flush=True)
     if args.serve:
         return serve(archive, model, key, args.port, args.cpu, cache=cache, model_id=profile["id"])
     return 0

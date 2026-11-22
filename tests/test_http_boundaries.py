@@ -7,7 +7,7 @@ import time
 import unittest
 from unittest.mock import patch
 
-from tideway.server import Application, TidewayHTTPServer, make_handler
+from moneyguard.server import Application, MoneyGuardHTTPServer, make_handler
 
 
 class HttpBoundaries(unittest.TestCase):
@@ -17,7 +17,7 @@ class HttpBoundaries(unittest.TestCase):
         class Quiet(make_handler(cls.app)):
             def log_message(self, *_args):
                 pass
-        cls.server = TidewayHTTPServer(("127.0.0.1", 0), Quiet)
+        cls.server = MoneyGuardHTTPServer(("127.0.0.1", 0), Quiet)
         cls.port = cls.server.server_port
         threading.Thread(target=cls.server.serve_forever, daemon=True).start()
 
@@ -31,7 +31,7 @@ class HttpBoundaries(unittest.TestCase):
         connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=5)
         try:
             connection.request("POST" if body is not None else "GET", path, body,
-                               {"Content-Type": "application/json", "X-Tideway-Token": self.app.csrf, **(headers or {})})
+                               {"Content-Type": "application/json", "X-MoneyGuard-Token": self.app.csrf, **(headers or {})})
             response = connection.getresponse()
             return response.status, json.loads(response.read())
         finally:
@@ -39,12 +39,12 @@ class HttpBoundaries(unittest.TestCase):
 
     def test_malformed_cookie_is_unauthenticated_not_a_connection_crash(self):
         self.assertEqual(self.request("/api/dashboard?business_id=shapla",
-                                     headers={"Cookie": "tideway_session=x; bad@key=y"})[0], 401)
+                                     headers={"Cookie": "moneyguard_session=x; bad@key=y"})[0], 401)
         self.assertEqual(self.request("/api/config")[0], 200)
 
     def test_photo_route_accepts_the_full_encoded_limit_and_other_routes_keep_their_cap(self):
         import base64
-        from tideway.vision import MAX_BYTES, MAX_PHOTO_BODY
+        from moneyguard.vision import MAX_BYTES, MAX_PHOTO_BODY
 
         image = "data:image/jpeg;base64," + base64.b64encode(bytes(MAX_BYTES)).decode()
         body = json.dumps({"business_id": "shapla-services", "image": image})
@@ -66,14 +66,14 @@ class HttpBoundaries(unittest.TestCase):
 
     def test_random_invalid_session_cookies_share_anonymous_rate_limit(self):
         for index in range(12):
-            self.request("/api/unknown", "{}", {"Cookie": f"tideway_session=invalid{index}"})
+            self.request("/api/unknown", "{}", {"Cookie": f"moneyguard_session=invalid{index}"})
         self.assertFalse(any(key.startswith("invalid") for key in self.app.post_limiter.buckets))
         self.assertIn("127.0.0.1", self.app.post_limiter.buckets)
 
     def raw(self, headers, body=b""):
         connection = socket.create_connection(("127.0.0.1", self.port), timeout=5)
         connection.sendall((f"POST /api/session/login HTTP/1.1\r\nHost: 127.0.0.1:{self.port}\r\n"
-                            f"Content-Type: application/json\r\nX-Tideway-Token: {self.app.csrf}\r\n"
+                            f"Content-Type: application/json\r\nX-MoneyGuard-Token: {self.app.csrf}\r\n"
                             + headers + "\r\n").encode() + body)
         return connection
 
@@ -84,7 +84,7 @@ class HttpBoundaries(unittest.TestCase):
                 self.assertIn(b"400", connection.recv(4096).split(b"\r\n", 1)[0])
 
     def test_stalled_body_gets_a_bounded_timeout_and_server_stays_available(self):
-        with patch("tideway.server.BODY_TIMEOUT_SECONDS", .25):
+        with patch("moneyguard.server.BODY_TIMEOUT_SECONDS", .25):
             start = time.monotonic()
             with self.raw("Content-Length: 20\r\n", b"{") as connection:
                 self.assertIn(b"408", connection.recv(4096).split(b"\r\n", 1)[0])
@@ -92,7 +92,7 @@ class HttpBoundaries(unittest.TestCase):
         self.assertEqual(self.request("/api/config")[0], 200)
 
     def test_trickled_bytes_do_not_restart_total_body_deadline(self):
-        with patch("tideway.server.BODY_TIMEOUT_SECONDS", .3):
+        with patch("moneyguard.server.BODY_TIMEOUT_SECONDS", .3):
             with self.raw("Content-Length: 200\r\n", b"{") as connection:
                 for _ in range(3):
                     time.sleep(.075)

@@ -4,9 +4,9 @@
   "fixture_sha256": "d3d9f683a5cc2a50d6d0bccce5684be12dd3a0581740252f6b6cd1ec5ae4d10d",
   "fixture": "tests\\fixtures\\screening_development_v14.json",
   "classifier_files": {
-    "tideway\\screening.py": "8e691c5d9113151d68907a33396ecffeb26986ac8fd0454e8161745a578b7906",
-    "tideway\\semantic_screening.py": "49f0ac94817e29b059db8c91d172ec57a46bea977f2e6019235b5e8d94a70f32",
-    "tideway\\tidelm.py": "84a50f429508c4570de5c430a196d6d74f661b8b192966ce765758b818a744b6"
+    "moneyguard\\screening.py": "8e691c5d9113151d68907a33396ecffeb26986ac8fd0454e8161745a578b7906",
+    "moneyguard\\semantic_screening.py": "dd8c572f05ec61c44c363ce52f57af2ad835b3936f06a3a9b76f5a5f016f86a9",
+    "moneyguard\\guardlm.py": "673b49640bb282096867179f0561f2390576867ec688cadf40b96b741b4538a3"
   },
   "source_tree_sha256": "2492e3d6bae9893657edef0338dd1db6e61f436ec5d37f08bfe45b188810be75",
   "model_identity": {
@@ -15,7 +15,7 @@
     "model": "Qwen3-4B-Instruct-2507-Q4_K_M",
     "backend": "local-compatible",
     "label": "Local model: Qwen3-4B-Instruct-2507-Q4_K_M (unbenchmarked)",
-    "evaluated_tidelm_adapter": false,
+    "evaluated_guardlm_adapter": false,
     "reason": null
   },
   "external_evaluation": false,
@@ -1408,6 +1408,6 @@
   "classifier_unchanged": true,
   "fixture_unchanged": true,
   "source_unchanged": true,
-  "case_results_sha256": "0b25ac335dedea072cfaf66b5c454cb6e67baa097ded8a139f222c6f63d76d3b",
+  "case_results_sha256": "db917942ae33b7c453851ec237235ba57613a17a70ccee0b972727cf4b445224",
   "finished_at_utc": "2026-10-19T07:17:04.249894+00:00"
 }

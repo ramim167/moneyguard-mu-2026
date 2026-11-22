@@ -5,9 +5,9 @@ import unittest
 import urllib.error
 from unittest import mock
 
-from tideway import ai_providers
-from tideway.agent import ProviderError
-from tideway.ai_providers import label, make_transport, providers_from_env
+from moneyguard import ai_providers
+from moneyguard.agent import ProviderError
+from moneyguard.ai_providers import label, make_transport, providers_from_env
 
 PAYLOAD = {"model": "ignored", "instructions": "S", "input": [{"role": "user", "content": "hi"}], "tools": []}
 
@@ -19,7 +19,7 @@ class TransportBudget(unittest.TestCase):
         from time import monotonic
         from urllib.request import Request
 
-        from tideway.provider_http import open_provider_request
+        from moneyguard.provider_http import open_provider_request
 
         closed = Event()
 
@@ -72,7 +72,7 @@ def scripted(outcomes, calls):
 
 class Config(unittest.TestCase):
     def test_only_configured_providers_in_the_chosen_order(self):
-        env = {"OPENROUTER_API_KEY": "or-k", "GROQ_API_KEY": "gq-k", "GEMINI_API_KEY": "gm-k", "TIDEWAY_AI_ORDER": "openrouter,gemini"}
+        env = {"OPENROUTER_API_KEY": "or-k", "GROQ_API_KEY": "gq-k", "GEMINI_API_KEY": "gm-k", "MONEYGUARD_AI_ORDER": "openrouter,gemini"}
         names = [p.name for p in providers_from_env(env)]
         self.assertEqual(names, ["openrouter", "gemini", "groq"])
         self.assertEqual(providers_from_env({}), [])
@@ -99,7 +99,7 @@ class RedirectPolicy(unittest.TestCase):
     def test_only_same_origin_redirects_are_followed(self):
         from urllib.error import HTTPError
         from urllib.request import Request
-        from tideway.provider_http import SameOriginRedirect
+        from moneyguard.provider_http import SameOriginRedirect
 
         handler = SameOriginRedirect()
         request = Request("https://provider.example/v1", data=b"{}")
@@ -149,7 +149,7 @@ class Fallback(unittest.TestCase):
         self.assertEqual(out["output"][0]["content"][0]["text"], "answer from api.groq.com llama-3.3-70b-versatile")
 
     def test_deadline_caps_each_model_and_stops_the_fallback_chain(self):
-        from tideway.provider_http import DeadlineExpired
+        from moneyguard.provider_http import DeadlineExpired
         clock = [0.0]
         timeouts = []
 
@@ -159,13 +159,13 @@ class Fallback(unittest.TestCase):
             raise urllib.error.HTTPError(request.full_url, 429, "busy", {}, None)
 
         transport = make_transport(providers_from_env({"GROQ_API_KEY": "test", "GROQ_MODEL": "a,b,c,d,e,f"}))
-        with mock.patch("tideway.provider_http.monotonic", side_effect=lambda: clock[0]), \
+        with mock.patch("moneyguard.provider_http.monotonic", side_effect=lambda: clock[0]), \
                 mock.patch.object(ai_providers, "open_provider_request", busy), self.assertRaises(DeadlineExpired):
             transport(PAYLOAD, deadline=95)
         self.assertEqual(timeouts, [20, 20, 20, 20, 15])  # 20 s per model, never past the 95 s deadline
 
     def test_bangla_preview_shows_wire_body_with_lab_disabled(self):
-        from tideway.server import Application
+        from moneyguard.server import Application
         calls = []
         providers = providers_from_env(self.env)
         app = Application(":memory:", "configured", "multiple providers", transport=make_transport(providers))

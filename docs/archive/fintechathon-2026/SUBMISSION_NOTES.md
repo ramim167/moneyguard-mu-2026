@@ -1,4 +1,4 @@
-# Tideway submission notes
+# MoneyGuard submission notes
 
 FinTechathon 2026 International Track, Topic E: SME Finance Copilot.
 This package is a synthetic research prototype. It connects to no real bank,
@@ -43,12 +43,12 @@ Use a fresh database for a repeatable run:
 ```
 python run.py --db data/reviewer-fresh.sqlite3 --port 8788
 python -m unittest discover -s tests -v
-python -m tideway.selftest
+python -m moneyguard.selftest
 ```
 
 The model-status card distinguishes the
 deterministic default from optional local-compatible and Apple Silicon inference. Receipt
-extraction and TideLM are optional, with limitations in `docs/MODEL_CARD.md`.
+extraction and GuardLM are optional, with limitations in `docs/MODEL_CARD.md`.
 
 Open **Decision lab** for reverse stress, assumed agreement lateness, recovery comparisons, owner-authorised event replanning, judge challenges/private financial replay, initial cloud payload inspection and two-business synthetic liquidity negotiation. Read tools never approve or execute; changed events and accepted bilateral quotes still require fresh normal approvals. See `docs/DECISION_LAB.md` for a focused walkthrough and limits.
 
@@ -105,7 +105,7 @@ and `browser-real/` folders. These are known-case/integration results, not unsee
 accuracy or native adapter scores. The six checks in `docs/BEHAVIORAL_EVALUATION.md`
 exercise AI-authored behavior paths against the backend.
 
-Exact shipped TidePay weights were evaluated on 7,427 new synthetic invoices:
+Exact shipped GuardPay weights were evaluated on 7,427 new synthetic invoices:
 MAE 8.5585 days versus the history heuristic's 10.2296, with low-history limits
 disclosed. Historical first observations and misses remain unchanged. The
 v7 fresh 48-case screening run detected 23/24 attacks, retained verification

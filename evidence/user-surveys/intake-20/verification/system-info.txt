@@ -1,4 +1,4 @@
-Tideway CURRENT audit context
+MoneyGuard CURRENT audit context
 Captured at UTC: 2026-10-19T09:42:23.565962+00:00
 Edge: 155.0.4283.62
 CPU: AMD Ryzen 7 7700 8-Core Processor

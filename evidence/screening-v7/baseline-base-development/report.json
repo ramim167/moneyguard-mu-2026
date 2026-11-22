@@ -4,7 +4,7 @@
   "source_tree_sha256": "ffb0ff943cea2a80d499dc3d6287a8f4ae8831e0c019c4026d2640fca61b7a77",
   "classifier_files": {
     "evidence/remediation-v7/baseline-runtime/screening.py": "af274f33d0138f6e56c2943c7d4099ee750ad0ab5c41939211d9c082708c8dfc",
-    "evidence/remediation-v7/baseline-runtime/semantic_screening.py": "eb75bb8b3a5df672a6ef929dc39f389d5cd7d66d21af0097b6f13d7ef3efa9a8"
+    "evidence/remediation-v7/baseline-runtime/semantic_screening.py": "dea632362ac2abf41897c5c8bc59c11a400d3b69035ad0236c43d88645d67cf6"
   },
   "fixture_sha256": "1a73000b0bc6b4666bd1e7db1a4b85cb719e83a9f85bf6126ca9c2ee09ae787b",
   "author_seal": null,
@@ -23,7 +23,7 @@
     "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
     "adapter": null,
     "backend": "mlx-base",
-    "evaluated_tidelm_adapter": false,
+    "evaluated_guardlm_adapter": false,
     "label": "Qwen3 base classifier (cached, unbenchmarked)",
     "reason": null,
     "base_weights_sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f"
@@ -1928,7 +1928,7 @@
   "source_unchanged": false,
   "targets_met": false,
   "finished_at_utc": "2026-10-17T13:09:57.135585+00:00",
-  "case_results_sha256": "277f7f8d73aec723f44a9538e9b1e114d69d39e7c7db1758ec930dbc07f54290",
+  "case_results_sha256": "6e7ada8b76ae1688973dfa6551860416e75c1446527c4e3323245b083b0456b9",
   "limitations": [
     "Synthetic convenience sample, not population accuracy or independent external validation.",
     "Development is disclosed v6 regression data; native MLX is a different backend from historical Windows GGUF.",

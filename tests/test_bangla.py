@@ -2,10 +2,10 @@
 import re
 import unittest
 
-from tideway import i18n
-from tideway.agent import Agent
-from tideway.conversation import classify, intent
-from tideway.service import Tideway
+from moneyguard import i18n
+from moneyguard.agent import Agent
+from moneyguard.conversation import classify, intent
+from moneyguard.service import MoneyGuard
 
 SHAPLA = "shapla-services"
 BENGALI = re.compile(r"[ঀ-৿]")
@@ -35,7 +35,7 @@ class BanglaTemplates(unittest.TestCase):
 class BanglaConversation(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = Tideway(":memory:")
+        cls.app = MoneyGuard(":memory:")
         cls.agent = Agent(cls.app)
 
     def ask(self, message):

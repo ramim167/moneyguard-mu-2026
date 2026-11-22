@@ -5,7 +5,7 @@ assertions. The warning classifier never supplies financial action authority.
 """
 import unittest
 
-from tideway.domain import PAYMENT_REVIEW_FLAGS, scan_text, validate_bill
+from moneyguard.domain import PAYMENT_REVIEW_FLAGS, scan_text, validate_bill
 
 
 class BoundedScreeningBehaviour(unittest.TestCase):

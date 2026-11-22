@@ -2,11 +2,11 @@
 import unittest
 from unittest.mock import patch
 
-from tideway.domain import ValidationError, is_payroll_text, validate_bill
-from tideway.planner import _deferral_options, _early_payment_options
-from tideway.owner_view import build_report, brief_html
-from tideway.projection import project
-from tideway.server import Application
+from moneyguard.domain import ValidationError, is_payroll_text, validate_bill
+from moneyguard.planner import _deferral_options, _early_payment_options
+from moneyguard.owner_view import build_report, brief_html
+from moneyguard.projection import project
+from moneyguard.server import Application
 
 BID = "shapla-services"
 
@@ -182,7 +182,7 @@ class CashExplanationTests(unittest.TestCase):
 class RecoveryCoachTests(unittest.TestCase):
     def setUp(self):
         self.http = Application(":memory:")
-        self.app,self.store,self.owner = self.http.tideway,self.http.store,self.http.owner_view
+        self.app,self.store,self.owner = self.http.moneyguard,self.http.store,self.http.owner_view
         self.addCleanup(self.store.close)
 
     def counts(self):

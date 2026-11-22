@@ -18,7 +18,7 @@
   ],
   "engineering_receipt_sha256": {
     "evidence/test-summary.json": "d0dadda0d80b572de53b984f670f1b244159b0ffae2934e80bec085fcfdedd3b",
-    "evidence/screens/browser-verification.json": "81f363cf1cde3349a2eb9ece32b1b63a262da1cf4d03ef50d13adaac1b87d5f4"
+    "evidence/screens/browser-verification.json": "dc8cbaf21e5fc28990e21d8d26464eee40ea1e7089b8be46b4971189205ee5f0"
   },
   "historical_survey_commit": null,
   "historical_survey_working_tree": null,

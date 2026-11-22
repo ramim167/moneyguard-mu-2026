@@ -4,15 +4,15 @@ import unittest
 from unittest.mock import patch
 
 from scripts.evaluate_upgrade_scenarios import _approve, load_spec, new_business
-from tideway import analytics, planner
-from tideway.domain import ValidationError
-from tideway.service import Tideway
+from moneyguard import analytics, planner
+from moneyguard.domain import ValidationError
+from moneyguard.service import MoneyGuard
 
 
 class PlannerRiskCoverage(unittest.TestCase):
     def setUp(self):
         self.spec = load_spec()
-        self.app = Tideway(":memory:", seed=False)
+        self.app = MoneyGuard(":memory:", seed=False)
         self.addCleanup(self.app.store.close)
 
     def business(self, identifier):
@@ -31,7 +31,7 @@ class PlannerRiskCoverage(unittest.TestCase):
         self.assertIn(f"1 of {eligible} eligible records", plan["explanation"])
 
     def test_overdue_open_payroll_hits_opening_day_once(self):
-        from tideway.projection import project
+        from moneyguard.projection import project
         business = {"business_id": "shop", "currency": "BDT", "opening_cash_minor": 100_000,
                     "opening_date": "2026-10-02"}
         bill = {"id": "wages", "priority": "payroll", "status": "open", "due_date": "2026-10-01",
@@ -84,7 +84,7 @@ class PlannerRiskCoverage(unittest.TestCase):
                 draws.append(uniform)
             return 0
 
-        with patch.object(analytics, "tidepay_predictions", return_value=predictions), \
+        with patch.object(analytics, "guardpay_predictions", return_value=predictions), \
                 patch.object(analytics, "delay_quantile", side_effect=sample):
             args = (snapshot["business"], snapshot["policy"], records, snapshot["business"]["default_target_date"])
             analytics.monte_carlo(*args, runs=8, seed=9)

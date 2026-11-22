@@ -3,10 +3,10 @@ import csv
 import io
 import unittest
 from unittest.mock import patch
-from tideway.currency_view import convert, display, question
-from tideway.domain import ValidationError, parse_combined_csv
-from tideway.owner_view import brief_html
-from tideway.server import Application
+from moneyguard.currency_view import convert, display, question
+from moneyguard.domain import ValidationError, parse_combined_csv
+from moneyguard.owner_view import brief_html
+from moneyguard.server import Application
 
 
 class CurrencyArithmetic(unittest.TestCase):
@@ -85,7 +85,7 @@ class CurrencyReports(unittest.TestCase):
 
     def test_explicit_currency_is_normalized_before_model_and_agent_calls(self):
         body=dict(business_id='shapla-services',message='Credit for Nila Traders: USD 100 for 30 days',input_currency='USD')
-        with patch.object(self.http.tidelm,'ask',return_value={'text':'test'}) as called:
+        with patch.object(self.http.guardlm,'ask',return_value={'text':'test'}) as called:
             self.http.post('/api/copilot/ask',body,self.owner,None)
         self.assertIn('BDT 12,200',called.call_args.args[3])
         self.assertEqual(body['message'],'Credit for Nila Traders: USD 100 for 30 days')

@@ -3,8 +3,8 @@ import math
 import random
 import unittest
 
-from tideway.analytics import liquidity_gap, monte_carlo
-from tideway.service import Tideway
+from moneyguard.analytics import liquidity_gap, monte_carlo
+from moneyguard.service import MoneyGuard
 from scripts.evaluate_upgrade_scenarios import load_spec, new_business
 
 
@@ -39,11 +39,11 @@ class LiquidityGap(unittest.TestCase):
     def test_cash_only_counterfactual_does_not_mutate_h11_ledger(self):
         spec = load_spec()
         case = next(c for c in spec["scenarios"] if c["id"] == "H11")
-        app = Tideway(":memory:", seed=False)
+        app = MoneyGuard(":memory:", seed=False)
         try:
             identifier = new_business(app, case, spec["defaults"])
             snapshot = app.store.snapshot(identifier)
-            from tideway import planner
+            from moneyguard import planner
             end = planner.horizon_end(snapshot["business"], snapshot["business"]["default_target_date"], snapshot["policy"]["lookahead_days"])
             actions = [max(planner._deferral_options(snapshot["business"], snapshot["policy"], bill, end, {})[0],
                            key=lambda action: (action["days"], action["amount_minor"])) for bill in snapshot["records"]["bills"]]

@@ -1,7 +1,7 @@
 import unittest
 
-from tideway.agent import Agent, Pseudonyms, grounding_check
-from tideway.service import Tideway
+from moneyguard.agent import Agent, Pseudonyms, grounding_check
+from moneyguard.service import MoneyGuard
 
 
 BUSINESS = "shapla-services"
@@ -9,7 +9,7 @@ BUSINESS = "shapla-services"
 
 class AgentPrivacyRegressionTests(unittest.TestCase):
     def setUp(self):
-        self.app = Tideway(":memory:")
+        self.app = MoneyGuard(":memory:")
         self.addCleanup(self.app.store.close)
 
     def test_privacy_preview_scrubs_exact_case_variants_but_not_name_substrings(self):
@@ -66,7 +66,7 @@ class GroundingCheckRegressionTests(unittest.TestCase):
                 self.assertTrue(grounding_check(fact.replace(old,new), outputs, "BDT"))
 
     def test_spelled_amounts_and_payroll_verdicts_require_evidence(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         self.addCleanup(app.store.close)
         for claim in ("Payroll is covered for ten days.", "You owe thirteen dollars.",
                       "The business is solvent.", "বেতন দিতে তেরো দিন বাকি।"):
@@ -79,7 +79,7 @@ class GroundingCheckRegressionTests(unittest.TestCase):
                 self.assertNotIn(claim, result["text"])
 
     def test_unresolved_cloud_claim_is_withheld_even_without_recognized_question(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         self.addCleanup(app.store.close)
         def transport(payload, key):
             return {"output": [{"type": "message", "content": [{"type": "output_text", "text": "BDT 54321"}]}]}

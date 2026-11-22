@@ -5,9 +5,9 @@ import unittest
 import urllib.error
 from unittest import mock
 
-from tideway import agent as agent_module
-from tideway.agent import Agent, ProviderError, chat_to_responses, request_openrouter, responses_to_chat
-from tideway.service import Tideway
+from moneyguard import agent as agent_module
+from moneyguard.agent import Agent, ProviderError, chat_to_responses, request_openrouter, responses_to_chat
+from moneyguard.service import MoneyGuard
 
 SHAPLA = "shapla-services"
 
@@ -41,7 +41,7 @@ class Translation(unittest.TestCase):
 
 class GuardedLoop(unittest.TestCase):
     def test_openrouter_answer_goes_through_the_same_tools_and_number_check(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         replies = iter([
             {"choices": [{"message": {"content": None, "tool_calls": [
                 {"id": "c1", "type": "function", "function": {"name": "simulate_risk", "arguments": "{}"}}]}}]},
@@ -66,7 +66,7 @@ class GuardedLoop(unittest.TestCase):
         self.assertNotIn("Rahman Supplies", json.dumps(sent, ensure_ascii=False))
 
     def test_money_tools_are_not_offered_and_unknown_tools_are_refused(self):
-        app = Tideway(":memory:")
+        app = MoneyGuard(":memory:")
         replies = iter([
             {"choices": [{"message": {"content": None, "tool_calls": [
                 {"id": "c1", "type": "function", "function": {"name": "execute_payment", "arguments": "{}"}}]}}]},

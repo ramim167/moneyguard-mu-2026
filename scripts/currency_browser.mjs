@@ -7,8 +7,8 @@ export async function checkCurrency({evaluate,click,until,view,viewport,shot,pho
   const input=(selector,value)=>evaluate(`(()=>{const el=document.querySelector(${JSON.stringify(selector)});if(!el)throw new Error('Missing input');el.value=${JSON.stringify(value)};el.dispatchEvent(new Event('input',{bubbles:true}));})()`);
   const idle=()=>until("!state.busy && !document.querySelector('.owner-view button:disabled,.lab-tabs button:disabled')",'currency calculation',240);
   await select('USD');
-  await evaluate("window.__assertCurrencyView=()=>{const walker=document.createTreeWalker(document.querySelector('#view'),NodeFilter.SHOW_TEXT);let node,text='';while((node=walker.nextNode()))if(!node.parentElement.closest('pre,textarea,input,select,.msg.user,[data-currency-original]'))text+=node.nodeValue+' ';return TidewayMoney.text(text,displayCurrency(),moneyNames())===text;}");
-  const textGuard=()=>evaluate("window.__assertCurrencyView=()=>{const walker=document.createTreeWalker(document.querySelector('#view'),NodeFilter.SHOW_TEXT);let node,text='';while((node=walker.nextNode()))if(!node.parentElement.closest('pre,textarea,input,select,.msg.user,[data-currency-original]'))text+=node.nodeValue+' ';return TidewayMoney.text(text,displayCurrency(),moneyNames())===text;}");
+  await evaluate("window.__assertCurrencyView=()=>{const walker=document.createTreeWalker(document.querySelector('#view'),NodeFilter.SHOW_TEXT);let node,text='';while((node=walker.nextNode()))if(!node.parentElement.closest('pre,textarea,input,select,.msg.user,[data-currency-original]'))text+=node.nodeValue+' ';return MoneyGuardMoney.text(text,displayCurrency(),moneyNames())===text;}");
+  const textGuard=()=>evaluate("window.__assertCurrencyView=()=>{const walker=document.createTreeWalker(document.querySelector('#view'),NodeFilter.SHOW_TEXT);let node,text='';while((node=walker.nextNode()))if(!node.parentElement.closest('pre,textarea,input,select,.msg.user,[data-currency-original]'))text+=node.nodeValue+' ';return MoneyGuardMoney.text(text,displayCurrency(),moneyNames())===text;}");
   const record=()=>evaluate("(()=>{window.__currencyFetch=window.fetch;window.__currencyRequests=[];window.fetch=(...args)=>{if(args[1]?.body)window.__currencyRequests.push({path:String(args[0]),body:JSON.parse(args[1].body)});return window.__currencyFetch(...args);};})()");
   await record();
   await input('[data-owner-field=amount]','100.00');await click('[data-action=owner-expense]');await idle();
@@ -56,7 +56,7 @@ export async function checkCurrency({evaluate,click,until,view,viewport,shot,pho
   await input('#approve-pin','2468');
   if(await evaluate("!document.querySelector('#approve-risk-label').hidden"))await click('#approve-risk-ack');
   if(bundle.dual_approval_required){await click('#approve-submit');if(!await evaluate("document.querySelector('#approve-error').textContent.includes('displayed exposure')"))throw new Error('Incorrect converted exposure was accepted');}
-  if(bundle.dual_approval_required)await input('#confirm-amount',await evaluate('TidewayMoney.units(TidewayMoney.bigConvert(state.approving.bundle.exposure_minor,currency(),displayCurrency()))'));
+  if(bundle.dual_approval_required)await input('#confirm-amount',await evaluate('MoneyGuardMoney.units(MoneyGuardMoney.bigConvert(state.approving.bundle.exposure_minor,currency(),displayCurrency()))'));
   await click('#approve-submit');await until("!document.querySelector('#approve-dialog').open && !state.busy",'converted approval');
   if(bundle.dual_approval_required&&!await evaluate(`window.__currencyRequests.findLast(x=>x.path==='/api/plan/approve').body.confirm_amount_minor===${bundle.exposure_minor}`))throw new Error('Approval authority was rounded or rewritten to view units');
   const planHash=await evaluate('state.dashboard.plan.plan_hash');
@@ -65,7 +65,7 @@ export async function checkCurrency({evaluate,click,until,view,viewport,shot,pho
   await view('assistant');await input('#chat-input','Unsaved USD 100 question');await select('EUR');
   if(!await evaluate("document.querySelector('#chat-input').value==='Unsaved USD 100 question'"))throw new Error('Currency switch erased an unsent question');
   await select('USD');
-  await evaluate("TidewayLab.previewChat('Explain USD 100 credit for Nila Traders')");await idle();
+  await evaluate("MoneyGuardLab.previewChat('Explain USD 100 credit for Nila Traders')");await idle();
   if(!await evaluate("window.__currencyRequests.findLast(x=>x.path==='/api/lab/privacy').body.input_currency==='USD' && document.querySelector('.lab-panel').textContent.includes('BDT 12,200')"))throw new Error('Privacy inspector omitted selected-unit normalization');
   await input('[data-lab-field=privacyText]','Explain USD 200 credit for Nila Traders');
   await click('[data-action=lab-return-chat]');await select('EUR');

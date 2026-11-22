@@ -14,7 +14,7 @@
     ]
   },
   "page_errors": [],
-  "tidelm_available": false,
+  "guardlm_available": false,
   "test_only_local_backend": false,
   "linked_payment_delay": true,
   "model_inference_tested": false,

@@ -20,7 +20,7 @@ rail is connected. The team has deferred leader/roles/registration details and v
 
 The optional compatible model is Unsloth's GGUF conversion of
 Qwen3-4B-Instruct-2507 at Q4_K_M, served locally with pinned llama.cpp b11678.
-It is not the released TideLM LoRA adapter. Provisioning verifies immutable URLs,
+It is not the released GuardLM LoRA adapter. Provisioning verifies immutable URLs,
 byte counts and SHA-256; model/runtime binaries are excluded from the package.
 
 - `evidence/readiness-v2/model/qwen3-final-smoke.json`: 6/6 authored requests matched,
@@ -34,7 +34,7 @@ byte counts and SHA-256; model/runtime binaries are excluded from the package.
   4B run (5/6) remain preserved. Schema alone cannot establish semantic correctness.
 
 These are authored synthetic smoke checks, not an independent model-quality
-benchmark. Native Mac MLX/TideLM and receipt-model device verification remain
+benchmark. Native Mac MLX/GuardLM and receipt-model device verification remain
 outstanding. Historical adapter scores do not transfer to this backend.
 
 ## Screening evidence
@@ -63,7 +63,7 @@ No result was forced to improve these figures. An infeasible case remains explic
 
 Use `docs/SETUP_WINDOWS_MAC.md` for core and optional model startup. The selected
 local model server requires a separate process; the deterministic core continues
-to run without it. `TIDEWAY_LOCAL_STRUCTURED_PLANS=1` explicitly enables schema
+to run without it. `MONEYGUARD_LOCAL_STRUCTURED_PLANS=1` explicitly enables schema
 support on a compatible local server. Unsupported schema requests fail closed.
 
 The latest actual test counts and skip reasons are in `evidence/test-summary.json`

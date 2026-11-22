@@ -23,7 +23,7 @@ from scripts.verify_submission import source_digest
 PUBLIC = ROOT / 'evidence/user-surveys/intake-20'
 PRIVATE = ROOT / 'evidence/private/survey-intake-20'
 SOURCE_PATHS = ['run.py', '.github/workflows/ci.yml', 'Dockerfile', '.dockerignore',
-                'tideway', 'tests', 'web', 'scripts']
+                'moneyguard', 'tests', 'web', 'scripts']
 
 
 def encoded(value):
@@ -80,7 +80,7 @@ def read_exports():
                             'row_sha256': hashlib.sha256(json.dumps(row, sort_keys=True,
                                                                    ensure_ascii=False).encode()).hexdigest()}
                            for index, row in enumerate(values, 1)] for kind, values in rows.items()}
-    private = {'schema_version': 'tideway-private-export-linkage-v1', 'sources': results,
+    private = {'schema_version': 'moneyguard-private-export-linkage-v1', 'sources': results,
                'records': fingerprints, 'reported_overlap': links,
                'scope': 'Links supplied CSV rows and team-reported cross-cohort IDs only; no real identity map.'}
     return results, private
@@ -171,7 +171,7 @@ def main():
     require(not out.exists(), 'Capture already exists; use --check or a new --out directory')
     at = datetime.now(timezone.utc).isoformat()
     system, runtime, lineage = current_system(), runtime_artifacts(args.model_cache), source_lineage()
-    findings = {'schema_version': 'tideway-survey-context-verification-v1', 'captured_at_utc': at,
+    findings = {'schema_version': 'moneyguard-survey-context-verification-v1', 'captured_at_utc': at,
                 'scope': 'Current artifact measurements and supplied export linkage; historical session binding is unresolved.',
                 'sources': sources, 'record_linkage': {'source_rows_verified': 40,
                     'reported_overlap_references_verified': len(linkage['reported_overlap']),
@@ -187,14 +187,14 @@ def main():
     reports = {'verification.json': findings, 'system-info.json': {'captured_at_utc': at, **system},
                'runtime-provenance.json': {'captured_at_utc': at, **runtime},
                'source-lineage.json': {'captured_at_utc': at, **lineage}}
-    readable = ('Tideway CURRENT audit context\nCaptured at UTC: ' + at + '\n'
+    readable = ('MoneyGuard CURRENT audit context\nCaptured at UTC: ' + at + '\n'
                 + 'Edge: ' + system['edge'][0]['product_version'] + '\nCPU: ' + '; '.join(system['cpu'])
                 + '\nPhysical RAM GiB: ' + str(system['physical_ram_gib']) + '\nOS: ' + system['os']
                 + '\nApplication source SHA-256: ' + lineage['application_source_tree_sha256']
                 + '\nScope: current machine only; historical survey laptop/build/browser not established.\n')
     files = {name: encoded(value) for name, value in reports.items()}
     files['system-info.txt'] = readable.encode('utf-8')
-    manifest = {'schema_version': 'tideway-survey-context-capture-manifest-v1', 'captured_at_utc': at,
+    manifest = {'schema_version': 'moneyguard-survey-context-capture-manifest-v1', 'captured_at_utc': at,
                 'collector_sha256': digest(Path(__file__)),
                 'sha256': {name: hashlib.sha256(data).hexdigest() for name, data in files.items()}}
     private_path = PRIVATE / 'record-linkage.json'

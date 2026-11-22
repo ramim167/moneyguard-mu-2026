@@ -7,9 +7,9 @@ import threading
 import unittest
 from unittest import mock
 
-from tideway.server import Application, make_handler
+from moneyguard.server import Application, make_handler
 
-PUBLIC = "tideway-demo.onrender.com"
+PUBLIC = "moneyguard-demo.onrender.com"
 
 
 class HostedMode(unittest.TestCase):
@@ -42,7 +42,7 @@ class HostedMode(unittest.TestCase):
     def login(self, host, origin, proto="https"):
         return self.request("POST", "/api/session/login", {
             "Host": host, "Origin": origin, "X-Forwarded-Proto": proto, "X-Forwarded-For": "203.0.113.7",
-            "Content-Type": "application/json", "X-Tideway-Token": self.app.csrf},
+            "Content-Type": "application/json", "X-MoneyGuard-Token": self.app.csrf},
             json.dumps({"operator_id": "nadia", "pin": "2468"}))
 
     def test_public_hostname_works_over_https_with_a_secure_cookie(self):

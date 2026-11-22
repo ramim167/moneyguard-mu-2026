@@ -10,16 +10,16 @@ COPY . .
 
 # The runtime uses only the Python standard library. Compile and test during the
 # image build so a broken image cannot be published as a runnable sandbox.
-RUN python -S -m compileall -q run.py tideway scripts tests \
+RUN python -S -m compileall -q run.py moneyguard scripts tests \
     && python -S scripts/verify_submission.py \
-    && useradd --create-home --uid 10001 tideway \
+    && useradd --create-home --uid 10001 moneyguard \
     && mkdir -p /app/data \
-    && chown -R tideway:tideway /app
+    && chown -R moneyguard:moneyguard /app
 
-USER tideway
+USER moneyguard
 EXPOSE 8787
 
 # The container listens internally. For interactive use, publish explicitly on
 # host loopback with -p 127.0.0.1:8787:8787. The verifier uses --network none and
 # checks HTTP over container loopback through docker exec, without host ports.
-CMD ["python", "run.py", "--host", "0.0.0.0", "--port", "8787", "--db", "/app/data/tideway.sqlite3"]
+CMD ["python", "run.py", "--host", "0.0.0.0", "--port", "8787", "--db", "/app/data/moneyguard.sqlite3"]

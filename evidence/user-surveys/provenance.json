@@ -1,5 +1,5 @@
 {
-  "schema_version": "tideway-survey-intake-v1",
+  "schema_version": "moneyguard-survey-intake-v1",
   "sources": {
     "sme": {
       "filename": "sme-survey_v2.csv",
@@ -46,5 +46,5 @@
     "cross-cohort participant mapping",
     "security reviewer qualifications and independent testing scope"
   ],
-  "publication_policy": "Publish aggregate counts only. Raw CSVs, narratives and anonymous ID mapping remain private. Optional-AI survey responses do not verify the native TideLM adapter or receipt model."
+  "publication_policy": "Publish aggregate counts only. Raw CSVs, narratives and anonymous ID mapping remain private. Optional-AI survey responses do not verify the native GuardLM adapter or receipt model."
 }

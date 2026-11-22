@@ -8,7 +8,7 @@
   "runtime_release": "b11678",
   "runtime_archive": "llama-b11678-bin-macos-arm64.tar.gz",
   "runtime_archive_sha256": "81c98d485d430272895ed216ffd5537b400a36519e9da1fa412c5dbb3d1e0f4c",
-  "scope": "Actual local compatible Qwen inference; not the released TideLM MLX adapter. Weights/runtime excluded from submission package.",
+  "scope": "Actual local compatible Qwen inference; not the released GuardLM MLX adapter. Weights/runtime excluded from submission package.",
   "verification": {
     "model_bytes_observed": 2497281120,
     "model_sha256_observed": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
