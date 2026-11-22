@@ -6,7 +6,7 @@ provider's models in order) and moves on when one is busy (429), down (5xx, time
 provider answers: names are pseudonymised, only read/propose tools exist, every number is checked.
 
 Configure in .env (all optional; keys never leave this computer except to the provider they belong to):
-  GEMINI_API_KEY      Google AI Studio (free tier)            GEMINI_MODEL      default gemini-2.5-flash
+  GEMINI_API_KEY      Google AI Studio (free tier)            GEMINI_MODEL      default gemini-flash-lite-latest,gemini-flash-latest
   GROQ_API_KEY        Groq (free tier)                        GROQ_MODEL        default llama-3.3-70b-versatile
   OPENROUTER_API_KEY  OpenRouter (:free models cost nothing)  OPENROUTER_MODEL  comma-separated list
   CUSTOM_AI_BASE_URL  any other OpenAI-compatible service (https only), with CUSTOM_AI_API_KEY and CUSTOM_AI_MODEL
@@ -26,7 +26,10 @@ from .provider_http import open_provider_request, remaining_budget
 from .agent import OPENROUTER_DEFAULT_MODEL, OPENROUTER_URL, ProviderError, chat_to_responses, responses_to_chat
 
 KNOWN = {
-    "gemini": ("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", "gemini-2.5-flash",
+    "gemini": ("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+               # Rolling aliases: pinned versions such as gemini-2.5-flash are retired for new keys.
+               # Flash-Lite first: it answers in about a second while Flash often queues under load.
+               "gemini-flash-lite-latest,gemini-flash-latest",
                "GEMINI_API_KEY", "GEMINI_MODEL"),
     "groq": ("https://api.groq.com/openai/v1/chat/completions", "llama-3.3-70b-versatile", "GROQ_API_KEY", "GROQ_MODEL"),
     "openrouter": (OPENROUTER_URL, OPENROUTER_DEFAULT_MODEL, "OPENROUTER_API_KEY", "OPENROUTER_MODEL"),
@@ -139,7 +142,10 @@ def make_transport(providers):
                 except ProviderError as exc:
                     tried.append(f"{provider.name}: {str(exc)[:60]}")
                     continue
-                except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError):
+                except TimeoutError:
+                    tried.append(f"{provider.name} timeout")  # a stuck model gives way to the next one
+                    continue
+                except (urllib.error.URLError, json.JSONDecodeError, OSError):
                     tried.append(f"{provider.name} unreachable")
                     break
         busy = all(" 429" in t for t in tried)

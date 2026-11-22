@@ -76,7 +76,7 @@ class Config(unittest.TestCase):
         names = [p.name for p in providers_from_env(env)]
         self.assertEqual(names, ["openrouter", "gemini", "groq"])
         self.assertEqual(providers_from_env({}), [])
-        self.assertIn("gemini (gemini-2.5-flash)", label(providers_from_env({"GEMINI_API_KEY": "k"})))
+        self.assertIn("gemini (gemini-flash-lite-latest +1)", label(providers_from_env({"GEMINI_API_KEY": "k"})))
 
     def test_custom_provider_needs_https_and_a_model(self):
         ok = providers_from_env({"CUSTOM_AI_BASE_URL": "https://ai.example.com/v1", "CUSTOM_AI_API_KEY": "k", "CUSTOM_AI_MODEL": "m1,m2"})
@@ -123,25 +123,27 @@ class Fallback(unittest.TestCase):
                 return exc, calls
 
     def test_busy_first_provider_falls_through_to_the_next(self):
-        out, calls = self.run_with({("generativelanguage.googleapis.com", "gemini-2.5-flash"): 429})
+        out, calls = self.run_with({("generativelanguage.googleapis.com", "gemini-flash-latest"): 429,
+                                    ("generativelanguage.googleapis.com", "gemini-flash-lite-latest"): 503})
         self.assertEqual(out["output"][0]["content"][0]["text"], "answer from api.groq.com llama-3.3-70b-versatile")
-        self.assertEqual([c[0] for c in calls], ["generativelanguage.googleapis.com", "api.groq.com"])
-        self.assertEqual(calls[1][2], "Bearer gq-k")  # each provider gets only its own key
+        self.assertEqual([c[0] for c in calls], ["generativelanguage.googleapis.com"] * 2 + ["api.groq.com"])
+        self.assertEqual(calls[2][2], "Bearer gq-k")  # each provider gets only its own key
 
     def test_bad_key_skips_provider_and_busy_model_tries_next_model(self):
-        out, calls = self.run_with({("generativelanguage.googleapis.com", "gemini-2.5-flash"): 401,
+        out, calls = self.run_with({("generativelanguage.googleapis.com", "gemini-flash-lite-latest"): 401,
                                     ("api.groq.com", "llama-3.3-70b-versatile"): 503,
                                     ("openrouter.ai", "a:free"): 429})
         self.assertEqual(out["output"][0]["content"][0]["text"], "answer from openrouter.ai b:free")
-        self.assertEqual([c[1] for c in calls], ["gemini-2.5-flash", "llama-3.3-70b-versatile", "a:free", "b:free"])
+        self.assertEqual([c[1] for c in calls], ["gemini-flash-lite-latest", "llama-3.3-70b-versatile", "a:free", "b:free"])
 
     def test_an_empty_reply_tries_the_next_model(self):
         calls = []
         base = scripted({}, calls)
 
         def urlopen(request, timeout):
-            if json.loads(request.data)["model"] == "gemini-2.5-flash":
-                calls.append(("generativelanguage.googleapis.com", "gemini-2.5-flash", None))
+            model = json.loads(request.data)["model"]
+            if model.startswith("gemini-"):
+                calls.append(("generativelanguage.googleapis.com", model, None))
                 return Response(json.dumps({"choices": [{"message": {"content": "  "}}]}).encode())
             return base(request, timeout)
         with mock.patch.object(ai_providers, "open_provider_request", urlopen):
@@ -188,7 +190,8 @@ class Fallback(unittest.TestCase):
         self.assertNotIn("gm-k", str(preview))
 
     def test_everyone_busy_gives_a_clear_message(self):
-        out, _ = self.run_with({("generativelanguage.googleapis.com", "gemini-2.5-flash"): 429, ("api.groq.com", "llama-3.3-70b-versatile"): 429,
+        out, _ = self.run_with({("generativelanguage.googleapis.com", "gemini-flash-latest"): 429,
+                                ("generativelanguage.googleapis.com", "gemini-flash-lite-latest"): 429, ("api.groq.com", "llama-3.3-70b-versatile"): 429,
                                 ("openrouter.ai", "a:free"): 429, ("openrouter.ai", "b:free"): 429})
         self.assertIsInstance(out, ProviderError)
         self.assertIn("Every AI provider is busy", str(out))
@@ -197,3 +200,30 @@ class Fallback(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RetiredModel(unittest.TestCase):
+    def test_retired_pinned_model_falls_back_to_the_rolling_alias(self):
+        calls = []
+        transport = make_transport(providers_from_env({"GEMINI_API_KEY": "gm-k",
+                                                       "GEMINI_MODEL": "gemini-2.5-flash,gemini-flash-latest"}))
+        with mock.patch.object(ai_providers, "open_provider_request",
+                               scripted({("generativelanguage.googleapis.com", "gemini-2.5-flash"): 404}, calls)):
+            out = transport(PAYLOAD)
+        self.assertEqual(out["output"][0]["content"][0]["text"],
+                         "answer from generativelanguage.googleapis.com gemini-flash-latest")
+
+
+class StuckModel(unittest.TestCase):
+    def test_a_timed_out_model_gives_way_to_the_next_model(self):
+        calls = []
+        base = scripted({}, calls)
+
+        def urlopen(request, timeout):
+            if json.loads(request.data)["model"] == "gemini-flash-lite-latest":
+                raise TimeoutError("The provider request timed out.")
+            return base(request, timeout)
+        with mock.patch.object(ai_providers, "open_provider_request", urlopen):
+            out = make_transport(providers_from_env({"GEMINI_API_KEY": "gm-k"}))(PAYLOAD)
+        self.assertEqual(out["output"][0]["content"][0]["text"],
+                         "answer from generativelanguage.googleapis.com gemini-flash-latest")
