@@ -783,8 +783,11 @@ class Agent:
         for row in bills[:6]:
             due = row.get("rescheduled_date") or row["due_date"]
             late = due < today
-            line = (f"{row['payee']}: {money_text(row['amount_minor'], currency)}, {'\u09ac\u09be\u0995\u09bf \u09aa\u09a1\u09bc\u09c7\u099b\u09c7' if late else '\u09a6\u09bf\u09a4\u09c7 \u09b9\u09ac\u09c7'} {i18n.day('bn', due)}"
-                    if bn else f"{row['payee']} {money_text(row['amount_minor'], currency)} {'overdue since' if late else 'due'} {i18n.day('en', due)}")
+            # Python 3.11: no backslash (these \u escapes) inside an f-string expression, so choose the words first.
+            status = ("\u09ac\u09be\u0995\u09bf \u09aa\u09a1\u09bc\u09c7\u099b\u09c7" if late else "\u09a6\u09bf\u09a4\u09c7 \u09b9\u09ac\u09c7") if bn else (
+                "overdue since" if late else "due")
+            line = (f"{row['payee']}: {money_text(row['amount_minor'], currency)}, {status} {i18n.day('bn', due)}"
+                    if bn else f"{row['payee']} {money_text(row['amount_minor'], currency)} {status} {i18n.day('en', due)}")
             if row["id"] in derived["blocked"]:
                 line += " (\u0986\u099f\u0995\u09be\u09a8\u09cb: \u09ac\u09cd\u09af\u09be\u0982\u0995 \u09a4\u09a5\u09cd\u09af \u09af\u09be\u099a\u09be\u0987 \u0995\u09b0\u09c1\u09a8)" if bn else " (blocked: verify bank details first)"
             parts.append(line)
